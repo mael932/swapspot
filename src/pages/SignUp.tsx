@@ -3,20 +3,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { MailCheck } from "lucide-react";
+import { MailCheck, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { validateUniversityEmail } from "@/lib/validation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "@/components/ui/sonner";
+import { sendVerificationEmail } from "@/services/emailService";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate university email
@@ -27,16 +29,26 @@ const SignUp = () => {
     
     // Clear any previous errors
     setError("");
+    setIsLoading(true);
     
-    // In a real application, this would send a verification email
-    // For now, we'll simulate successful submission
-    setSubmitted(true);
-    toast("Verification email sent", {
-      description: "Please check your university email inbox to confirm your account."
-    });
-    
-    // In a real app, this would actually send the verification email
-    console.log(`Verification link would be sent to: ${email}`);
+    try {
+      // Send verification email
+      const success = await sendVerificationEmail(email);
+      
+      if (success) {
+        setSubmitted(true);
+        toast.success("Verification email sent", {
+          description: "Please check your university email inbox to confirm your account."
+        });
+      } else {
+        setError("Failed to send verification email. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error in email verification process:", error);
+      setError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -66,6 +78,7 @@ const SignUp = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full"
                     required
+                    disabled={isLoading}
                   />
                   <p className="text-xs text-gray-500">
                     Must be a valid university email (e.g., @uva.nl, @sorbonne.fr)
@@ -78,8 +91,15 @@ const SignUp = () => {
                   </Alert>
                 )}
                 
-                <Button type="submit" className="w-full">
-                  Get Verification Link
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Get Verification Link"
+                  )}
                 </Button>
               </form>
               

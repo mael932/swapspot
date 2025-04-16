@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Euro, ArrowRightLeft } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // Dummy data for featured swaps
 const swapListings = [
@@ -151,9 +152,11 @@ export default function FeaturedSwaps() {
               </CardContent>
               
               <CardFooter>
-                <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue">
-                  <ArrowRightLeft className="h-4 w-4 mr-2" />
-                  View Swap Details
+                <Button asChild className="w-full bg-swap-blue hover:bg-swap-darkBlue">
+                  <Link to={`/swaps/${swap.id}`}>
+                    <ArrowRightLeft className="h-4 w-4 mr-2" />
+                    View Swap Details
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -161,8 +164,8 @@ export default function FeaturedSwaps() {
         </div>
         
         <div className="text-center mt-12">
-          <Button variant="outline" className="border-swap-blue text-swap-blue hover:bg-swap-lightBlue px-6">
-            View All Swaps
+          <Button variant="outline" asChild className="border-swap-blue text-swap-blue hover:bg-swap-lightBlue px-6">
+            <Link to="/browse">View All Swaps</Link>
           </Button>
         </div>
       </div>
