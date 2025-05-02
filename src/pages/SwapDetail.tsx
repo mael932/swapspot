@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Calendar, Euro, MapPin, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import Map from "@/components/Map";
 
 // This would typically come from an API call using the ID
 const getSwapById = (id: string) => {
@@ -270,8 +271,8 @@ const SwapDetail = () => {
               
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-lg mb-4">Location</h3>
-                <div className="bg-gray-200 rounded-lg h-48 flex items-center justify-center">
-                  <p className="text-gray-600">Map would be displayed here</p>
+                <div className="rounded-lg h-48">
+                  <Map city={swap.current.city} />
                 </div>
                 <p className="mt-3 text-sm text-gray-600">
                   Note: Exact location is shared only after matching
