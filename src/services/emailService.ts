@@ -1,40 +1,58 @@
-
+import emailjs from "@emailjs/browser";
 import { toast } from "@/components/ui/sonner";
 
 /**
  * Send a verification email to the user
- * In a real app, this would connect to an email service like SendGrid or AWS SES
- * For now, we'll simulate it with a timeout and console logs
+ * Using EmailJS to actually send emails without a backend
  */
 export const sendVerificationEmail = async (email: string): Promise<boolean> => {
   console.log(`Attempting to send verification email to: ${email}`);
   
   try {
-    // Simulate API call to email service
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Generate a verification token (in real app, store this with user record)
+    // Generate a verification token
     const verificationToken = generateVerificationToken();
     const verificationLink = `${window.location.origin}/verify?email=${encodeURIComponent(email)}&token=${verificationToken}`;
     
-    // In a real implementation, this would be the email content sent to the user
-    console.log("Email sent with the following details:");
-    console.log("To:", email);
-    console.log("Subject: Verify your SwapSpot account");
-    console.log("Verification link:", verificationLink);
-    
-    // Store token in localStorage (in a real app, this would be stored in a database)
-    const verificationData = {
-      email,
-      token: verificationToken,
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours expiry
+    // Send actual email using EmailJS
+    // NOTE: You need to replace these with your own EmailJS service, template, and user IDs
+    const emailParams = {
+      to_email: email,
+      to_name: email.split('@')[0],
+      verification_link: verificationLink,
+      from_name: "SwapSpot Team",
+      subject: "Verify your SwapSpot account"
     };
     
-    const storedVerifications = JSON.parse(localStorage.getItem('pendingVerifications') || '[]');
-    storedVerifications.push(verificationData);
-    localStorage.setItem('pendingVerifications', JSON.stringify(storedVerifications));
+    // Initialize EmailJS with your public key
+    emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace this with your actual public key
     
-    return true;
+    // Send the email
+    const response = await emailjs.send(
+      "YOUR_EMAILJS_SERVICE_ID", // Replace with your Service ID
+      "YOUR_EMAILJS_TEMPLATE_ID", // Replace with your Template ID
+      emailParams
+    );
+    
+    if (response.status === 200) {
+      console.log("Email successfully sent!");
+      
+      // Store token in localStorage (in a real app, this would be stored in a database)
+      const verificationData = {
+        email,
+        token: verificationToken,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours expiry
+      };
+      
+      const storedVerifications = JSON.parse(localStorage.getItem('pendingVerifications') || '[]');
+      storedVerifications.push(verificationData);
+      localStorage.setItem('pendingVerifications', JSON.stringify(storedVerifications));
+      
+      return true;
+    } else {
+      console.error("Failed to send email:", response);
+      toast.error("Failed to send verification email. Please try again later.");
+      return false;
+    }
   } catch (error) {
     console.error("Error sending verification email:", error);
     toast.error("Failed to send verification email. Please try again later.");
