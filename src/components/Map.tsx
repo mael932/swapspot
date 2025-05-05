@@ -17,7 +17,7 @@ const Map = ({ city, randomize = true }: MapProps) => {
 
     // For demo purposes, use a public token
     // In production, this should be stored securely
-    mapboxgl.accessToken = 'pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNsdmk4dDRnYTA5aGUyc29kO DQxM2E1eHEifQ.ohorbZuc9o6pktQ7mIpJNA';
+    mapboxgl.accessToken = 'pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNsdmk4dDRnYTA5aGUyc29kODQxM2E1eHEifQ.ohorbZuc9o6pktQ7mIpJNA';
     
     // Generate slightly randomized coordinates based on city
     // These are approximate coordinates for demo purposes
@@ -36,7 +36,7 @@ const Map = ({ city, randomize = true }: MapProps) => {
     };
     
     // Default to London if city isn't found
-    let [lng, lat] = cityCoordinates[city] || [13.4050, 52.5200];
+    let [lng, lat] = cityCoordinates[city] || [-0.1278, 51.5074];
     
     // Add small random variation if randomize is true
     if (randomize) {
