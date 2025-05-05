@@ -1,11 +1,17 @@
 
 /**
- * Validates if an email is from a recognized university domain
+ * Validates if an email is from a recognized university domain,
+ * but also accepts common email domains for demo purposes
  */
 export const validateUniversityEmail = (email: string): boolean => {
   // Basic email format validation
   const isValidEmailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if (!isValidEmailFormat) return false;
+  
+  // For the demo version, we accept all valid email formats
+  return true;
+  
+  /* The code below can be re-enabled when strict university validation is required
   
   // Extract domain from email
   const domain = email.split('@')[1]?.toLowerCase();
@@ -43,4 +49,5 @@ export const validateUniversityEmail = (email: string): boolean => {
   return acceptedDomains.some(acceptedDomain => 
     domain === acceptedDomain || domain.endsWith('.' + acceptedDomain)
   );
+  */
 };

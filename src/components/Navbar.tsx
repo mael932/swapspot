@@ -33,13 +33,17 @@ export default function Navbar() {
           <Link to="/browse" className="text-gray-600 hover:text-swap-blue">Browse</Link>
           <Link to="/about" className="text-gray-600 hover:text-swap-blue">About</Link>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="flex items-center gap-2">
-              <LogIn className="h-4 w-4" />
-              <span>Log In</span>
+            <Button variant="outline" className="flex items-center gap-2" asChild>
+              <Link to="/login">
+                <LogIn className="h-4 w-4" />
+                <span>Log In</span>
+              </Link>
             </Button>
-            <Button className="bg-swap-blue hover:bg-swap-darkBlue flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              <span>Sign Up</span>
+            <Button className="bg-swap-blue hover:bg-swap-darkBlue flex items-center gap-2" asChild>
+              <Link to="/signup">
+                <UserPlus className="h-4 w-4" />
+                <span>Sign Up</span>
+              </Link>
             </Button>
           </div>
         </div>
@@ -54,13 +58,17 @@ export default function Navbar() {
             <Link to="/browse" className="text-gray-600 hover:text-swap-blue py-2">Browse</Link>
             <Link to="/about" className="text-gray-600 hover:text-swap-blue py-2">About</Link>
             <div className="flex flex-col gap-2 pt-2">
-              <Button variant="outline" className="w-full justify-center">
-                <LogIn className="h-4 w-4 mr-2" />
-                <span>Log In</span>
+              <Button variant="outline" className="w-full justify-center" asChild>
+                <Link to="/login">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  <span>Log In</span>
+                </Link>
               </Button>
-              <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue justify-center">
-                <UserPlus className="h-4 w-4 mr-2" />
-                <span>Sign Up</span>
+              <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue justify-center" asChild>
+                <Link to="/signup">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  <span>Sign Up</span>
+                </Link>
               </Button>
             </div>
           </div>
