@@ -1,30 +1,52 @@
 
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { verifyEmail } from "@/services/emailService";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabase = createClient();
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const [verificationStatus, setVerificationStatus] = useState<"loading" | "success" | "error">("loading");
+  const navigate = useNavigate();
   
   useEffect(() => {
-    const email = searchParams.get("email");
-    const token = searchParams.get("token");
+    const handleVerification = async () => {
+      // Get the verification parameters from the URL
+      // Supabase redirects to this page with these parameters
+      const token = searchParams.get("token_hash");
+      const type = searchParams.get("type");
+      
+      if (!token || !type) {
+        setVerificationStatus("error");
+        return;
+      }
+      
+      try {
+        // Verify the OTP (one-time password) token
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: token,
+          type: type as any
+        });
+        
+        if (error) {
+          console.error("Verification error:", error);
+          setVerificationStatus("error");
+        } else {
+          setVerificationStatus("success");
+        }
+      } catch (err) {
+        console.error("Error during verification:", err);
+        setVerificationStatus("error");
+      }
+    };
     
-    if (!email || !token) {
-      setVerificationStatus("error");
-      return;
-    }
-    
-    // Simulate network delay
-    setTimeout(() => {
-      const isVerified = verifyEmail(email, token);
-      setVerificationStatus(isVerified ? "success" : "error");
-    }, 2000);
+    handleVerification();
   }, [searchParams]);
   
   return (

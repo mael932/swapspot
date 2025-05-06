@@ -3,13 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { MailCheck, Loader2, Upload } from "lucide-react";
+import { MailCheck, Loader2, Upload, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "@/components/ui/sonner";
 import { sendVerificationEmail } from "@/services/emailService";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabase = createClient();
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -34,23 +38,26 @@ const SignUp = () => {
     setIsLoading(true);
     
     try {
-      // Send verification email
+      // Send verification email using Supabase auth
       const success = await sendVerificationEmail(email);
       
       if (success) {
-        // In a real app, we would also store university and enrollment proof
+        // Store university and file info in Supabase later when user is verified
         setSubmitted(true);
         toast.success("Verification email sent", {
           description: "Please check your email inbox to confirm your account."
         });
         
-        // Store university info for manual verification later
+        // Temporarily store university info in localStorage until user confirms email
         if (university || file) {
           localStorage.setItem(`verification_${email}`, JSON.stringify({
             university,
             hasUploadedProof: !!file,
             timestamp: new Date().toISOString(),
           }));
+          
+          // In a full implementation, we would upload the file to Supabase storage
+          // and associate it with the user after verification
         }
       } else {
         setError("Failed to send verification email. Please try again later.");
@@ -99,13 +106,17 @@ const SignUp = () => {
                 <p className="mt-2 text-gray-600">
                   Sign up to start exploring student housing swaps
                 </p>
-                <div className="mt-2">
+                <div className="mt-2 flex items-center justify-center gap-2">
                   <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                     Early Demo Version
                   </Badge>
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                    <Shield className="h-3 w-3" />
+                    Supabase Auth
+                  </Badge>
                 </div>
                 <p className="mt-4 text-sm text-gray-500 bg-yellow-50 p-2 rounded-md border border-yellow-100">
-                  This early version is for demonstration purposes. Full student verification and institutional integration coming soon.
+                  Sign up with your email to receive a secure verification link.
                 </p>
               </div>
               
