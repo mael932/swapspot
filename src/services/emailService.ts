@@ -9,12 +9,16 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
   console.log(`Attempting to send verification email to: ${email}`);
   
   try {
+    // Get the current origin for proper redirection
+    const redirectTo = window.location.origin + "/verify";
+    console.log("Setting redirect URL to:", redirectTo);
+    
     // Use Supabase's built-in signup with email verification
     const { data, error } = await supabase.auth.signUp({
       email,
       password: generateSecurePassword(), // Generate a temporary password
       options: {
-        emailRedirectTo: `${window.location.origin}/verify`,
+        emailRedirectTo: redirectTo,
       }
     });
     

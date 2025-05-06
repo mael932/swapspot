@@ -19,14 +19,14 @@ const VerifyEmail = () => {
       console.log("Starting email verification process");
       
       // Get the verification parameters from the URL
-      // Supabase redirects to this page with these parameters
-      const token = searchParams.get("token_hash");
+      const token_hash = searchParams.get("token_hash");
       const type = searchParams.get("type");
+      const next = searchParams.get("next") || "/account";
       
-      console.log("Verification params:", { token: !!token, type });
+      console.log("Verification params:", { token_hash: !!token_hash, type, next });
       
-      if (!token || !type) {
-        console.error("Missing token or type in URL");
+      if (!token_hash || !type) {
+        console.error("Missing token_hash or type in URL");
         setVerificationStatus("error");
         return;
       }
@@ -34,13 +34,14 @@ const VerifyEmail = () => {
       try {
         // Verify the OTP (one-time password) token
         const { data, error } = await supabase.auth.verifyOtp({
-          token_hash: token,
+          token_hash,
           type: type as any
         });
         
         if (error) {
           console.error("Verification error:", error);
           setVerificationStatus("error");
+          toast.error("Verification failed. Please try again.");
         } else {
           console.log("Email verification successful:", data);
           setUser(data.user);
