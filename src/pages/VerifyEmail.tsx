@@ -1,16 +1,11 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client with required parameters
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { supabase } from "@/lib/supabase";
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -19,12 +14,17 @@ const VerifyEmail = () => {
   
   useEffect(() => {
     const handleVerification = async () => {
+      console.log("Starting email verification process");
+      
       // Get the verification parameters from the URL
       // Supabase redirects to this page with these parameters
       const token = searchParams.get("token_hash");
       const type = searchParams.get("type");
       
+      console.log("Verification params:", { token: !!token, type });
+      
       if (!token || !type) {
+        console.error("Missing token or type in URL");
         setVerificationStatus("error");
         return;
       }
@@ -40,6 +40,7 @@ const VerifyEmail = () => {
           console.error("Verification error:", error);
           setVerificationStatus("error");
         } else {
+          console.log("Email verification successful");
           setVerificationStatus("success");
         }
       } catch (err) {

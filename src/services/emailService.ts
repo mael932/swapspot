@@ -1,12 +1,5 @@
-
 import { toast } from "@/components/ui/sonner";
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client with required parameters
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { supabase } from "@/lib/supabase";
 
 /**
  * Send a verification email to the user using Supabase Auth
