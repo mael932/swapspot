@@ -7,13 +7,7 @@ import { Loader2, LogIn, MailCheck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "@/components/ui/sonner";
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client with required parameters
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { supabase } from "@/lib/supabase";
 
 const Login = () => {
   const [email, setEmail] = useState("");

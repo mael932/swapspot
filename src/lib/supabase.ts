@@ -1,13 +1,18 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Safely handle the case when env vars might not be available
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Use the direct values from the client.ts file since environment variables are not accessible
+const supabaseUrl = "https://geeuxuskzdnpcuirrkqv.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZXV4dXNremRucGN1aXJya3F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MzQ2ODAsImV4cCI6MjA2MjExMDY4MH0.YS4Kjb_cxMq7IjUG_UVU7GE0rQF0A09stuWbPhPhqDg";
 
-// Check if we have the required configuration
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables. Check your .env file and Supabase connection.');
-}
+// Create and export the Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    storage: localStorage
+  }
+});
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// For debugging
+console.log("Supabase client initialized with URL:", supabaseUrl);

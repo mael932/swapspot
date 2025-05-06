@@ -14,6 +14,7 @@ import Browse from "./pages/Browse";
 import About from "./pages/About";
 import SwapDetail from "./pages/SwapDetail";
 import VerifyEmail from "./pages/VerifyEmail";
+import { supabase } from "./lib/supabase";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,7 +33,22 @@ const App = () => {
     // Simple startup check
     try {
       console.log("App initialized");
-      setIsLoading(false);
+      
+      // Test Supabase connection
+      supabase.auth.getSession()
+        .then(({ data, error: sessionError }) => {
+          if (sessionError) {
+            console.error("Supabase session error:", sessionError);
+            // Don't set as error to prevent blocking the app
+          } else {
+            console.log("Supabase connection working", data.session ? "User is logged in" : "No active session");
+          }
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error("Error checking Supabase session:", err);
+          setIsLoading(false);
+        });
     } catch (err) {
       console.error("Application startup error:", err);
       setError("Failed to initialize application. Please check the console for more details.");
