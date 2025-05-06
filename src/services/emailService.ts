@@ -2,9 +2,11 @@
 import { toast } from "@/components/ui/sonner";
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-// The URL and anon key are automatically injected by Lovable
-const supabase = createClient();
+// Initialize Supabase client with required parameters
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 /**
  * Send a verification email to the user using Supabase Auth
