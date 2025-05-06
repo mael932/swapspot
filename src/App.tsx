@@ -33,6 +33,7 @@ const App = () => {
     // Simple startup check
     try {
       console.log("App initialized");
+      console.log("Supabase client available:", !!supabase);
       
       // Test Supabase connection
       supabase.auth.getSession()
