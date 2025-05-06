@@ -14,6 +14,8 @@ import Browse from "./pages/Browse";
 import About from "./pages/About";
 import SwapDetail from "./pages/SwapDetail";
 import VerifyEmail from "./pages/VerifyEmail";
+import Account from "./pages/Account";
+import PostPlace from "./pages/PostPlace";
 import { supabase } from "./lib/supabase";
 
 const queryClient = new QueryClient({
@@ -86,6 +88,8 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/swaps/:id" element={<SwapDetail />} />
             <Route path="/verify" element={<VerifyEmail />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/post-place" element={<PostPlace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

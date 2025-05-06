@@ -6,10 +6,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { toast } from "@/components/ui/sonner";
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const [verificationStatus, setVerificationStatus] = useState<"loading" | "success" | "error">("loading");
+  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -31,7 +33,7 @@ const VerifyEmail = () => {
       
       try {
         // Verify the OTP (one-time password) token
-        const { error } = await supabase.auth.verifyOtp({
+        const { data, error } = await supabase.auth.verifyOtp({
           token_hash: token,
           type: type as any
         });
@@ -40,8 +42,19 @@ const VerifyEmail = () => {
           console.error("Verification error:", error);
           setVerificationStatus("error");
         } else {
-          console.log("Email verification successful");
+          console.log("Email verification successful:", data);
+          setUser(data.user);
           setVerificationStatus("success");
+          
+          // Auto-redirect after successful verification
+          toast.success("Email verified successfully!", {
+            description: "You're now logged in to SwapSpot"
+          });
+          
+          // Give user a moment to see the success message before redirecting
+          setTimeout(() => {
+            navigate("/account");
+          }, 3000);
         }
       } catch (err) {
         console.error("Error during verification:", err);
@@ -50,7 +63,7 @@ const VerifyEmail = () => {
     };
     
     handleVerification();
-  }, [searchParams]);
+  }, [searchParams, navigate]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -74,10 +87,10 @@ const VerifyEmail = () => {
               </p>
               <div className="pt-4">
                 <Button asChild className="w-full">
-                  <Link to="/browse">Start Browsing Swaps</Link>
+                  <Link to="/account">Go to Your Account</Link>
                 </Button>
                 <p className="mt-4 text-sm text-gray-500">
-                  Or go to your <Link to="/profile" className="text-swap-blue hover:underline">profile settings</Link> to complete your profile
+                  Redirecting to your account in a few seconds...
                 </p>
               </div>
             </div>
