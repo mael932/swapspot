@@ -17,6 +17,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     const handleVerification = async () => {
       console.log("Starting email verification process");
+      console.log("URL params:", Object.fromEntries(searchParams.entries()));
       
       // Get the verification parameters from the URL
       const token_hash = searchParams.get("token_hash");
@@ -41,7 +42,7 @@ const VerifyEmail = () => {
         if (error) {
           console.error("Verification error:", error);
           setVerificationStatus("error");
-          toast.error("Verification failed. Please try again.");
+          toast.error("Verification failed: " + error.message);
         } else {
           console.log("Email verification successful:", data);
           setUser(data.user);

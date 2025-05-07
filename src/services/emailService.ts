@@ -9,14 +9,41 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
   console.log(`Attempting to send verification email to: ${email}`);
   
   try {
-    // Get the current origin for proper redirection
-    const redirectTo = window.location.origin + "/verify";
+    // Get the current URL for proper redirection - using window.location.origin
+    // Make sure we're using the actual current origin for redirects
+    const currentOrigin = window.location.origin;
+    const redirectTo = `${currentOrigin}/verify`;
     console.log("Setting redirect URL to:", redirectTo);
     
-    // Use Supabase's built-in signup with email verification
+    // First check if this user exists and maybe needs a resend
+    const { data: existingUserData, error: existingUserError } = await supabase.auth.admin
+      .getUserByEmail(email)
+      .catch(() => ({ data: null, error: null }));
+    
+    let success = false;
+    
+    // If user already exists but email isn't confirmed
+    if (existingUserData?.user) {
+      console.log("User exists, sending recovery email instead");
+      const { error: otpError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectTo,
+      });
+      
+      if (otpError) {
+        console.error("Error sending password reset email:", otpError);
+        toast.error("Failed to send verification email. Please try again later.");
+        return false;
+      }
+      
+      console.log("Password reset/verification email sent successfully");
+      toast.success("Verification email sent to your inbox");
+      return true;
+    }
+    
+    // For new users, use signup flow
     const { data, error } = await supabase.auth.signUp({
       email,
-      password: generateSecurePassword(), // Generate a temporary password
+      password: generateSecurePassword(), // Generate a secure temporary password
       options: {
         emailRedirectTo: redirectTo,
       }
@@ -24,18 +51,10 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
     
     if (error) {
       console.error("Error sending verification email:", error);
-      toast.error("Failed to send verification email. Please try again later.");
-      return false;
-    }
-    
-    // Check if the email was actually sent
-    if (data && data.user && data.user.confirmation_sent_at) {
-      console.log("Verification email sent successfully via Supabase:", data);
-      return true;
-    } else {
-      // This happens if the user already exists but needs to verify
-      if (data && data.user && !data.user.confirmation_sent_at) {
-        console.log("User exists but not confirmed, resending verification...");
+      
+      // Special case for when user exists but is not verified
+      if (error.message.includes("already registered")) {
+        // Try to resend verification
         const { error: resendError } = await supabase.auth.resend({
           type: 'signup',
           email,
@@ -46,15 +65,25 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
         
         if (resendError) {
           console.error("Error resending verification email:", resendError);
-          toast.error("Failed to resend verification email. Please try again later.");
+          toast.error("Failed to resend verification email. Please try again.");
           return false;
         }
         
         console.log("Verification email resent successfully");
+        toast.success("Verification email resent to your inbox");
         return true;
       }
       
-      console.error("Verification email not sent - no confirmation_sent_at timestamp");
+      toast.error("Failed to send verification email. Please try again.");
+      return false;
+    }
+    
+    // Check if the email was actually sent
+    if (data && data.user) {
+      console.log("Signup successful, verification email should be sent:", data);
+      return true;
+    } else {
+      console.error("Verification email not sent - unexpected response from Supabase");
       toast.error("Failed to send verification email. Please try again later.");
       return false;
     }
