@@ -42,7 +42,7 @@ const About = () => {
                 <blockquote className="text-gray-700 italic">
                   "During my exchange semester, finding affordable housing was the biggest challenge. I kept thinking how perfect it would be if I could just swap with another student going to my home university. That's when the idea for SwapSpot began to take shape."
                 </blockquote>
-                <p className="mt-4 font-medium">— Emma Chen, Co-founder</p>
+                <p className="mt-4 font-medium">— Mael Moulin Fournier, Co-founder</p>
               </div>
             </div>
           </div>
@@ -153,7 +153,7 @@ const About = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
-                {name: "Emma Chen", role: "Co-founder & CEO", avatar: "https://i.pravatar.cc/150?img=23"},
+                {name: "Mael Moulin Fournier", role: "Co-founder & CEO", avatar: "https://i.pravatar.cc/150?img=23"},
                 {name: "Marco Rossi", role: "Co-founder & CTO", avatar: "https://i.pravatar.cc/150?img=53"},
                 {name: "Sophia Müller", role: "Head of User Experience", avatar: "https://i.pravatar.cc/150?img=47"},
                 {name: "Liam Johnson", role: "Head of Partnerships", avatar: "https://i.pravatar.cc/150?img=67"}
