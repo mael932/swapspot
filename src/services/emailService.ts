@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/lib/supabase";
 
@@ -15,15 +14,16 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
     const redirectTo = `${currentOrigin}/verify`;
     console.log("Setting redirect URL to:", redirectTo);
     
-    // First check if this user exists and maybe needs a resend
-    const { data: existingUserData, error: existingUserError } = await supabase.auth.admin
-      .getUserByEmail(email)
+    // We need to check if this user exists differently since getUserByEmail is not available
+    const { data: existingUsers, error: listUsersError } = await supabase.auth.admin
+      .listUsers({ filter: `email.eq.${email}` })
       .catch(() => ({ data: null, error: null }));
     
-    let success = false;
+    // Check if we found a matching user
+    const existingUser = existingUsers?.users?.find(user => user.email === email);
     
     // If user already exists but email isn't confirmed
-    if (existingUserData?.user) {
+    if (existingUser) {
       console.log("User exists, sending recovery email instead");
       const { error: otpError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectTo,
@@ -81,6 +81,7 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
     // Check if the email was actually sent
     if (data && data.user) {
       console.log("Signup successful, verification email should be sent:", data);
+      toast.success("Verification email sent to your inbox");
       return true;
     } else {
       console.error("Verification email not sent - unexpected response from Supabase");
