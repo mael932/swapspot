@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/lib/supabase";
 
@@ -15,82 +14,58 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
     const redirectTo = `${currentOrigin}/verify`;
     console.log("Setting redirect URL to:", redirectTo);
     
-    // Check if this user exists already in Supabase
-    const { data: authData, error: authError } = await supabase.auth.signInWithOtp({
+    // First try a direct signup with email verification
+    const { data, error } = await supabase.auth.signUp({
       email,
+      password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase() + "1!", // Generate a random secure password
       options: {
-        shouldCreateUser: false, // Only check if user exists, don't create
+        emailRedirectTo: redirectTo,
+        data: {
+          signup_timestamp: new Date().toISOString(),
+        }
       }
     });
     
-    // If we got an error saying user doesn't exist, this is actually a new signup
-    if (authError && authError.message.includes("Email not found")) {
-      console.log("User doesn't exist, proceeding with signup");
+    if (error) {
+      console.error("Error in email verification process:", error);
       
-      // Send the signup invitation with email verification
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase() + "1!", // Generate a random secure password
-        options: {
-          emailRedirectTo: redirectTo,
-          data: {
-            signup_timestamp: new Date().toISOString(),
-          }
-        }
-      });
-      
-      if (error) {
-        console.error("Error sending verification email during signup:", error);
+      // If user already exists, send a magic link instead
+      if (error.message.includes("already registered") || error.message.includes("unique")) {
+        console.log("User already exists, sending magic link instead");
         
-        // Show user-friendly error message
-        if (error.message.includes("unique")) {
-          toast.error("Email already registered", {
-            description: "This email is already registered. Try to log in instead."
-          });
-        } else {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: redirectTo,
+        });
+        
+        if (resetError) {
+          console.error("Error sending magic link to existing user:", resetError);
           toast.error("Failed to send verification email", {
-            description: error.message
+            description: resetError.message
           });
+          return false;
         }
         
-        return false;
-      }
-      
-      // Check if the email was actually sent
-      if (data && data.user) {
-        console.log("Signup successful, verification email should be sent:", data);
+        console.log("Magic link sent successfully to existing user");
         toast.success("Verification email sent to your inbox");
         return true;
-      } else {
-        console.error("Verification email not sent - unexpected response from Supabase");
-        toast.error("Failed to send verification email", {
-          description: "Unexpected error occurred. Please try again."
-        });
-        return false;
       }
-    } else if (!authError || authError.message.includes("Email link")) {
-      // The user exists, we need to send a password reset/magic link
-      console.log("User exists, sending magic link");
       
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectTo,
+      // Other errors
+      toast.error("Failed to send verification email", {
+        description: error.message
       });
-      
-      if (resetError) {
-        console.error("Error sending magic link to existing user:", resetError);
-        toast.error("Failed to send verification email", {
-          description: resetError.message
-        });
-        return false;
-      }
-      
-      console.log("Magic link sent successfully to existing user");
+      return false;
+    }
+    
+    // Check if the email was actually sent
+    if (data && data.user) {
+      console.log("Signup successful, verification email sent:", data);
       toast.success("Verification email sent to your inbox");
       return true;
     } else {
-      console.error("Unexpected error checking user:", authError);
+      console.error("Verification email not sent - unexpected response from Supabase");
       toast.error("Failed to send verification email", {
-        description: authError.message
+        description: "Unexpected error occurred. Please try again."
       });
       return false;
     }

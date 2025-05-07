@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,25 +7,78 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, MapPin } from "lucide-react";
+import { Plus, MapPin, Calendar, Home, Upload, AlertCircle } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/lib/supabase";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const PostPlace = () => {
   const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [availableFrom, setAvailableFrom] = useState("");
+  const [availableTo, setAvailableTo] = useState("");
+  const [roomType, setRoomType] = useState("");
+  const [error, setError] = useState("");
+  const [user, setUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) {
+        setUser(data.session.user);
+        setIsAuthenticated(true);
+      } else {
+        // Redirect to signup if not authenticated
+        toast.error("Please sign in to post your apartment", {
+          description: "You'll be redirected to the signup page"
+        });
+        setTimeout(() => navigate("/signup"), 1500);
+      }
+    };
     
-    // This is a placeholder for future implementation
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Your place has been submitted!", {
+    checkAuth();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!isAuthenticated) {
+      toast.error("You must be logged in to post an apartment");
+      navigate("/signup");
+      return;
+    }
+    
+    // Basic validation
+    if (!title || !location || !description) {
+      setError("Please fill out all required fields");
+      return;
+    }
+    
+    setLoading(true);
+    setError("");
+    
+    try {
+      // In a real implementation, we would save this to Supabase
+      // For now, we'll just simulate saving
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast.success("Your apartment has been submitted!", {
         description: "It will be reviewed and published soon."
       });
+      
       navigate("/account");
-    }, 1500);
+    } catch (err: any) {
+      console.error("Error submitting apartment:", err);
+      setError(err.message || "Failed to submit your apartment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,30 +86,39 @@ const PostPlace = () => {
       <Navbar />
       <main className="flex-grow py-12 px-4">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Add Your Place</h1>
+          <h1 className="text-3xl font-bold mb-2">Post Your Apartment</h1>
           <p className="text-gray-600 mb-8">List your accommodation to find potential swaps</p>
           
           <Card>
             <CardHeader>
-              <CardTitle>Place Details</CardTitle>
-              <CardDescription>Provide information about your accommodation</CardDescription>
+              <CardTitle>Apartment Details</CardTitle>
+              <CardDescription>Provide information about your accommodation for potential swappers</CardDescription>
             </CardHeader>
             <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                    Title
+                    Title *
                   </label>
                   <Input 
                     id="title" 
                     placeholder="e.g., Cozy Studio Near University Campus"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                    Location
+                    Location *
                   </label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
@@ -64,20 +126,58 @@ const PostPlace = () => {
                       id="location" 
                       placeholder="City, Country"
                       className="pl-10"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
                       required
                     />
                   </div>
-                  <p className="text-xs text-gray-500">The city and country where your place is located</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="roomType" className="block text-sm font-medium text-gray-700">
+                      Room Type
+                    </label>
+                    <Select value={roomType} onValueChange={setRoomType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select room type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="entire-apartment">Entire Apartment</SelectItem>
+                        <SelectItem value="private-room">Private Room</SelectItem>
+                        <SelectItem value="shared-room">Shared Room</SelectItem>
+                        <SelectItem value="studio">Studio</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="availableFrom" className="block text-sm font-medium text-gray-700">
+                      Available From
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                      <Input 
+                        id="availableFrom" 
+                        type="date"
+                        className="pl-10"
+                        value={availableFrom}
+                        onChange={(e) => setAvailableFrom(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                    Description
+                    Description *
                   </label>
                   <Textarea 
                     id="description" 
                     placeholder="Describe your place, including number of rooms, amenities, and why someone would want to stay there..."
                     rows={5}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     required
                   />
                 </div>
@@ -88,13 +188,13 @@ const PostPlace = () => {
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-md p-6">
                     <div className="flex flex-col items-center">
-                      <Plus className="h-8 w-8 text-gray-400" />
+                      <Upload className="h-8 w-8 text-gray-400" />
                       <p className="mt-2 text-sm text-gray-600">
                         Drag and drop images here, or click to upload
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        (Feature coming soon)
-                      </p>
+                      <Button variant="outline" size="sm" className="mt-3">
+                        Choose Files
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -112,8 +212,8 @@ const PostPlace = () => {
                       </>
                     ) : (
                       <>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Submit Place
+                        <Home className="h-4 w-4 mr-2" />
+                        Post Your Apartment
                       </>
                     )}
                   </Button>

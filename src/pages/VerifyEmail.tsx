@@ -22,9 +22,8 @@ const VerifyEmail = () => {
       // Get the verification parameters from the URL
       const token_hash = searchParams.get("token_hash");
       const type = searchParams.get("type");
-      const next = searchParams.get("next") || "/account";
       
-      console.log("Verification params:", { token_hash: !!token_hash, type, next });
+      console.log("Verification params:", { token_hash: !!token_hash, type });
       
       if (!token_hash || !type) {
         console.error("Missing token_hash or type in URL");
@@ -50,12 +49,12 @@ const VerifyEmail = () => {
           
           // Auto-redirect after successful verification
           toast.success("Email verified successfully!", {
-            description: "You're now logged in to SwapSpot"
+            description: "You can now post your apartment on SwapSpot"
           });
           
           // Give user a moment to see the success message before redirecting
           setTimeout(() => {
-            navigate("/account");
+            navigate("/post-place");
           }, 3000);
         }
       } catch (err) {
@@ -85,14 +84,14 @@ const VerifyEmail = () => {
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
               <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
               <p className="text-gray-600">
-                Your email has been successfully verified. You can now access all features of SwapSpot.
+                Your email has been successfully verified. You can now post your apartment on SwapSpot.
               </p>
               <div className="pt-4">
                 <Button asChild className="w-full">
-                  <Link to="/account">Go to Your Account</Link>
+                  <Link to="/post-place">Post Your Apartment</Link>
                 </Button>
                 <p className="mt-4 text-sm text-gray-500">
-                  Redirecting to your account in a few seconds...
+                  Redirecting to apartment posting page in a few seconds...
                 </p>
               </div>
             </div>
@@ -110,7 +109,7 @@ const VerifyEmail = () => {
                   <Link to="/signup">Try Again</Link>
                 </Button>
                 <p className="mt-4 text-sm text-gray-500">
-                  If you continue to have issues, please <Link to="/contact" className="text-swap-blue hover:underline">contact support</Link>
+                  If you continue to have issues, please <Link to="/support" className="text-swap-blue hover:underline">contact support</Link>
                 </p>
               </div>
             </div>
