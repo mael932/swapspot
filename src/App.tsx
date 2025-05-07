@@ -17,6 +17,11 @@ import VerifyEmail from "./pages/VerifyEmail";
 import Account from "./pages/Account";
 import PostPlace from "./pages/PostPlace";
 import { supabase } from "./lib/supabase";
+import Safety from "./pages/Safety";
+import FAQ from "./pages/FAQ";
+import Terms from "./pages/Terms";
+import Careers from "./pages/Careers";
+import Support from "./pages/Support";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +95,11 @@ const App = () => {
             <Route path="/verify" element={<VerifyEmail />} />
             <Route path="/account" element={<Account />} />
             <Route path="/post-place" element={<PostPlace />} />
+            <Route path="/safety" element={<Safety />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/support" element={<Support />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

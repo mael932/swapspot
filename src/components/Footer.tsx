@@ -22,8 +22,6 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link to="/about" className="text-gray-600 hover:text-swap-blue">About Us</Link></li>
               <li><Link to="/careers" className="text-gray-600 hover:text-swap-blue">Careers</Link></li>
-              <li><Link to="/blog" className="text-gray-600 hover:text-swap-blue">Blog</Link></li>
-              <li><Link to="/press" className="text-gray-600 hover:text-swap-blue">Press</Link></li>
             </ul>
           </div>
           
@@ -50,7 +48,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Github className="h-5 w-5 text-swap-blue" />
-                <a href="#" className="text-gray-600 hover:text-swap-blue">GitHub</a>
+                <a href="https://github.com/swapspot" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-swap-blue">GitHub</a>
               </li>
             </ul>
           </div>

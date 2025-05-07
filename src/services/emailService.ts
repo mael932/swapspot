@@ -30,6 +30,7 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
       // Send the signup invitation with email verification
       const { data, error } = await supabase.auth.signUp({
         email,
+        password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase() + "1!", // Generate a random secure password
         options: {
           emailRedirectTo: redirectTo,
           data: {
