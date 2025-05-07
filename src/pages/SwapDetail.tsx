@@ -26,9 +26,9 @@ const getSwapById = (id: string) => {
         price: "€800/month",
         description: "A cozy studio apartment located in the 5th arrondissement, just a 10-minute walk from Sciences Po. The apartment features a comfortable bed, a small kitchen area, and a bathroom. It's perfect for a single student and has great natural light.",
         images: [
-          "/lovable-uploads/0cb5b474-ad02-4905-b91d-d7920095c6c9.png",
-          "https://i.pravatar.cc/500?img=32",
-          "https://i.pravatar.cc/500?img=20"
+          "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBhcnRtZW50fGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60",
+          "https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGFwYXJ0bWVudCUyMGtpdGNoZW58ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60",
+          "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
         ]
       },
       wanted: {
@@ -53,9 +53,9 @@ const getSwapById = (id: string) => {
         price: "€750/month",
         description: "Modern 1-bedroom apartment in the heart of Barcelona, just 15 minutes by metro from the university. Features a spacious living room, separate bedroom, and a small balcony with a view of the street.",
         images: [
-          "https://i.pravatar.cc/500?img=21",
-          "https://i.pravatar.cc/500?img=22",
-          "https://i.pravatar.cc/500?img=23"
+          "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60",
+          "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudCUyMGJlZHJvb218ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60",
+          "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBhcnRtZW50JTIwYmFsY29ueXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
         ]
       },
       wanted: {
@@ -80,9 +80,9 @@ const getSwapById = (id: string) => {
         price: "€550/month",
         description: "A room in a shared 2-bedroom apartment in Kreuzberg, Berlin. The apartment has a spacious living room, fully equipped kitchen, and a shared bathroom. Your roommate would be a friendly local student.",
         images: [
-          "https://i.pravatar.cc/500?img=24",
-          "https://i.pravatar.cc/500?img=25",
-          "https://i.pravatar.cc/500?img=26"
+          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60",
+          "https://images.unsplash.com/photo-1598928636135-d146006ff4be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGFwYXJ0bWVudCUyMGxpdmluZyUyMHJvb218ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60",
+          "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YXBhcnRtZW50JTIwa2l0Y2hlbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
         ]
       },
       wanted: {

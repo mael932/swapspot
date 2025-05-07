@@ -18,7 +18,8 @@ const swapListings = [
     current: {
       city: "Paris, France",
       type: "Studio Apartment",
-      price: "€800/month"
+      price: "€800/month",
+      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBhcnRtZW50fGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60"
     },
     wanted: {
       city: "Madrid, Spain",
@@ -38,7 +39,8 @@ const swapListings = [
     current: {
       city: "Barcelona, Spain",
       type: "1 Bedroom Apartment",
-      price: "€750/month"
+      price: "€750/month",
+      image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
     },
     wanted: {
       city: "Berlin, Germany",
@@ -58,7 +60,8 @@ const swapListings = [
     current: {
       city: "Berlin, Germany",
       type: "2 Bedroom Apartment (Shared)",
-      price: "€550/month"
+      price: "€550/month",
+      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
     },
     wanted: {
       city: "Copenhagen, Denmark",
@@ -108,6 +111,15 @@ export default function FeaturedSwaps() {
                     <Calendar className="h-4 w-4 text-swap-blue" />
                     <span>{swap.dates}</span>
                   </div>
+                </div>
+                
+                {/* Apartment image */}
+                <div className="mb-4 aspect-video rounded-md overflow-hidden">
+                  <img 
+                    src={swap.current.image} 
+                    alt={`${swap.current.city} apartment`}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-4">
