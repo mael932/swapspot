@@ -35,6 +35,23 @@ const SignUp = () => {
     setIsLoading(true);
     
     try {
+      // Check if user already exists
+      const { data: existingUser } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,
+        }
+      });
+      
+      if (existingUser?.user) {
+        toast.info("This email is already registered. A new verification email has been sent.", {
+          description: "Please check your inbox to verify your email."
+        });
+        setSubmitted(true);
+        setIsLoading(false);
+        return;
+      }
+      
       // Send verification email using Supabase auth
       const success = await sendVerificationEmail(email);
       
@@ -52,9 +69,6 @@ const SignUp = () => {
             hasUploadedProof: !!file,
             timestamp: new Date().toISOString(),
           }));
-          
-          // In a full implementation, we would upload the file to Supabase storage
-          // and associate it with the user after verification
         }
       } else {
         setError("Failed to send verification email. Please try again later.");

@@ -28,8 +28,36 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
       return false;
     }
     
-    console.log("Verification email sent successfully via Supabase:", data);
-    return true;
+    // Check if the email was actually sent
+    if (data && data.user && data.user.confirmation_sent_at) {
+      console.log("Verification email sent successfully via Supabase:", data);
+      return true;
+    } else {
+      // This happens if the user already exists but needs to verify
+      if (data && data.user && !data.user.confirmation_sent_at) {
+        console.log("User exists but not confirmed, resending verification...");
+        const { error: resendError } = await supabase.auth.resend({
+          type: 'signup',
+          email,
+          options: {
+            emailRedirectTo: redirectTo,
+          }
+        });
+        
+        if (resendError) {
+          console.error("Error resending verification email:", resendError);
+          toast.error("Failed to resend verification email. Please try again later.");
+          return false;
+        }
+        
+        console.log("Verification email resent successfully");
+        return true;
+      }
+      
+      console.error("Verification email not sent - no confirmation_sent_at timestamp");
+      toast.error("Failed to send verification email. Please try again later.");
+      return false;
+    }
   } catch (error) {
     console.error("Error in verification process:", error);
     toast.error("Failed to send verification email. Please try again later.");
