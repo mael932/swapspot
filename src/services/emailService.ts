@@ -22,9 +22,7 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
         emailRedirectTo: redirectTo,
         data: {
           signup_timestamp: new Date().toISOString(),
-        },
-        // Customize email subject
-        emailSubject: "SwapSpot - Verify your email"
+        }
       }
     });
     
