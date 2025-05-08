@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -178,11 +177,17 @@ const rentalListings = [
   }
 ];
 
+// Type definitions to fix TypeScript errors
+type SwapListing = typeof swapListings[0];
+type AuPairListing = typeof auPairListings[0]; 
+type RentalListing = typeof rentalListings[0];
+type ListingType = SwapListing | AuPairListing | RentalListing;
+
 const Browse = () => {
   const location = useLocation();
   const [mode, setMode] = useState("swap");
-  const [allListings, setAllListings] = useState(swapListings);
-  const [displayListings, setDisplayListings] = useState(swapListings);
+  const [allListings, setAllListings] = useState<ListingType[]>(swapListings as ListingType[]);
+  const [displayListings, setDisplayListings] = useState<ListingType[]>(swapListings as ListingType[]);
   const [searchLocation, setSearchLocation] = useState("");
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [pageTitle, setPageTitle] = useState("Browse Available Swaps");
@@ -192,20 +197,20 @@ const Browse = () => {
     // Determine mode based on URL path
     if (location.pathname === "/aupair") {
       setMode("aupair");
-      setAllListings(auPairListings);
-      setDisplayListings(auPairListings);
+      setAllListings(auPairListings as ListingType[]);
+      setDisplayListings(auPairListings as ListingType[]);
       setPageTitle("Browse Au Pair Opportunities");
       setPageDescription("Find families offering accommodation in exchange for childcare or household help");
     } else if (location.pathname === "/rentals") {
       setMode("rental");
-      setAllListings(rentalListings);
-      setDisplayListings(rentalListings);
+      setAllListings(rentalListings as ListingType[]);
+      setDisplayListings(rentalListings as ListingType[]);
       setPageTitle("Browse Rental Properties");
       setPageDescription("Find apartments, rooms, and shared accommodations for students");
     } else {
       setMode("swap");
-      setAllListings(swapListings);
-      setDisplayListings(swapListings);
+      setAllListings(swapListings as ListingType[]);
+      setDisplayListings(swapListings as ListingType[]);
       setPageTitle("Browse Available Swaps");
       setPageDescription("Find your perfect accommodation swap from students around the world");
     }
@@ -219,40 +224,44 @@ const Browse = () => {
       return;
     }
     
-    let filtered;
+    let filtered: ListingType[] = [];
     if (mode === "swap") {
-      filtered = allListings.filter((item: any) => 
-        item.current.city.toLowerCase().includes(searchLocation.toLowerCase()) ||
-        item.wanted.city.toLowerCase().includes(searchLocation.toLowerCase())
-      );
+      filtered = allListings.filter((item) => {
+        const swapItem = item as SwapListing;
+        return swapItem.current?.city.toLowerCase().includes(searchLocation.toLowerCase()) ||
+               swapItem.wanted?.city.toLowerCase().includes(searchLocation.toLowerCase());
+      });
     } else if (mode === "aupair") {
-      filtered = allListings.filter((item: any) => 
-        item.user.location.toLowerCase().includes(searchLocation.toLowerCase())
-      );
+      filtered = allListings.filter((item) => {
+        const auPairItem = item as AuPairListing;
+        return auPairItem.user?.location.toLowerCase().includes(searchLocation.toLowerCase());
+      });
     } else { // rental
-      filtered = allListings.filter((item: any) => 
-        item.location.toLowerCase().includes(searchLocation.toLowerCase())
-      );
+      filtered = allListings.filter((item) => {
+        const rentalItem = item as RentalListing;
+        return rentalItem.location.toLowerCase().includes(searchLocation.toLowerCase());
+      });
     }
     
     setDisplayListings(filtered);
   };
 
-  const renderListingCard = (listing: any) => {
+  const renderListingCard = (listing: ListingType) => {
     if (mode === "swap") {
+      const swapListing = listing as SwapListing;
       return (
-        <Card key={listing.id} className="overflow-hidden hover:shadow-md transition-shadow">
+        <Card key={swapListing.id} className="overflow-hidden hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <img 
-                  src={listing.user.avatar} 
-                  alt={listing.user.name}
+                  src={swapListing.user.avatar} 
+                  alt={swapListing.user.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <CardTitle className="text-lg">{listing.user.name}</CardTitle>
-                  <CardDescription>{listing.user.university}</CardDescription>
+                  <CardTitle className="text-lg">{swapListing.user.name}</CardTitle>
+                  <CardDescription>{swapListing.user.university}</CardDescription>
                 </div>
               </div>
             </div>
@@ -262,15 +271,15 @@ const Browse = () => {
             <div className="flex items-center justify-between mb-4 pt-2">
               <div className="flex items-center gap-1 text-sm text-gray-600">
                 <Calendar className="h-4 w-4 text-swap-blue" />
-                <span>{listing.dates}</span>
+                <span>{swapListing.dates}</span>
               </div>
             </div>
             
             {/* Apartment image */}
             <div className="mb-4 aspect-video rounded-md overflow-hidden">
               <img 
-                src={listing.current.image} 
-                alt={`${listing.current.city} apartment`}
+                src={swapListing.current.image} 
+                alt={`${swapListing.current.city} apartment`}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -281,13 +290,13 @@ const Browse = () => {
                 <div className="mb-2">
                   <div className="flex items-center gap-1 mb-1">
                     <MapPin className="h-4 w-4 text-swap-blue" />
-                    <span className="font-medium">{listing.current.city}</span>
+                    <span className="font-medium">{swapListing.current.city}</span>
                   </div>
-                  <p className="text-sm text-gray-600">{listing.current.type}</p>
+                  <p className="text-sm text-gray-600">{swapListing.current.type}</p>
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Euro className="h-4 w-4" />
-                  <span>{listing.current.price}</span>
+                  <span>{swapListing.current.price}</span>
                 </div>
               </div>
               
@@ -296,19 +305,19 @@ const Browse = () => {
                 <div className="mb-2">
                   <div className="flex items-center gap-1 mb-1">
                     <MapPin className="h-4 w-4 text-swap-blue" />
-                    <span className="font-medium">{listing.wanted.city}</span>
+                    <span className="font-medium">{swapListing.wanted.city}</span>
                   </div>
-                  <p className="text-sm text-gray-600">{listing.wanted.type}</p>
+                  <p className="text-sm text-gray-600">{swapListing.wanted.type}</p>
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Euro className="h-4 w-4" />
-                  <span>{listing.wanted.price}</span>
+                  <span>{swapListing.wanted.price}</span>
                 </div>
               </div>
             </div>
             
             <div className="flex flex-wrap gap-2 mb-2">
-              {listing.tags.map((tag: string, index: number) => (
+              {swapListing.tags.map((tag: string, index: number) => (
                 <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
                   {tag}
                 </Badge>
@@ -318,7 +327,7 @@ const Browse = () => {
           
           <CardFooter>
             <Button asChild className="w-full bg-swap-blue hover:bg-swap-darkBlue">
-              <Link to={`/swaps/${listing.id}`}>
+              <Link to={`/swaps/${swapListing.id}`}>
                 <ArrowRightLeft className="h-4 w-4 mr-2" />
                 View Swap Details
               </Link>
@@ -328,19 +337,20 @@ const Browse = () => {
       );
     } 
     else if (mode === "aupair") {
+      const auPairListing = listing as AuPairListing;
       return (
-        <Card key={listing.id} className="overflow-hidden hover:shadow-md transition-shadow">
+        <Card key={auPairListing.id} className="overflow-hidden hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <img 
-                  src={listing.user.avatar} 
-                  alt={listing.user.name}
+                  src={auPairListing.user.avatar} 
+                  alt={auPairListing.user.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <CardTitle className="text-lg">{listing.user.name}</CardTitle>
-                  <CardDescription>{listing.user.location}</CardDescription>
+                  <CardTitle className="text-lg">{auPairListing.user.name}</CardTitle>
+                  <CardDescription>{auPairListing.user.location}</CardDescription>
                 </div>
               </div>
             </div>
@@ -350,15 +360,15 @@ const Browse = () => {
             <div className="flex items-center justify-between mb-4 pt-2">
               <div className="flex items-center gap-1 text-sm text-gray-600">
                 <Calendar className="h-4 w-4 text-purple-600" />
-                <span>{listing.duration}</span>
+                <span>{auPairListing.duration}</span>
               </div>
             </div>
             
             {/* Accommodation image */}
             <div className="mb-4 aspect-video rounded-md overflow-hidden">
               <img 
-                src={listing.accommodation.image} 
-                alt={listing.accommodation.title}
+                src={auPairListing.accommodation.image} 
+                alt={auPairListing.accommodation.title}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -366,22 +376,22 @@ const Browse = () => {
             <div className="grid grid-cols-1 gap-4 mb-4">
               <div className="bg-purple-50 rounded-lg p-4">
                 <h4 className="font-medium mb-2 text-sm uppercase text-gray-500">Accommodation Offered</h4>
-                <p className="font-medium mb-1">{listing.accommodation.title}</p>
-                <p className="text-sm text-gray-600 mb-2">{listing.accommodation.benefits}</p>
+                <p className="font-medium mb-1">{auPairListing.accommodation.title}</p>
+                <p className="text-sm text-gray-600 mb-2">{auPairListing.accommodation.benefits}</p>
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4">
                 <h4 className="font-medium mb-2 text-sm uppercase text-gray-500">Requirements</h4>
                 <div className="mb-1">
-                  <p className="text-sm"><span className="font-medium">Hours:</span> {listing.requirements.hours}</p>
-                  <p className="text-sm"><span className="font-medium">Tasks:</span> {listing.requirements.tasks}</p>
-                  <p className="text-sm"><span className="font-medium">Language:</span> {listing.requirements.language}</p>
+                  <p className="text-sm"><span className="font-medium">Hours:</span> {auPairListing.requirements.hours}</p>
+                  <p className="text-sm"><span className="font-medium">Tasks:</span> {auPairListing.requirements.tasks}</p>
+                  <p className="text-sm"><span className="font-medium">Language:</span> {auPairListing.requirements.language}</p>
                 </div>
               </div>
             </div>
             
             <div className="flex flex-wrap gap-2 mb-2">
-              {listing.tags.map((tag: string, index: number) => (
+              {auPairListing.tags.map((tag: string, index: number) => (
                 <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
                   {tag}
                 </Badge>
@@ -391,7 +401,7 @@ const Browse = () => {
           
           <CardFooter>
             <Button asChild className="w-full bg-purple-600 hover:bg-purple-700">
-              <Link to={`/aupair/${listing.id}`}>
+              <Link to={`/aupair/${auPairListing.id}`}>
                 <Users className="h-4 w-4 mr-2" />
                 View Au Pair Details
               </Link>
@@ -401,45 +411,46 @@ const Browse = () => {
       );
     }
     else { // rental
+      const rentalListing = listing as RentalListing;
       return (
-        <Card key={listing.id} className="overflow-hidden hover:shadow-md transition-shadow">
+        <Card key={rentalListing.id} className="overflow-hidden hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">{listing.title}</CardTitle>
+            <CardTitle className="text-lg">{rentalListing.title}</CardTitle>
             <CardDescription className="flex items-center gap-1">
-              <MapPin className="h-4 w-4" /> {listing.location}
+              <MapPin className="h-4 w-4" /> {rentalListing.location}
             </CardDescription>
           </CardHeader>
           
           <CardContent>
             <div className="mb-4 aspect-video rounded-md overflow-hidden">
               <img 
-                src={listing.image} 
-                alt={listing.title}
+                src={rentalListing.image} 
+                alt={rentalListing.title}
                 className="w-full h-full object-cover"
               />
             </div>
             
             <div className="flex justify-between items-center mb-4">
-              <div className="text-lg font-bold text-amber-600">{listing.price}</div>
-              <div className="text-sm text-gray-500">{listing.size}</div>
+              <div className="text-lg font-bold text-amber-600">{rentalListing.price}</div>
+              <div className="text-sm text-gray-500">{rentalListing.size}</div>
             </div>
             
-            <p className="text-gray-700 mb-4">{listing.description}</p>
+            <p className="text-gray-700 mb-4">{rentalListing.description}</p>
             
             <div className="flex flex-wrap gap-2 mb-2">
-              {listing.amenities.map((amenity: string, index: number) => (
+              {rentalListing.amenities.map((amenity: string, index: number) => (
                 <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
                   {amenity}
                 </Badge>
               ))}
             </div>
             
-            <p className="text-sm text-gray-600 mt-3">{listing.availability}</p>
+            <p className="text-sm text-gray-600 mt-3">{rentalListing.availability}</p>
           </CardContent>
           
           <CardFooter>
             <Button asChild className="w-full bg-amber-600 hover:bg-amber-700">
-              <Link to={`/rentals/${listing.id}`}>
+              <Link to={`/rentals/${rentalListing.id}`}>
                 <Home className="h-4 w-4 mr-2" />
                 View Property Details
               </Link>

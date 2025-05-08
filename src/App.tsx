@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,8 @@ import HowItWorksPage from "./pages/HowItWorks";
 import Browse from "./pages/Browse";
 import About from "./pages/About";
 import SwapDetail from "./pages/SwapDetail";
+import AuPairDetail from "./pages/AuPairDetail";
+import RentalDetail from "./pages/RentalDetail";
 import VerifyEmail from "./pages/VerifyEmail";
 import Account from "./pages/Account";
 import PostPlace from "./pages/PostPlace";
@@ -92,6 +93,8 @@ const App = () => {
             <Route path="/browse" element={<Browse />} />
             <Route path="/about" element={<About />} />
             <Route path="/swaps/:id" element={<SwapDetail />} />
+            <Route path="/aupair/:id" element={<AuPairDetail />} />
+            <Route path="/rentals/:id" element={<RentalDetail />} />
             <Route path="/verify" element={<VerifyEmail />} />
             <Route path="/account" element={<Account />} />
             <Route path="/post-place" element={<PostPlace />} />
