@@ -11,7 +11,7 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
     console.log("Starting sendVerificationEmail for:", email);
     
     // Use the current window location for redirection
-    // This ensures we use the correct domain/port in all environments
+    // This ensures we use the correct domain in all environments
     const currentOrigin = window.location.origin;
     
     // Redirect to the verify page in our app
