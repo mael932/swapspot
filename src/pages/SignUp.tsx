@@ -80,6 +80,8 @@ const SignUp = () => {
     "Technical University of Berlin",
     "Uppsala University",
     "Complutense University of Madrid",
+    "IE University Madrid",
+    "Erasmus University Rotterdam",
     "Harvard University",
     "Stanford University",
     "MIT",

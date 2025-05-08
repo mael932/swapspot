@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Loader2, LogIn, MailCheck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -16,6 +16,21 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMagicLinkSent, setIsMagicLinkSent] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Auto-focus on email field when coming from navbar login button
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const fromNav = searchParams.get('fromNav') === 'true';
+    
+    if (fromNav) {
+      // Focus the email input when coming from nav login button
+      const emailInput = document.getElementById('email');
+      if (emailInput) {
+        emailInput.focus();
+      }
+    }
+  }, [location]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

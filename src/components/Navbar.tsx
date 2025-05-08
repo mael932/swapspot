@@ -1,168 +1,135 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useMobileDetection } from '@/hooks/use-mobile';
 
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Home, LogIn, UserPlus, Menu, User, LogOut, Plus } from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { toast } from "@/components/ui/sonner";
-
-export default function Navbar() {
+const Navbar = () => {
+  const isMobile = useMobileDetection();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    // Check for existing session
-    const getSession = async () => {
-      try {
-        setLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user || null);
-        
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (_event, session) => {
-            console.log("Auth state changed:", _event, session?.user?.email);
-            setUser(session?.user || null);
-          }
-        );
-        
-        return () => subscription.unsubscribe();
-      } catch (error) {
-        console.error("Auth error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    getSession();
-  }, []);
-  
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success("You've been logged out successfully");
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Failed to log out. Please try again.");
-    }
-    setIsMenuOpen(false);
+
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate('/login?fromNav=true');
   };
-  
+
   return (
-    <nav className="w-full py-4 px-4 md:px-8 bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Home className="h-6 w-6 text-swap-blue" />
-          <Link to="/" className="font-bold text-xl text-swap-darkBlue">SwapSpot</Link>
-        </div>
-        
-        {/* Mobile menu button */}
-        <div className="md:hidden">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
-        </div>
-        
-        {/* Desktop navigation */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-gray-600 hover:text-swap-blue">Home</Link>
-          <Link to="/how-it-works" className="text-gray-600 hover:text-swap-blue">How It Works</Link>
-          <Link to="/browse" className="text-gray-600 hover:text-swap-blue">Browse</Link>
-          <Link to="/about" className="text-gray-600 hover:text-swap-blue">About</Link>
-          
-          {loading ? (
-            <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
-          ) : user ? (
-            <div className="flex items-center gap-2">
-              <Button className="bg-green-600 hover:bg-green-700 flex items-center gap-2" asChild>
-                <Link to="/post-place">
-                  <Plus className="h-4 w-4" />
-                  <span>Post a Place</span>
-                </Link>
+    <div className="bg-white border-b shadow-sm sticky top-0 z-50">
+      <div className="container flex items-center justify-between py-4">
+        <Link to="/" className="font-bold text-2xl text-swap-blue">
+          SwapSpot
+        </Link>
+
+        {isMobile ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
               </Button>
-              <Button variant="outline" className="flex items-center gap-2" asChild>
-                <Link to="/account">
-                  <User className="h-4 w-4" />
-                  <span>Your Account</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-2">
-                <LogOut className="h-4 w-4" />
-                <span>Log Out</span>
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" className="flex items-center gap-2" asChild>
-                <Link to="/login">
-                  <LogIn className="h-4 w-4" />
-                  <span>Log In</span>
-                </Link>
-              </Button>
-              <Button className="bg-swap-blue hover:bg-swap-darkBlue flex items-center gap-2" asChild>
-                <Link to="/signup">
-                  <UserPlus className="h-4 w-4" />
-                  <span>Sign Up</span>
-                </Link>
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Mobile navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden mt-2 py-3 px-4 bg-white rounded-md shadow-lg animate-fade-in">
-          <div className="flex flex-col gap-3">
-            <Link to="/" className="text-gray-600 hover:text-swap-blue py-2">Home</Link>
-            <Link to="/how-it-works" className="text-gray-600 hover:text-swap-blue py-2">How It Works</Link>
-            <Link to="/browse" className="text-gray-600 hover:text-swap-blue py-2">Browse</Link>
-            <Link to="/about" className="text-gray-600 hover:text-swap-blue py-2">About</Link>
-            
-            {user ? (
-              <>
-                <Link to="/post-place" className="text-gray-600 hover:text-swap-blue py-2 flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  <span>Post a Place</span>
-                </Link>
-                <Link to="/account" className="text-gray-600 hover:text-swap-blue py-2 flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>Your Account</span>
-                </Link>
-                <button 
-                  onClick={handleLogout} 
-                  className="text-left text-gray-600 hover:text-swap-blue py-2 flex items-center gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Log Out</span>
-                </button>
-              </>
-            ) : (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button variant="outline" className="w-full justify-center" asChild>
-                  <Link to="/login">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    <span>Log In</span>
-                  </Link>
-                </Button>
-                <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue justify-center" asChild>
-                  <Link to="/signup">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    <span>Sign Up</span>
-                  </Link>
-                </Button>
-              </div>
-            )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[180px]">
+              <DropdownMenuItem asChild>
+                <Link to="/">Home</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/browse">Browse</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/post-place">Post a Place</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="#" onClick={handleLoginClick}>Log In</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/signup">Sign Up</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <div className="flex items-center space-x-4">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Listings</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-3 p-4 md:w-[400px] md:grid-cols-2 lg:w-[500px]">
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/browse"
+                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="text-sm font-medium leading-none">
+                              Browse Apartments
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Find your dream apartment swap.
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/post-place"
+                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="text-sm font-medium leading-none">
+                              Post Your Apartment
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              List your place and find potential swappers.
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink>
+                    <Link to="/how-it-works" className={navigationMenuTriggerStyle()}>
+                      How it Works
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink>
+                    <Link to="/about" className={navigationMenuTriggerStyle()}>
+                      About
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+            <Button variant="outline" asChild>
+              <Link to="#" onClick={handleLoginClick}>Log In</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/signup">Sign Up</Link>
+            </Button>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </div>
+    </div>
   );
-}
+};
+
+export default Navbar;
