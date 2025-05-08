@@ -1,6 +1,7 @@
 
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import AccommodationModes from "@/components/AccommodationModes";
 import HowItWorks from "@/components/HowItWorks";
 import FeaturedSwaps from "@/components/FeaturedSwaps";
 import Testimonials from "@/components/Testimonials";
@@ -71,6 +72,7 @@ const Index = () => {
       <Navbar />
       <main className="flex-grow">
         <HeroSection />
+        <AccommodationModes />
         <HowItWorks />
         <FeaturedSwaps />
         <Testimonials />
