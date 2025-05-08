@@ -16,15 +16,6 @@ import {
   CardFooter 
 } from "@/components/ui/card";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
-import { 
-  Form, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormControl, 
-  FormDescription, 
-  FormMessage 
-} from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
@@ -37,6 +28,7 @@ const PostPlace = () => {
   const [description, setDescription] = useState("");
   const [user, setUser] = useState<any>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,26 +57,40 @@ const PostPlace = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!title || !location || !description) {
-      toast.error("Please fill in all required fields");
-      return;
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      // Basic validation
+      if (!title || !location || !description) {
+        toast.error("Please fill in all required fields");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // For demo purposes, just show a success message
+      toast.success("Apartment listing submitted!", {
+        description: "In a production app, this would be saved to the database."
+      });
+      
+      // Reset form
+      setTitle("");
+      setLocation("");
+      setRoomType("private");
+      setPrice("");
+      setDescription("");
+      
+      // Redirect to browse page after a short delay
+      setTimeout(() => navigate("/browse"), 1500);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Something went wrong", {
+        description: "Please try again later"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    // For demo purposes, just show a success message
-    toast.success("Apartment listing submitted!", {
-      description: "In a production app, this would be saved to the database."
-    });
-    
-    // Reset form
-    setTitle("");
-    setLocation("");
-    setRoomType("private");
-    setPrice("");
-    setDescription("");
-    
-    // Redirect to browse page after a short delay
-    setTimeout(() => navigate("/browse"), 1500);
   };
 
   return (
@@ -121,7 +127,7 @@ const PostPlace = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <FormLabel htmlFor="title">Listing Title *</FormLabel>
+                    <label htmlFor="title" className="text-sm font-medium block mb-1">Listing Title *</label>
                     <Input 
                       id="title"
                       placeholder="e.g., Cozy Studio in the City Center"
@@ -129,13 +135,13 @@ const PostPlace = () => {
                       onChange={(e) => setTitle(e.target.value)}
                       required
                     />
-                    <FormDescription>
+                    <p className="text-sm text-gray-500 mt-1">
                       Create a catchy, descriptive title for your listing
-                    </FormDescription>
+                    </p>
                   </div>
                   
                   <div>
-                    <FormLabel htmlFor="location">Location *</FormLabel>
+                    <label htmlFor="location" className="text-sm font-medium block mb-1">Location *</label>
                     <Input 
                       id="location"
                       placeholder="e.g., Amsterdam, Netherlands"
@@ -147,7 +153,7 @@ const PostPlace = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <FormLabel htmlFor="roomType">Room Type</FormLabel>
+                      <label htmlFor="roomType" className="text-sm font-medium block mb-1">Room Type</label>
                       <Select value={roomType} onValueChange={setRoomType}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Room Type" />
@@ -161,7 +167,7 @@ const PostPlace = () => {
                     </div>
                     
                     <div>
-                      <FormLabel htmlFor="price">Monthly Price (Optional)</FormLabel>
+                      <label htmlFor="price" className="text-sm font-medium block mb-1">Monthly Price (Optional)</label>
                       <Input 
                         id="price"
                         type="text"
@@ -173,7 +179,7 @@ const PostPlace = () => {
                   </div>
                   
                   <div>
-                    <FormLabel htmlFor="description">Description *</FormLabel>
+                    <label htmlFor="description" className="text-sm font-medium block mb-1">Description *</label>
                     <Textarea 
                       id="description"
                       placeholder="Describe your place, including amenities, neighborhood, and transportation options..."
@@ -185,8 +191,12 @@ const PostPlace = () => {
                   </div>
                 </div>
                 
-                <Button type="submit" className="w-full">
-                  Submit Listing
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Listing"}
                 </Button>
               </form>
             </CardContent>
