@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Calendar, Euro, Home, MapPin, MessageCircle } from "lucide-react";
 import Map from "@/components/Map";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for rental listings
 const getRentalById = (id: string) => {
@@ -78,6 +80,7 @@ const RentalDetail = () => {
   const [rental, setRental] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (id) {
@@ -87,6 +90,22 @@ const RentalDetail = () => {
       setLoading(false);
     }
   }, [id]);
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Message Sent",
+      description: `Your message has been sent to ${rental?.landlordName}. They will get back to you soon.`,
+    });
+  };
+
+  const handleScheduleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Viewing Requested",
+      description: "Your viewing request has been submitted. We'll confirm the details soon.",
+    });
+  };
 
   if (loading) {
     return (
@@ -232,14 +251,115 @@ const RentalDetail = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full bg-amber-600 hover:bg-amber-700 mb-3">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Contact Landlord
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <Home className="h-4 w-4 mr-2" />
-                  Schedule Viewing
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full bg-amber-600 hover:bg-amber-700 mb-3">
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Contact Landlord
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Contact {rental.landlordName}</DialogTitle>
+                      <DialogDescription>
+                        Send a message about this property. We'll share your contact information so they can get back to you.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleContactSubmit} className="space-y-4 py-4">
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="name" className="text-sm font-medium">Your Name</label>
+                        <input 
+                          id="name" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="email" className="text-sm font-medium">Your Email</label>
+                        <input 
+                          id="email" 
+                          type="email" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full gap-1.5">
+                        <label htmlFor="message" className="text-sm font-medium">Message</label>
+                        <textarea 
+                          id="message" 
+                          rows={4} 
+                          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          placeholder="I'm interested in this property and would like to know more about..."
+                          required
+                        ></textarea>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Send Message</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full">
+                      <Home className="h-4 w-4 mr-2" />
+                      Schedule Viewing
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Schedule a Viewing</DialogTitle>
+                      <DialogDescription>
+                        Select a date and time that works for you to see this property.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleScheduleSubmit} className="space-y-4 py-4">
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="viewing-name" className="text-sm font-medium">Your Name</label>
+                        <input 
+                          id="viewing-name" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="viewing-email" className="text-sm font-medium">Your Email</label>
+                        <input 
+                          id="viewing-email" 
+                          type="email" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="viewing-date" className="text-sm font-medium">Preferred Date</label>
+                        <input 
+                          id="viewing-date" 
+                          type="date" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="viewing-time" className="text-sm font-medium">Preferred Time</label>
+                        <select 
+                          id="viewing-time" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        >
+                          <option value="">Select a time</option>
+                          <option value="morning">Morning (9AM - 12PM)</option>
+                          <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                          <option value="evening">Evening (5PM - 8PM)</option>
+                        </select>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Request Viewing</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm">

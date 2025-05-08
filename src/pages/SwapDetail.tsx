@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Calendar, Euro, MapPin, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import Map from "@/components/Map";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 // This would typically come from an API call using the ID
 const getSwapById = (id: string) => {
@@ -18,7 +20,8 @@ const getSwapById = (id: string) => {
       user: {
         name: "Emma Johnson",
         avatar: "https://i.pravatar.cc/150?img=1",
-        university: "Sciences Po Paris"
+        university: "Sciences Po Paris",
+        about: "Hi there! I'm Emma, a 21-year-old International Relations student from Canada currently studying at Sciences Po Paris. I love exploring new cultures and am an avid photographer in my spare time. I'm a clean, organized person who respects others' space. I'm looking for a swap in Madrid as I'll be doing an exchange semester there. I don't smoke, and I'm happy to water your plants and take care of any pets you might have!"
       },
       current: {
         city: "Paris, France",
@@ -45,7 +48,8 @@ const getSwapById = (id: string) => {
       user: {
         name: "Miguel Santos",
         avatar: "https://i.pravatar.cc/150?img=11",
-        university: "University of Barcelona"
+        university: "University of Barcelona",
+        about: "Hello! I'm Miguel, a 23-year-old Architecture student from Barcelona. I'm very passionate about design, urban planning, and sustainable living. In my free time, I enjoy sketching city landscapes and playing guitar. I'm a responsible and tidy person who values a clean living space. I'm looking for a swap in Berlin for my upcoming exchange program. I don't smoke and I'm perfectly fine with pets as I grew up with dogs."
       },
       current: {
         city: "Barcelona, Spain",
@@ -72,7 +76,8 @@ const getSwapById = (id: string) => {
       user: {
         name: "Sophie Weber",
         avatar: "https://i.pravatar.cc/150?img=5",
-        university: "Humboldt University"
+        university: "Humboldt University",
+        about: "Greetings from Berlin! I'm Sophie, a 22-year-old Sociology student at Humboldt University. I'm an avid reader, enjoy indie films, and love discovering hidden cafés around the city. I'm a relaxed but responsible person who keeps things tidy. I'm looking for a swap in Copenhagen for my research semester. I'm a non-smoker, vegetarian, and I love cycling as my main mode of transportation. I have a collection of plants that my neighbor will care for while I'm away."
       },
       current: {
         city: "Berlin, Germany",
@@ -104,6 +109,7 @@ const SwapDetail = () => {
   const [swap, setSwap] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (id) {
@@ -113,6 +119,14 @@ const SwapDetail = () => {
       setLoading(false);
     }
   }, [id]);
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Message Sent",
+      description: `Your message has been sent to ${swap?.user.name}. They will get back to you soon.`,
+    });
+  };
 
   if (loading) {
     return (
@@ -177,6 +191,12 @@ const SwapDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left column - place info */}
             <div className="lg:col-span-2">
+              {/* About the Student section */}
+              <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h2 className="text-xl font-semibold mb-4">About the Student</h2>
+                <p className="text-gray-700">{swap.user.about}</p>
+              </div>
+            
               {/* Photo gallery */}
               <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
                 <div className="relative aspect-video">
@@ -260,10 +280,54 @@ const SwapDetail = () => {
                 <p className="text-gray-600 mb-6">
                   Contact {swap.user.name} to discuss the details of your potential accommodation swap
                 </p>
-                <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue mb-3">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Send a Message
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue mb-3">
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Send a Message
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Message {swap.user.name}</DialogTitle>
+                      <DialogDescription>
+                        Send a message about this swap opportunity. We'll share your contact information so they can respond directly.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleContactSubmit} className="space-y-4 py-4">
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="swap-name" className="text-sm font-medium">Your Name</label>
+                        <input 
+                          id="swap-name" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full items-center gap-1.5">
+                        <label htmlFor="swap-email" className="text-sm font-medium">Your Email</label>
+                        <input 
+                          id="swap-email" 
+                          type="email" 
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          required
+                        />
+                      </div>
+                      <div className="grid w-full gap-1.5">
+                        <label htmlFor="swap-message" className="text-sm font-medium">Message</label>
+                        <textarea 
+                          id="swap-message" 
+                          rows={4} 
+                          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          placeholder="I'm interested in swapping with you. I have an apartment in..."
+                          required
+                        ></textarea>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Send Message</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
                 <Button variant="outline" className="w-full">
                   Save to Favorites
                 </Button>
