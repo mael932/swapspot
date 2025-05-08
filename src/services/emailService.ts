@@ -23,8 +23,10 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
       email,
       options: {
         emailRedirectTo: redirectTo,
+        // Add custom metadata that indicates this is for SwapSpot
         data: {
           signup_timestamp: new Date().toISOString(),
+          app_name: "SwapSpot",
         }
       }
     });

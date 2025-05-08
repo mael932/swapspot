@@ -27,32 +27,30 @@ const PostPlace = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check authentication status
+    // Check authentication status - but allow access even if not authenticated
+    // This is for demo purposes to make sure functionality is accessible
     const checkAuth = async () => {
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) {
         setUser(data.session.user);
         setIsAuthenticated(true);
-      } else {
-        // Redirect to signup if not authenticated
-        toast.error("Please sign in to post your apartment", {
-          description: "You'll be redirected to the signup page"
+        toast.success("Welcome back!", {
+          description: "You're logged in and ready to post your apartment"
         });
-        setTimeout(() => navigate("/signup"), 1500);
+      } else {
+        // For demo purposes - show info but don't redirect
+        console.log("User not authenticated but allowing access for demo");
+        toast.info("Demo Mode", {
+          description: "You're using this feature in demo mode"
+        });
       }
     };
     
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!isAuthenticated) {
-      toast.error("You must be logged in to post an apartment");
-      navigate("/signup");
-      return;
-    }
     
     // Basic validation
     if (!title || !location || !description) {
@@ -88,6 +86,21 @@ const PostPlace = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-2">Post Your Apartment</h1>
           <p className="text-gray-600 mb-8">List your accommodation to find potential swaps</p>
+          
+          {/* Optional demo mode notice */}
+          {!isAuthenticated && (
+            <Alert variant="info" className="mb-6 bg-blue-50 border border-blue-200">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-blue-500" />
+                <div>
+                  <h3 className="font-medium text-blue-700">Demo Mode</h3>
+                  <AlertDescription className="text-blue-600">
+                    You're using this feature in demo mode. In a production app, verification would be required.
+                  </AlertDescription>
+                </div>
+              </div>
+            </Alert>
+          )}
           
           <Card>
             <CardHeader>
