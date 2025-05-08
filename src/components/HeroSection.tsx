@@ -17,7 +17,7 @@ export default function HeroSection() {
             <Link to="/signup">Sign Up with University Email</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
-            <Link to="/">How It Works</Link>
+            <Link to="/how-it-works">How It Works</Link>
           </Button>
         </div>
       </div>
