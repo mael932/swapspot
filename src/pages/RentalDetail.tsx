@@ -27,6 +27,7 @@ const getRentalById = (id: string) => {
       availability: "Available from Sep 1, 2023",
       landlordName: "Elena Rossi",
       landlordAvatar: "https://i.pravatar.cc/150?img=28",
+      about: "I'm Elena, a university professor who has been renting to students for over 10 years. I live nearby and am always available to help with any issues that arise. I'm passionate about making sure my tenants have a comfortable and pleasant stay in Milan. I speak Italian, English, and some French.",
       additionalInfo: "Utilities included in the rent. Minimum stay of 4 months required. The building has an elevator and secure entry system."
     },
     {
@@ -45,6 +46,7 @@ const getRentalById = (id: string) => {
       availability: "Available from Oct 15, 2023",
       landlordName: "Thomas Wagner",
       landlordAvatar: "https://i.pravatar.cc/150?img=51",
+      about: "Hello! I'm Thomas, a local business owner who enjoys meeting students from around the world. I've been renting out this apartment for 5 years and take pride in maintaining it to a high standard. I'm responsive to maintenance requests and happy to provide advice about living in Vienna.",
       additionalInfo: "Utilities are not included in the rent price. No pets allowed. Security deposit equal to 2 months rent required."
     },
     {
@@ -63,6 +65,7 @@ const getRentalById = (id: string) => {
       availability: "Available immediately",
       landlordName: "Sofia Almeida",
       landlordAvatar: "https://i.pravatar.cc/150?img=47",
+      about: "I'm Sofia, a young professional who owns and manages several student accommodations in Lisbon. As a former international student myself, I understand the challenges of finding comfortable housing in a new city. I strive to create a welcoming environment for all my tenants and am available to help with anything you might need during your stay.",
       additionalInfo: "Current roommate is a friendly 22-year-old female engineering student. Communal areas are cleaned once a week (included in rent). No overnight guests allowed more than twice per week."
     }
   ];
@@ -199,6 +202,12 @@ const RentalDetail = () => {
                     ))}
                   </div>
                 </div>
+              </div>
+              
+              {/* About the Landlord section */}
+              <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h2 className="text-xl font-semibold mb-4">About the Landlord</h2>
+                <p className="text-gray-700">{rental.about}</p>
               </div>
               
               {/* Additional information */}
