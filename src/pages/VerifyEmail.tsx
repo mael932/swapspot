@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -28,6 +27,9 @@ const VerifyEmail = () => {
       if (!token_hash || !type) {
         console.error("Missing token_hash or type in URL");
         setVerificationStatus("error");
+        toast.error("Invalid verification link", {
+          description: "The link appears to be missing required parameters."
+        });
         return;
       }
       
@@ -35,13 +37,18 @@ const VerifyEmail = () => {
         // Verify the OTP (one-time password) token
         const { data, error } = await supabase.auth.verifyOtp({
           token_hash,
-          type: type as any
+          type: type as any,
+          options: {
+            redirectTo: window.location.origin // Ensure we redirect to our domain
+          }
         });
         
         if (error) {
           console.error("Verification error:", error);
           setVerificationStatus("error");
-          toast.error("Verification failed: " + error.message);
+          toast.error("Verification failed", {
+            description: error.message
+          });
         } else {
           console.log("Email verification successful:", data);
           setUser(data.user);
@@ -60,9 +67,13 @@ const VerifyEmail = () => {
       } catch (err) {
         console.error("Error during verification:", err);
         setVerificationStatus("error");
+        toast.error("Verification process failed", {
+          description: "Please try signing up again or contact support."
+        });
       }
     };
     
+    // Call verification handler
     handleVerification();
   }, [searchParams, navigate]);
   

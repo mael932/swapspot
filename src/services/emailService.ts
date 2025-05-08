@@ -10,12 +10,15 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
   try {
     console.log("Starting sendVerificationEmail for:", email);
     
-    // Set the redirect URL to be the current origin + /verify path
+    // Use the current window location for redirection
+    // This ensures we use the correct domain/port in all environments
     const currentOrigin = window.location.origin;
+    
+    // Redirect to the verify page in our app
     const redirectTo = `${currentOrigin}/verify`;
     console.log("Setting redirect URL to:", redirectTo);
     
-    // First try a direct signup with email verification
+    // Send the OTP via email
     const { data, error } = await supabase.auth.signInWithOtp({
       email,
       options: {
