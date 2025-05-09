@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -151,27 +150,16 @@ const About = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                {name: "Mael Moulin Fournier", role: "Co-founder & CEO", avatar: "https://i.pravatar.cc/150?img=23"},
-                {name: "Marco Rossi", role: "Co-founder & CTO", avatar: "https://i.pravatar.cc/150?img=53"},
-                {name: "Sophia Müller", role: "Head of User Experience", avatar: "https://i.pravatar.cc/150?img=47"},
-                {name: "Liam Johnson", role: "Head of Partnerships", avatar: "https://i.pravatar.cc/150?img=67"}
-              ].map((member, index) => (
-                <div key={index} className="text-center">
-                  <div className="mb-4 flex justify-center">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
-                      <img 
-                        src={member.avatar} 
-                        alt={member.name} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-semibold">{member.name}</h3>
-                  <p className="text-gray-600">{member.role}</p>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+              <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                <h3 className="text-xl font-semibold mt-4">Mael Moulin Fournier</h3>
+                <p className="text-gray-600">Co-founder & CEO</p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                <h3 className="text-xl font-semibold mt-4">Daniel Puri</h3>
+                <p className="text-gray-600">Co-founder & CTO</p>
+              </div>
             </div>
           </div>
         </section>
