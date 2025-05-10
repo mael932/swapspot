@@ -1,3 +1,4 @@
+
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -5,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import AuPairImageGallery from "@/components/aupair/AuPairImageGallery";
-import AuPairContactForm from "@/components/aupair/AuPairContactForm";
 import AuPairFamilyInfo from "@/components/aupair/AuPairFamilyInfo";
 import AuPairAccommodationInfo from "@/components/aupair/AuPairAccommodationInfo";
 import AuPairRequirements from "@/components/aupair/AuPairRequirements";
 import AuPairLocationMap from "@/components/aupair/AuPairLocationMap";
+import ContactFormDialog from "@/components/shared/ContactFormDialog";
+import FavoriteButton from "@/components/shared/FavoriteButton";
 
 // Mock data for au pair listings
 const getAuPairById = (id: string) => {
@@ -204,7 +206,22 @@ const AuPairDetail = () => {
             
             {/* Right column - contact and map */}
             <div>
-              <AuPairContactForm userName={auPair.user.name} />
+              <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+                <h3 className="font-semibold text-lg mb-4">Interested in this opportunity?</h3>
+                <p className="text-gray-600 mb-6">
+                  Contact {auPair.user.name} to discuss the details of this au pair arrangement
+                </p>
+                <ContactFormDialog 
+                  recipientName={auPair.user.name}
+                  buttonColor="bg-purple-600 hover:bg-purple-700 mb-3"
+                  placeholder="I'm interested in your au pair opportunity. I would like to discuss..."
+                />
+                <FavoriteButton 
+                  itemName="au pair opportunity" 
+                  colorClass={isFavorited => isFavorited ? 'bg-purple-50 text-purple-600 border-purple-200' : ''}
+                />
+              </div>
+              
               <AuPairLocationMap location={auPair.user.location} />
             </div>
           </div>

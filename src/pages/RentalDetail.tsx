@@ -1,14 +1,15 @@
-
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Calendar, Euro, Home, MapPin, MessageCircle } from "lucide-react";
+import { ArrowLeft, Calendar, Euro, Home, MapPin } from "lucide-react";
 import Map from "@/components/Map";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import ContactFormDialog from "@/components/shared/ContactFormDialog";
+import FavoriteButton from "@/components/shared/FavoriteButton";
 
 // Mock data for rental listings
 const getRentalById = (id: string) => {
@@ -90,14 +91,6 @@ const RentalDetail = () => {
       setLoading(false);
     }
   }, [id]);
-
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent",
-      description: `Your message has been sent to ${rental?.landlordName}. They will get back to you soon.`,
-    });
-  };
 
   const handleScheduleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,58 +244,16 @@ const RentalDetail = () => {
                   </div>
                 </div>
                 
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-amber-600 hover:bg-amber-700 mb-3">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Contact Landlord
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Contact {rental.landlordName}</DialogTitle>
-                      <DialogDescription>
-                        Send a message about this property. We'll share your contact information so they can get back to you.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleContactSubmit} className="space-y-4 py-4">
-                      <div className="grid w-full items-center gap-1.5">
-                        <label htmlFor="name" className="text-sm font-medium">Your Name</label>
-                        <input 
-                          id="name" 
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          required
-                        />
-                      </div>
-                      <div className="grid w-full items-center gap-1.5">
-                        <label htmlFor="email" className="text-sm font-medium">Your Email</label>
-                        <input 
-                          id="email" 
-                          type="email" 
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          required
-                        />
-                      </div>
-                      <div className="grid w-full gap-1.5">
-                        <label htmlFor="message" className="text-sm font-medium">Message</label>
-                        <textarea 
-                          id="message" 
-                          rows={4} 
-                          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          placeholder="I'm interested in this property and would like to know more about..."
-                          required
-                        ></textarea>
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit">Send Message</Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <ContactFormDialog 
+                  recipientName={rental.landlordName}
+                  buttonColor="bg-amber-600 hover:bg-amber-700 mb-3"
+                  placeholder="I'm interested in this property and would like to know more about..."
+                  successMessage={`Your message has been sent to ${rental.landlordName}. They will get back to you soon.`}
+                />
                 
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full mb-3">
                       <Home className="h-4 w-4 mr-2" />
                       Schedule Viewing
                     </Button>
@@ -360,6 +311,8 @@ const RentalDetail = () => {
                     </form>
                   </DialogContent>
                 </Dialog>
+                
+                <FavoriteButton itemName="rental property" />
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm">

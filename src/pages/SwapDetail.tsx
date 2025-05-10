@@ -1,15 +1,14 @@
-
 import { useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Calendar, Euro, MapPin, MessageCircle } from "lucide-react";
+import { ArrowLeft, Calendar, Euro, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import Map from "@/components/Map";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+import ContactFormDialog from "@/components/shared/ContactFormDialog";
+import FavoriteButton from "@/components/shared/FavoriteButton";
 
 // This would typically come from an API call using the ID
 const getSwapById = (id: string) => {
@@ -109,7 +108,6 @@ const SwapDetail = () => {
   const [swap, setSwap] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (id) {
@@ -119,14 +117,6 @@ const SwapDetail = () => {
       setLoading(false);
     }
   }, [id]);
-
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent",
-      description: `Your message has been sent to ${swap?.user.name}. They will get back to you soon.`,
-    });
-  };
 
   if (loading) {
     return (
@@ -280,57 +270,12 @@ const SwapDetail = () => {
                 <p className="text-gray-600 mb-6">
                   Contact {swap.user.name} to discuss the details of your potential accommodation swap
                 </p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-swap-blue hover:bg-swap-darkBlue mb-3">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Send a Message
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Message {swap.user.name}</DialogTitle>
-                      <DialogDescription>
-                        Send a message about this swap opportunity. We'll share your contact information so they can respond directly.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleContactSubmit} className="space-y-4 py-4">
-                      <div className="grid w-full items-center gap-1.5">
-                        <label htmlFor="swap-name" className="text-sm font-medium">Your Name</label>
-                        <input 
-                          id="swap-name" 
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          required
-                        />
-                      </div>
-                      <div className="grid w-full items-center gap-1.5">
-                        <label htmlFor="swap-email" className="text-sm font-medium">Your Email</label>
-                        <input 
-                          id="swap-email" 
-                          type="email" 
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          required
-                        />
-                      </div>
-                      <div className="grid w-full gap-1.5">
-                        <label htmlFor="swap-message" className="text-sm font-medium">Message</label>
-                        <textarea 
-                          id="swap-message" 
-                          rows={4} 
-                          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          placeholder="I'm interested in swapping with you. I have an apartment in..."
-                          required
-                        ></textarea>
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit">Send Message</Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-                <Button variant="outline" className="w-full">
-                  Save to Favorites
-                </Button>
+                <ContactFormDialog 
+                  recipientName={swap.user.name}
+                  buttonColor="bg-swap-blue hover:bg-swap-darkBlue mb-3"
+                  placeholder="I'm interested in swapping with you. I have an apartment in..."
+                />
+                <FavoriteButton itemName="swap opportunity" />
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm">
