@@ -1,14 +1,15 @@
-
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Calendar, Heart, MessageCircle, Users } from "lucide-react";
-import Map from "@/components/Map";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+import AuPairImageGallery from "@/components/aupair/AuPairImageGallery";
+import AuPairContactForm from "@/components/aupair/AuPairContactForm";
+import AuPairFamilyInfo from "@/components/aupair/AuPairFamilyInfo";
+import AuPairAccommodationInfo from "@/components/aupair/AuPairAccommodationInfo";
+import AuPairRequirements from "@/components/aupair/AuPairRequirements";
+import AuPairLocationMap from "@/components/aupair/AuPairLocationMap";
 
 // Mock data for au pair listings
 const getAuPairById = (id: string) => {
@@ -97,9 +98,6 @@ const AuPairDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [auPair, setAuPair] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showHeart, setShowHeart] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (id) {
@@ -109,34 +107,6 @@ const AuPairDetail = () => {
       setLoading(false);
     }
   }, [id]);
-
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent",
-      description: `Your message has been sent to ${auPair?.user.name}. They will get back to you soon.`,
-    });
-  };
-
-  const handleFavoriteClick = () => {
-    if (!isFavorited) {
-      setShowHeart(true);
-      setTimeout(() => {
-        setShowHeart(false);
-      }, 1000);
-      setIsFavorited(true);
-      toast({
-        title: "Added to Favorites",
-        description: "This au pair opportunity has been added to your favorites.",
-      });
-    } else {
-      setIsFavorited(false);
-      toast({
-        title: "Removed from Favorites",
-        description: "This au pair opportunity has been removed from your favorites.",
-      });
-    }
-  };
 
   if (loading) {
     return (
@@ -202,141 +172,40 @@ const AuPairDetail = () => {
             {/* Left column - accommodation info */}
             <div className="lg:col-span-2">
               {/* Photo */}
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-                <div className="relative aspect-video">
-                  <img 
-                    src={auPair.accommodation.image} 
-                    alt={auPair.accommodation.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
+              <AuPairImageGallery 
+                image={auPair.accommodation.image} 
+                title={auPair.accommodation.title} 
+              />
               
               {/* Details grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 {/* Accommodation */}
-                <div className="bg-purple-50 rounded-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4">ACCOMMODATION OFFERED</h2>
-                  <div className="mb-3">
-                    <p className="font-medium text-lg mb-2">{auPair.accommodation.title}</p>
-                    <p className="text-gray-700 mb-4">{auPair.accommodation.benefits}</p>
-                    <p className="text-gray-700">{auPair.accommodation.description}</p>
-                  </div>
-                </div>
+                <AuPairAccommodationInfo
+                  title={auPair.accommodation.title}
+                  benefits={auPair.accommodation.benefits}
+                  description={auPair.accommodation.description}
+                />
                 
                 {/* Requirements */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h2 className="text-xl font-semibold mb-4">REQUIREMENTS</h2>
-                  <div className="mb-3">
-                    <p className="text-gray-700"><span className="font-medium">Hours:</span> {auPair.requirements.hours}</p>
-                    <p className="text-gray-700 mt-2"><span className="font-medium">Tasks:</span> {auPair.requirements.tasks}</p>
-                    <p className="text-gray-700 mt-2"><span className="font-medium">Language:</span> {auPair.requirements.language}</p>
-                    <p className="text-gray-700 mt-4">{auPair.requirements.additional}</p>
-                  </div>
-                </div>
+                <AuPairRequirements
+                  hours={auPair.requirements.hours}
+                  tasks={auPair.requirements.tasks}
+                  language={auPair.requirements.language}
+                  additional={auPair.requirements.additional}
+                />
               </div>
               
-              {/* Family information */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 className="text-xl font-semibold mb-4">About the Family</h2>
-                <p className="text-gray-700">{auPair.family.description}</p>
-              </div>
-              
-              {/* Amenities/Tags */}
-              <div className="mb-8">
-                <h3 className="text-lg font-medium mb-3">Features</h3>
-                <div className="flex flex-wrap gap-2">
-                  {auPair.tags.map((tag: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 py-1.5 px-3 text-sm">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+              {/* Family information and tags */}
+              <AuPairFamilyInfo 
+                familyDescription={auPair.family.description} 
+                tags={auPair.tags} 
+              />
             </div>
             
             {/* Right column - contact and map */}
             <div>
-              <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-                <h3 className="font-semibold text-lg mb-4">Interested in this opportunity?</h3>
-                <p className="text-gray-600 mb-6">
-                  Contact {auPair.user.name} to discuss the details of this au pair arrangement
-                </p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700 mb-3">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Send a Message
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Message {auPair.user.name}</DialogTitle>
-                      <DialogDescription>
-                        Send a message about this au pair opportunity. We'll share your contact information so they can respond directly.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleContactSubmit} className="space-y-4 py-4">
-                      <div className="grid w-full items-center gap-1.5">
-                        <label htmlFor="aupair-name" className="text-sm font-medium">Your Name</label>
-                        <input 
-                          id="aupair-name" 
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          required
-                        />
-                      </div>
-                      <div className="grid w-full items-center gap-1.5">
-                        <label htmlFor="aupair-email" className="text-sm font-medium">Your Email</label>
-                        <input 
-                          id="aupair-email" 
-                          type="email" 
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          required
-                        />
-                      </div>
-                      <div className="grid w-full gap-1.5">
-                        <label htmlFor="aupair-message" className="text-sm font-medium">Message</label>
-                        <textarea 
-                          id="aupair-message" 
-                          rows={4} 
-                          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                          placeholder="I'm interested in your au pair opportunity. I would like to discuss..."
-                          required
-                        ></textarea>
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit">Send Message</Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-                <div className="relative">
-                  <Button 
-                    variant="outline" 
-                    className={`w-full ${isFavorited ? 'bg-purple-50 text-purple-600 border-purple-200' : ''}`}
-                    onClick={handleFavoriteClick}
-                  >
-                    {isFavorited ? 'Saved to Favorites' : 'Save to Favorites'}
-                  </Button>
-                  {showHeart && (
-                    <Heart 
-                      className="absolute left-1/2 transform -translate-x-1/2 text-red-500 animate-[fade-in_0.3s_ease-out,float_3s_ease-in-out_infinite] opacity-0"
-                      fill="red"
-                      size={20}
-                    />
-                  )}
-                </div>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="font-semibold text-lg mb-4">Location</h3>
-                <div className="rounded-lg h-48">
-                  <Map city={auPair.user.location} />
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Note: Only an approximate location is shown for privacy reasons
-                </p>
-              </div>
+              <AuPairContactForm userName={auPair.user.name} />
+              <AuPairLocationMap location={auPair.user.location} />
             </div>
           </div>
         </div>
