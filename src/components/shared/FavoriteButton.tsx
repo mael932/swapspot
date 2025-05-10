@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import "@/styles/animations.css";
 
 interface FavoriteButtonProps {
   itemName: string;
@@ -22,9 +23,9 @@ const FavoriteButton = ({
   const handleFavoriteClick = () => {
     if (!isFavorited) {
       // Add multiple hearts with slightly different positions for a more dynamic effect
-      const newHearts = Array(3).fill(0).map((_, index) => ({
+      const newHearts = Array(5).fill(0).map((_, index) => ({
         id: Date.now() + index,
-        left: `${48 + (Math.random() * 4 - 2)}%`
+        left: `${48 + (Math.random() * 6 - 3)}%`
       }));
       setHearts([...hearts, ...newHearts]);
       
@@ -70,7 +71,7 @@ const FavoriteButton = ({
       {hearts.map((heart) => (
         <Heart 
           key={heart.id}
-          className="absolute bottom-full transform -translate-x-1/2 text-red-500 fill-red-500 animate-[scale-in_0.2s_ease-out,float-up_1s_ease-out_forwards]"
+          className="animate-float-up absolute bottom-full transform -translate-x-1/2 text-red-500 fill-red-500"
           style={{
             left: heart.left,
             opacity: 1,
