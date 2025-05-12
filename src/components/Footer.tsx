@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Home, Mail, MessageSquare, Github } from "lucide-react";
+import { Home, Mail, MessageSquare } from "lucide-react";
 
 export default function Footer() {
   // Function to scroll to top when links are clicked
@@ -53,10 +53,6 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-swap-blue" />
                 <Link to="/support" onClick={scrollToTop} className="text-gray-600 hover:text-swap-blue">Support</Link>
-              </li>
-              <li className="flex items-center gap-2">
-                <Github className="h-5 w-5 text-swap-blue" />
-                <a href="https://github.com/swapspot" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-swap-blue">GitHub</a>
               </li>
             </ul>
           </div>
