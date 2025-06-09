@@ -2,36 +2,64 @@ import { useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Calendar, Euro, MapPin } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import Map from "@/components/Map";
 import ContactFormDialog from "@/components/shared/ContactFormDialog";
 import FavoriteButton from "@/components/shared/FavoriteButton";
+import StudentProfile from "@/components/StudentProfile";
+import RoomDetails from "@/components/RoomDetails";
 
-// This would typically come from an API call using the ID
+// Enhanced mock data with detailed student profiles and room information
 const getSwapById = (id: string) => {
-  // Mock data for now - in a real app, this would be fetched from a database
   const swaps = [
     {
       id: "1",
       user: {
+        id: "user1",
         name: "Emma Johnson",
         avatar: "https://i.pravatar.cc/150?img=1",
         university: "Sciences Po Paris",
-        about: "Hi there! I'm Emma, a 21-year-old International Relations student from Canada currently studying at Sciences Po Paris. I love exploring new cultures and am an avid photographer in my spare time. I'm a clean, organized person who respects others' space. I'm looking for a swap in Madrid as I'll be doing an exchange semester there. I don't smoke, and I'm happy to water your plants and take care of any pets you might have!"
+        studyProgram: "International Relations",
+        yearOfStudy: "3rd Year",
+        currentLocation: "Paris, France",
+        languages: ["English (Native)", "French (Fluent)", "Spanish (Intermediate)"],
+        interests: ["Photography", "Travel", "Reading", "Museum Visits", "Cooking"],
+        about: "Hi there! I'm Emma, a 21-year-old International Relations student from Canada currently studying at Sciences Po Paris. I love exploring new cultures and am an avid photographer in my spare time. I'm a clean, organized person who respects others' space. I'm looking for a swap in Madrid as I'll be doing an exchange semester there. I don't smoke, and I'm happy to water your plants and take care of any pets you might have!",
+        isVerified: true,
+        verificationMethod: "University Email + Student ID",
+        backgroundCheckVerified: true
       },
       current: {
-        city: "Paris, France",
+        id: "room1",
+        title: "Cozy Studio in Latin Quarter",
         type: "Studio Apartment",
-        price: "€800/month",
-        description: "A cozy studio apartment located in the 5th arrondissement, just a 10-minute walk from Sciences Po. The apartment features a comfortable bed, a small kitchen area, and a bathroom. It's perfect for a single student and has great natural light.",
         images: [
           "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBhcnRtZW50fGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60",
           "https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGFwYXJ0bWVudCUyMGtpdGNoZW58ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60",
           "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
-        ]
+        ],
+        pricing: {
+          monthlyRent: "€800",
+          utilities: "€50 (Electricity, Water)",
+          deposit: "€400",
+          notes: "Willing to negotiate for longer stays"
+        },
+        amenities: ["WiFi", "Furnished", "Kitchen", "Heating", "Near Metro"],
+        houseRules: {
+          smoking: false,
+          pets: false,
+          guests: true,
+          quietHours: "10 PM - 8 AM",
+          cleaningSchedule: "Weekly cleaning expected"
+        },
+        description: "A charming studio apartment in the heart of the Latin Quarter, just 10 minutes walk from Sciences Po. Perfect for a student who wants to experience authentic Parisian life. The space is compact but efficiently designed with everything you need.",
+        location: {
+          neighborhood: "5th Arrondissement - Latin Quarter",
+          transportation: ["Metro Line 4", "RER B", "Multiple Bus Lines"],
+          nearbyUniversities: ["Sciences Po Paris", "Sorbonne University", "Panthéon-Sorbonne"]
+        }
       },
       wanted: {
         city: "Madrid, Spain",
@@ -39,27 +67,54 @@ const getSwapById = (id: string) => {
         price: "€600-800/month",
         description: "I'm looking for any type of accommodation in Madrid, preferably close to the university area. I need it for my exchange semester."
       },
-      dates: "Sep 5, 2023 - Feb 20, 2024",
-      tags: ["Near University", "Furnished", "Public Transit"]
+      dates: "Sep 5, 2023 - Feb 20, 2024"
     },
     {
       id: "2",
       user: {
+        id: "user2",
         name: "Miguel Santos",
         avatar: "https://i.pravatar.cc/150?img=11",
         university: "University of Barcelona",
-        about: "Hello! I'm Miguel, a 23-year-old Architecture student from Barcelona. I'm very passionate about design, urban planning, and sustainable living. In my free time, I enjoy sketching city landscapes and playing guitar. I'm a responsible and tidy person who values a clean living space. I'm looking for a swap in Berlin for my upcoming exchange program. I don't smoke and I'm perfectly fine with pets as I grew up with dogs."
+        studyProgram: "Architecture",
+        yearOfStudy: "4th Year",
+        currentLocation: "Barcelona, Spain",
+        languages: ["Spanish (Native)", "Catalan (Fluent)", "English (Advanced)"],
+        interests: ["Design", "Urban Planning", "Sustainable Living", "Sketching", "Guitar"],
+        about: "Hello! I'm Miguel, a 23-year-old Architecture student from Barcelona. I'm very passionate about design, urban planning, and sustainable living. In my free time, I enjoy sketching city landscapes and playing guitar. I'm a responsible and tidy person who values a clean living space. I'm looking for a swap in Berlin for my upcoming exchange program. I don't smoke and I'm perfectly fine with pets as I grew up with dogs.",
+        isVerified: true,
+        verificationMethod: "Student ID Card",
+        backgroundCheckVerified: false
       },
       current: {
-        city: "Barcelona, Spain",
+        id: "room2",
+        title: "Modern Apartment in Gracia",
         type: "1 Bedroom Apartment",
-        price: "€750/month",
-        description: "Modern 1-bedroom apartment in the heart of Barcelona, just 15 minutes by metro from the university. Features a spacious living room, separate bedroom, and a small balcony with a view of the street.",
         images: [
           "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60",
           "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGFwYXJ0bWVudCUyMGJlZHJvb218ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60",
           "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBhcnRtZW50JTIwYmFsY29ueXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
-        ]
+        ],
+        pricing: {
+          monthlyRent: "€750",
+          utilities: "Included",
+          deposit: "€500",
+          notes: "Negotiable for responsible tenants"
+        },
+        amenities: ["Balcony", "WiFi", "Furnished", "Close to Metro", "Natural Light"],
+        houseRules: {
+          smoking: false,
+          pets: true,
+          guests: true,
+          quietHours: "11 PM - 9 AM",
+          cleaningSchedule: "Shared responsibility"
+        },
+        description: "Modern 1-bedroom apartment in the heart of Barcelona, just 15 minutes by metro from the university. Features a spacious living room, separate bedroom, and a small balcony with a view of the street.",
+        location: {
+          neighborhood: "Gracia",
+          transportation: ["Metro L3", "Multiple Bus Lines", "Bicing (Bike Sharing)"],
+          nearbyUniversities: ["University of Barcelona", "Polytechnic University of Catalonia"]
+        }
       },
       wanted: {
         city: "Berlin, Germany",
@@ -67,27 +122,54 @@ const getSwapById = (id: string) => {
         price: "€500-800/month",
         description: "Looking for a comfortable place to stay during my exchange semester in Berlin. Preferably close to public transportation."
       },
-      dates: "Oct 10, 2023 - Mar 15, 2024",
-      tags: ["Balcony", "WiFi", "Furnished"]
+      dates: "Oct 10, 2023 - Mar 15, 2024"
     },
     {
       id: "3",
       user: {
+        id: "user3",
         name: "Sophie Weber",
         avatar: "https://i.pravatar.cc/150?img=5",
         university: "Humboldt University",
-        about: "Greetings from Berlin! I'm Sophie, a 22-year-old Sociology student at Humboldt University. I'm an avid reader, enjoy indie films, and love discovering hidden cafés around the city. I'm a relaxed but responsible person who keeps things tidy. I'm looking for a swap in Copenhagen for my research semester. I'm a non-smoker, vegetarian, and I love cycling as my main mode of transportation. I have a collection of plants that my neighbor will care for while I'm away."
+        studyProgram: "Sociology",
+        yearOfStudy: "2nd Year",
+        currentLocation: "Berlin, Germany",
+        languages: ["German (Native)", "English (Fluent)", "French (Basic)"],
+        interests: ["Reading", "Indie Films", "Cafés", "Cycling", "Vegetarian Cooking"],
+        about: "Greetings from Berlin! I'm Sophie, a 22-year-old Sociology student at Humboldt University. I'm an avid reader, enjoy indie films, and love discovering hidden cafés around the city. I'm a relaxed but responsible person who keeps things tidy. I'm looking for a swap in Copenhagen for my research semester. I'm a non-smoker, vegetarian, and I love cycling as my main mode of transportation. I have a collection of plants that my neighbor will care for while I'm away.",
+        isVerified: false,
+        verificationMethod: null,
+        backgroundCheckVerified: false
       },
       current: {
-        city: "Berlin, Germany",
-        type: "2 Bedroom Apartment (Shared)",
-        price: "€550/month",
-        description: "A room in a shared 2-bedroom apartment in Kreuzberg, Berlin. The apartment has a spacious living room, fully equipped kitchen, and a shared bathroom. Your roommate would be a friendly local student.",
+        id: "room3",
+        title: "Room in Shared Apartment in Kreuzberg",
+        type: "Room in 2 Bedroom Apartment",
         images: [
           "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60",
           "https://images.unsplash.com/photo-1598928636135-d146006ff4be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGFwYXJ0bWVudCUyMGxpdmluZyUyMHJvb218ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60",
           "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YXBhcnRtZW50JTIwa2l0Y2hlbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
-        ]
+        ],
+        pricing: {
+          monthlyRent: "€550",
+          utilities: "€80 (Shared)",
+          deposit: "€300",
+          notes: "Includes internet and shared supplies"
+        },
+        amenities: ["Pet Friendly", "Near Park", "Bicycle Storage", "Shared Kitchen", "Washing Machine"],
+        houseRules: {
+          smoking: false,
+          pets: true,
+          guests: "With notice",
+          quietHours: "10 PM - 7 AM",
+          cleaningSchedule: "Rotating weekly chores"
+        },
+        description: "A room in a shared 2-bedroom apartment in Kreuzberg, Berlin. The apartment has a spacious living room, fully equipped kitchen, and a shared bathroom. Your roommate would be a friendly local student.",
+        location: {
+          neighborhood: "Kreuzberg",
+          transportation: ["U-Bahn U1", "Bus Lines", "Bike Paths"],
+          nearbyUniversities: ["Humboldt University", "Free University of Berlin"]
+        }
       },
       wanted: {
         city: "Copenhagen, Denmark",
@@ -95,8 +177,7 @@ const getSwapById = (id: string) => {
         price: "€500-700/month",
         description: "I'm flexible with accommodation type as long as it's in Copenhagen and within my budget range."
       },
-      dates: "Jan 15, 2024 - Jun 30, 2024",
-      tags: ["Pet Friendly", "Near Park", "Bicycle Storage"]
+      dates: "Jan 15, 2024 - Jun 30, 2024"
     }
   ];
   
@@ -107,7 +188,6 @@ const SwapDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [swap, setSwap] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -158,114 +238,30 @@ const SwapDetail = () => {
             Back to Browse
           </Link>
           
-          {/* User info and dates */}
+          {/* Header with dates */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-            <div className="flex items-center gap-4 mb-4 md:mb-0">
-              <img 
-                src={swap.user.avatar} 
-                alt={swap.user.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-swap-blue"
-              />
-              <div>
-                <h1 className="text-2xl font-bold">{swap.user.name}</h1>
-                <p className="text-gray-600">{swap.user.university}</p>
-              </div>
-            </div>
+            <h1 className="text-3xl font-bold mb-4 md:mb-0">Student Swap Details</h1>
             <div className="flex items-center bg-white px-4 py-2 rounded-lg border">
               <Calendar className="h-5 w-5 text-swap-blue mr-2" />
               <span className="font-medium">{swap.dates}</span>
             </div>
           </div>
           
-          {/* Main content area */}
+          {/* Main content grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left column - place info */}
-            <div className="lg:col-span-2">
-              {/* About the Student section */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 className="text-xl font-semibold mb-4">About the Student</h2>
-                <p className="text-gray-700">{swap.user.about}</p>
-              </div>
-            
-              {/* Photo gallery */}
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-                <div className="relative aspect-video">
-                  <img 
-                    src={swap.current.images[activeImageIndex]} 
-                    alt={`${swap.current.city} accommodation`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-2 flex overflow-x-auto gap-2">
-                  {swap.current.images.map((image: string, index: number) => (
-                    <button 
-                      key={index}
-                      onClick={() => setActiveImageIndex(index)}
-                      className={`relative w-20 h-20 flex-shrink-0 ${index === activeImageIndex ? 'ring-2 ring-swap-blue' : ''}`}
-                    >
-                      <img 
-                        src={image} 
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover rounded"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {/* Left column - Student profile and room details */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Student Profile */}
+              <StudentProfile student={swap.user} />
               
-              {/* Details grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                {/* Current place */}
-                <div className="bg-swap-lightBlue rounded-lg p-6">
-                  <h2 className="text-xl font-semibold mb-4">CURRENT PLACE</h2>
-                  <div className="mb-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <MapPin className="h-5 w-5 text-swap-blue" />
-                      <span className="font-medium text-lg">{swap.current.city}</span>
-                    </div>
-                    <p className="text-gray-700">{swap.current.type}</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-lg font-medium mb-4">
-                    <Euro className="h-5 w-5" />
-                    <span>{swap.current.price}</span>
-                  </div>
-                  <p className="text-gray-700">{swap.current.description}</p>
-                </div>
-                
-                {/* Looking for */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h2 className="text-xl font-semibold mb-4">LOOKING FOR</h2>
-                  <div className="mb-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <MapPin className="h-5 w-5 text-swap-blue" />
-                      <span className="font-medium text-lg">{swap.wanted.city}</span>
-                    </div>
-                    <p className="text-gray-700">{swap.wanted.type}</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-lg font-medium mb-4">
-                    <Euro className="h-5 w-5" />
-                    <span>{swap.wanted.price}</span>
-                  </div>
-                  <p className="text-gray-700">{swap.wanted.description}</p>
-                </div>
-              </div>
-              
-              {/* Amenities/Tags */}
-              <div className="mb-8">
-                <h3 className="text-lg font-medium mb-3">Amenities & Features</h3>
-                <div className="flex flex-wrap gap-2">
-                  {swap.tags.map((tag: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 py-1.5 px-3 text-sm">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+              {/* Room Details */}
+              <RoomDetails room={swap.current} />
             </div>
             
-            {/* Right column - contact and map */}
-            <div>
-              <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+            {/* Right column - Contact and looking for */}
+            <div className="space-y-6">
+              {/* Contact Card */}
+              <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-lg mb-4">Interested in this swap?</h3>
                 <p className="text-gray-600 mb-6">
                   Contact {swap.user.name} to discuss the details of your potential accommodation swap
@@ -277,14 +273,38 @@ const SwapDetail = () => {
                 />
                 <FavoriteButton itemName="swap opportunity" />
               </div>
+
+              {/* Looking For Card */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 className="text-xl font-semibold mb-4">Looking For</h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="font-medium text-gray-600">Destination:</span>
+                    <p className="text-lg">{swap.wanted.city}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Type:</span>
+                    <p>{swap.wanted.type}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Budget:</span>
+                    <p>{swap.wanted.price}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Details:</span>
+                    <p className="text-gray-700">{swap.wanted.description}</p>
+                  </div>
+                </div>
+              </div>
               
+              {/* Map */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-lg mb-4">Location</h3>
                 <div className="rounded-lg h-48">
-                  <Map city={swap.current.city} />
+                  <Map city={swap.current.location.neighborhood} />
                 </div>
                 <p className="mt-3 text-sm text-gray-600">
-                  Note: Exact location is shared only after matching
+                  Note: Exact address is shared only after matching
                 </p>
               </div>
             </div>
