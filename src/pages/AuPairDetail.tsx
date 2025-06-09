@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -140,6 +139,10 @@ const AuPairDetail = () => {
     );
   }
 
+  const favoriteButtonClass = (isFavorited: boolean): string => {
+    return isFavorited ? "bg-purple-50 text-purple-600 border-purple-200" : "";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -218,7 +221,7 @@ const AuPairDetail = () => {
                 />
                 <FavoriteButton 
                   itemName="au pair opportunity" 
-                  colorClass={isFavorited => isFavorited ? 'bg-purple-50 text-purple-600 border-purple-200' : ''}
+                  colorClass={favoriteButtonClass}
                 />
               </div>
               

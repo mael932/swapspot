@@ -2,18 +2,20 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Euro, ArrowRightLeft } from "lucide-react";
+import { MapPin, Calendar, Euro, ArrowRightLeft, Shield, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-// Dummy data for featured swaps
+// Updated dummy data with verification info
 const swapListings = [
   {
     id: 1,
     user: {
       name: "Emma Johnson",
       avatar: "https://i.pravatar.cc/150?img=1",
-      university: "Sciences Po Paris"
+      university: "Sciences Po Paris",
+      isVerified: true,
+      verificationMethod: "University Email"
     },
     current: {
       city: "Paris, France",
@@ -34,7 +36,9 @@ const swapListings = [
     user: {
       name: "Miguel Santos",
       avatar: "https://i.pravatar.cc/150?img=11",
-      university: "University of Barcelona"
+      university: "University of Barcelona",
+      isVerified: true,
+      verificationMethod: "Student ID Card"
     },
     current: {
       city: "Barcelona, Spain",
@@ -55,7 +59,9 @@ const swapListings = [
     user: {
       name: "Sophie Weber",
       avatar: "https://i.pravatar.cc/150?img=5",
-      university: "Humboldt University"
+      university: "Humboldt University",
+      isVerified: false,
+      verificationMethod: null
     },
     current: {
       city: "Berlin, Germany",
@@ -82,7 +88,7 @@ export default function FeaturedSwaps() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Swap Opportunities</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Browse some of the latest accommodation swaps available on our platform.
+            Browse verified student swaps from top universities around the world.
           </p>
         </div>
         
@@ -98,8 +104,26 @@ export default function FeaturedSwaps() {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                     <div>
-                      <CardTitle className="text-lg">{swap.user.name}</CardTitle>
-                      <CardDescription>{swap.user.university}</CardDescription>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-lg">{swap.user.name}</CardTitle>
+                        {swap.user.isVerified ? (
+                          <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                            <Shield className="h-3 w-3" />
+                            Verified
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
+                            Unverified
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <GraduationCap className="h-3 w-3" />
+                        <CardDescription>{swap.user.university}</CardDescription>
+                      </div>
+                      {swap.user.isVerified && swap.user.verificationMethod && (
+                        <p className="text-xs text-green-600">Verified via {swap.user.verificationMethod}</p>
+                      )}
                     </div>
                   </div>
                 </div>
