@@ -39,6 +39,7 @@ export default function Footer() {
               <li><Link to="/how-it-works" onClick={scrollToTop} className="text-gray-600 hover:text-swap-blue">How It Works</Link></li>
               <li><Link to="/safety" onClick={scrollToTop} className="text-gray-600 hover:text-swap-blue">Safety</Link></li>
               <li><Link to="/faq" onClick={scrollToTop} className="text-gray-600 hover:text-swap-blue">FAQ</Link></li>
+              <li><Link to="/community" onClick={scrollToTop} className="text-gray-600 hover:text-swap-blue">Community</Link></li>
               <li><Link to="/terms" onClick={scrollToTop} className="text-gray-600 hover:text-swap-blue">Terms of Service</Link></li>
             </ul>
           </div>

@@ -24,6 +24,7 @@ import Terms from "./pages/Terms";
 import Careers from "./pages/Careers";
 import Support from "./pages/Support";
 import Onboarding from "./pages/Onboarding";
+import Community from "./pages/Community";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 
 const queryClient = new QueryClient({
@@ -107,6 +108,7 @@ const App = () => {
               <Route path="/terms" element={<Terms />} />
               <Route path="/careers" element={<Careers />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/community" element={<Community />} />
               <Route path="/aupair" element={<Browse />} />
               <Route path="/rentals" element={<Browse />} />
               <Route path="*" element={<NotFound />} />
