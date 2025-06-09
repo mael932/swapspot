@@ -2,7 +2,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Headphones, MessageSquare, Mail, Book } from "lucide-react";
+import { Headphones, MessageSquare, Mail, Book, Bot } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import PubertChat from "@/components/PubertChat";
+import { useState } from "react";
 
 const supportFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -22,6 +25,8 @@ const supportFormSchema = z.object({
 type SupportFormValues = z.infer<typeof supportFormSchema>;
 
 const Support = () => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  
   const form = useForm<SupportFormValues>({
     resolver: zodResolver(supportFormSchema),
     defaultValues: {
@@ -60,7 +65,34 @@ const Support = () => {
         {/* Support Options */}
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+              <div className="bg-gray-50 p-8 rounded-lg text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-swap-lightBlue p-3 rounded-full">
+                    <Bot className="h-6 w-6 text-swap-blue" />
+                  </div>
+                </div>
+                <h2 className="text-xl font-semibold mb-2">AI Assistant</h2>
+                <p className="text-gray-600 mb-4">
+                  Chat with Pubert, our AI assistant, for instant help and guidance.
+                </p>
+                <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      Chat with Pubert
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl h-[80vh] p-0">
+                    <DialogHeader className="p-6 pb-0">
+                      <DialogTitle>Chat with Pubert - AI Assistant</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-grow p-6 pt-0">
+                      <PubertChat className="h-full" />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              
               <div className="bg-gray-50 p-8 rounded-lg text-center">
                 <div className="flex justify-center mb-4">
                   <div className="bg-swap-lightBlue p-3 rounded-full">

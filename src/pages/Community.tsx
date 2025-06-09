@@ -1,4 +1,3 @@
-
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,13 +12,19 @@ import {
   Clock,
   ThumbsUp,
   Search,
-  Filter
+  Filter,
+  Bot
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import PubertChat from "@/components/PubertChat";
+import { useState } from "react";
 
 const Community = () => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  
   const wikiGuides = [
     {
       title: "How to Clean and Leave the Place",
@@ -339,15 +344,28 @@ const Community = () => {
           <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Need More Help?</h2>
             <p className="text-gray-600 mb-6">
-              Can't find what you're looking for? Our support team is here to help.
+              Can't find what you're looking for? Our support team and AI assistant are here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild>
                 <Link to="/support">Contact Support</Link>
               </Button>
-              <Button variant="outline">
-                AI Assistant (Pubert)
-              </Button>
+              <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Bot className="h-4 w-4" />
+                    Chat with Pubert
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl h-[80vh] p-0">
+                  <DialogHeader className="p-6 pb-0">
+                    <DialogTitle>Chat with Pubert - AI Assistant</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex-grow p-6 pt-0">
+                    <PubertChat className="h-full" />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </section>
