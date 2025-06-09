@@ -7,17 +7,20 @@ import FeaturedSwaps from "@/components/FeaturedSwaps";
 import Testimonials from "@/components/Testimonials";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
+import SmartRecommendations from "@/components/SmartRecommendations";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     console.log("Index page loaded");
     
-    // Test Supabase connection
+    // Test Supabase connection and get user
     const checkSupabaseConnection = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
@@ -27,6 +30,7 @@ const Index = () => {
           setError("Failed to connect to Supabase. Check the console for details.");
         } else {
           console.log("Supabase connection successful:", data.session ? "User is logged in" : "No active session");
+          setUser(data.session?.user || null);
         }
       } catch (err) {
         console.error("Error checking Supabase connection:", err);
@@ -37,6 +41,13 @@ const Index = () => {
     };
     
     checkSupabaseConnection();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   if (loading) {
@@ -71,12 +82,33 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-        <HeroSection />
-        <AccommodationModes />
-        <HowItWorks />
-        <FeaturedSwaps />
-        <Testimonials />
-        <CtaSection />
+        {user ? (
+          // Show personalized content for logged-in users
+          <div className="container mx-auto px-4 py-8">
+            <SmartRecommendations 
+              userPreferences={{
+                location: "Europe",
+                dates: {
+                  startDate: "2025-09-01",
+                  endDate: "2025-12-15"
+                },
+                university: "Student Exchange Program"
+              }}
+              className="mb-12"
+            />
+            <FeaturedSwaps />
+          </div>
+        ) : (
+          // Show standard homepage for visitors
+          <>
+            <HeroSection />
+            <AccommodationModes />
+            <HowItWorks />
+            <FeaturedSwaps />
+            <Testimonials />
+            <CtaSection />
+          </>
+        )}
       </main>
       <Footer />
     </div>
