@@ -23,6 +23,7 @@ import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
 import Careers from "./pages/Careers";
 import Support from "./pages/Support";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -81,34 +82,36 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/browse" element={<Browse />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/swaps/:id" element={<SwapDetail />} />
-            <Route path="/aupair/:id" element={<AuPairDetail />} />
-            <Route path="/rentals/:id" element={<RentalDetail />} />
-            <Route path="/verify" element={<VerifyEmail />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/post-place" element={<PostPlace />} />
-            <Route path="/safety" element={<Safety />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/aupair" element={<Browse />} />
-            <Route path="/rentals" element={<Browse />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <SubscriptionProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/how-it-works" element={<HowItWorksPage />} />
+              <Route path="/browse" element={<Browse />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/swaps/:id" element={<SwapDetail />} />
+              <Route path="/aupair/:id" element={<AuPairDetail />} />
+              <Route path="/rentals/:id" element={<RentalDetail />} />
+              <Route path="/verify" element={<VerifyEmail />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/post-place" element={<PostPlace />} />
+              <Route path="/safety" element={<Safety />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/aupair" element={<Browse />} />
+              <Route path="/rentals" element={<Browse />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </SubscriptionProvider>
     </QueryClientProvider>
   );
 };
