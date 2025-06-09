@@ -10,6 +10,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactFormDialog from "@/components/shared/ContactFormDialog";
 import MessagingDialog from "@/components/MessagingDialog";
+import SwapAgreementDialog from "@/components/SwapAgreementDialog";
+import InsuranceSupport from "@/components/InsuranceSupport";
 
 interface SwapDetailParams {
   id: string;
@@ -163,6 +165,9 @@ const SwapDetail = () => {
             <div className="lg:col-span-2 space-y-6">
               {/* Room Details */}
               <RoomDetails room={mockSwap.room} />
+
+              {/* Safety & Support Section */}
+              <InsuranceSupport />
             </div>
 
             <div className="space-y-6">
@@ -194,6 +199,22 @@ const SwapDetail = () => {
                   <FavoriteButton 
                     listingId={mockSwap.id}
                     variant="outline"
+                    className="w-full"
+                  />
+
+                  <SwapAgreementDialog
+                    recipientName={mockSwap.host.name}
+                    listingTitle={mockSwap.room.title}
+                    listingLocation={`${mockSwap.location.city}, ${mockSwap.location.country}`}
+                    listingDates={{
+                      startDate: mockSwap.dates.startDate,
+                      endDate: mockSwap.dates.endDate
+                    }}
+                    userDates={{
+                      startDate: "2025-09-01",
+                      endDate: "2025-12-15"
+                    }}
+                    buttonVariant="secondary"
                     className="w-full"
                   />
                 </CardContent>
