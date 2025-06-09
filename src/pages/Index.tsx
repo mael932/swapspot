@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AccommodationModes from "@/components/AccommodationModes";
@@ -8,6 +7,7 @@ import Testimonials from "@/components/Testimonials";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
 import SmartRecommendations from "@/components/SmartRecommendations";
+import QRCodeComponent from "@/components/QRCode";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
@@ -97,6 +97,9 @@ const Index = () => {
               className="mb-12"
             />
             <FeaturedSwaps />
+            <div className="mt-16 flex justify-center">
+              <QRCodeComponent />
+            </div>
           </div>
         ) : (
           // Show standard homepage for visitors
@@ -107,6 +110,9 @@ const Index = () => {
             <FeaturedSwaps />
             <Testimonials />
             <CtaSection />
+            <div className="py-16 flex justify-center bg-gray-50">
+              <QRCodeComponent />
+            </div>
           </>
         )}
       </main>

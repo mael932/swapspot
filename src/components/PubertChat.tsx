@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,7 @@ const PubertChat: React.FC<PubertChatProps> = ({ className = "" }) => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hi there! I'm Pubert, your SwapSpot AI assistant! 🏠✨ I'm here to help you with anything about student accommodation swaps. Whether you need help creating a listing, finding matches, or understanding how our platform works, just ask me!",
+      content: "Hi there! I'm John, your SwapSpot AI assistant! 🏠✨ I'm here to help you with anything about student accommodation swaps. Whether you need help creating a listing, finding matches, or understanding how our platform works, just ask me!",
       timestamp: new Date()
     }
   ]);
@@ -81,7 +80,7 @@ const PubertChat: React.FC<PubertChatProps> = ({ className = "" }) => {
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error sending message to Pubert:', error);
+      console.error('Error sending message to John:', error);
       toast.error("Sorry, I couldn't process your message. Please try again.");
       
       const errorMessage: Message = {
@@ -109,7 +108,7 @@ const PubertChat: React.FC<PubertChatProps> = ({ className = "" }) => {
       <CardHeader className="flex-shrink-0">
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-swap-blue" />
-          Chat with Pubert
+          Chat with John
         </CardTitle>
       </CardHeader>
       
@@ -161,7 +160,7 @@ const PubertChat: React.FC<PubertChatProps> = ({ className = "" }) => {
                 <div className="bg-gray-100 rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm text-gray-600">Pubert is typing...</span>
+                    <span className="text-sm text-gray-600">John is typing...</span>
                   </div>
                 </div>
               </div>
@@ -175,7 +174,7 @@ const PubertChat: React.FC<PubertChatProps> = ({ className = "" }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask Pubert anything about SwapSpot..."
+              placeholder="Ask John anything about SwapSpot..."
               disabled={isLoading}
               className="flex-grow"
             />

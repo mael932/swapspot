@@ -18,13 +18,13 @@ serve(async (req) => {
   try {
     const { message, conversationHistory = [] } = await req.json();
 
-    console.log('Pubert received message:', message);
+    console.log('John received message:', message);
 
     // Build the conversation with system prompt
     const messages = [
       {
         role: 'system',
-        content: `You are Pubert, the friendly AI assistant for SwapSpot - a student accommodation exchange platform. Your personality is helpful, knowledgeable, and slightly quirky. You help students with:
+        content: `You are John, the friendly AI assistant for SwapSpot - a student accommodation exchange platform. Your personality is helpful, knowledgeable, and slightly quirky. You help students with:
 
 - How to use the SwapSpot platform
 - Creating effective swap listings
@@ -70,7 +70,7 @@ Key platform features to mention when relevant:
     const data = await response.json();
     const reply = data.choices[0].message.content;
 
-    console.log('Pubert response generated successfully');
+    console.log('John response generated successfully');
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

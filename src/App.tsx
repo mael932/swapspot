@@ -26,6 +26,7 @@ import Support from "./pages/Support";
 import Onboarding from "./pages/Onboarding";
 import Community from "./pages/Community";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import FloatingChatTab from "./components/FloatingChatTab";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -113,6 +114,7 @@ const App = () => {
               <Route path="/rentals" element={<Browse />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <FloatingChatTab />
           </BrowserRouter>
         </TooltipProvider>
       </SubscriptionProvider>

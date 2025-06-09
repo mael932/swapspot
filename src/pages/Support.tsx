@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -74,17 +73,17 @@ const Support = () => {
                 </div>
                 <h2 className="text-xl font-semibold mb-2">AI Assistant</h2>
                 <p className="text-gray-600 mb-4">
-                  Chat with Pubert, our AI assistant, for instant help and guidance.
+                  Chat with John, our AI assistant, for instant help and guidance.
                 </p>
                 <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline">
-                      Chat with Pubert
+                      Chat with John
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-4xl h-[80vh] p-0">
                     <DialogHeader className="p-6 pb-0">
-                      <DialogTitle>Chat with Pubert - AI Assistant</DialogTitle>
+                      <DialogTitle>Chat with John - AI Assistant</DialogTitle>
                     </DialogHeader>
                     <div className="flex-grow p-6 pt-0">
                       <PubertChat className="h-full" />
