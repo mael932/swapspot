@@ -79,7 +79,7 @@ interface MockSwap {
 }
 
 const SwapDetail = () => {
-  const { id } = useParams<SwapDetailParams>();
+  const { id } = useParams<{ id: string }>();
 
   // Mock data for the swap detail page
   const mockSwap: MockSwap = {
