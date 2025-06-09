@@ -23,6 +23,7 @@ import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
 import Careers from "./pages/Careers";
 import Support from "./pages/Support";
+import Onboarding from "./pages/Onboarding";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 
 const queryClient = new QueryClient({
@@ -98,6 +99,7 @@ const App = () => {
               <Route path="/aupair/:id" element={<AuPairDetail />} />
               <Route path="/rentals/:id" element={<RentalDetail />} />
               <Route path="/verify" element={<VerifyEmail />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/account" element={<Account />} />
               <Route path="/post-place" element={<PostPlace />} />
               <Route path="/safety" element={<Safety />} />

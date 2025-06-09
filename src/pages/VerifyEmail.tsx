@@ -57,12 +57,12 @@ const VerifyEmail = () => {
           
           // Auto-redirect after successful verification
           toast.success("Email verified successfully!", {
-            description: "You can now post your apartment on SwapSpot"
+            description: "Let's complete your profile setup"
           });
           
           // Give user a moment to see the success message before redirecting
           setTimeout(() => {
-            navigate("/post-place");
+            navigate("/onboarding");
           }, 3000);
         }
       } catch (err) {
@@ -96,14 +96,14 @@ const VerifyEmail = () => {
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
               <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
               <p className="text-gray-600">
-                Your email has been successfully verified. You can now post your apartment on SwapSpot.
+                Your email has been successfully verified. Let's complete your profile setup to see your first matches!
               </p>
               <div className="pt-4">
                 <Button asChild className="w-full">
-                  <Link to="/post-place">Post Your Apartment</Link>
+                  <Link to="/onboarding">Complete Profile Setup</Link>
                 </Button>
                 <p className="mt-4 text-sm text-gray-500">
-                  Redirecting to apartment posting page in a few seconds...
+                  Redirecting to profile setup in a few seconds...
                 </p>
               </div>
             </div>

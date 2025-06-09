@@ -104,15 +104,15 @@ const SignUp = () => {
                 </p>
                 <div className="mt-2 flex items-center justify-center gap-2">
                   <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                    Early Demo Version
+                    Step-by-step Onboarding
                   </Badge>
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
                     <Shield className="h-3 w-3" />
-                    Supabase Auth
+                    Secure Verification
                   </Badge>
                 </div>
                 <p className="mt-4 text-sm text-gray-500 bg-yellow-50 p-2 rounded-md border border-yellow-100">
-                  Sign up with your email to receive a secure verification link.
+                  Complete our guided setup to see your first matches immediately!
                 </p>
               </div>
               
@@ -212,7 +212,7 @@ const SignUp = () => {
                 We've sent a verification link to <span className="font-medium">{email}</span>.
               </p>
               <p className="text-gray-600">
-                Please check your email inbox and click the link to complete your registration.
+                Please check your email inbox and click the link to complete your profile setup.
               </p>
               <Button variant="outline" onClick={() => navigate("/")} className="mt-4">
                 Return to Home
