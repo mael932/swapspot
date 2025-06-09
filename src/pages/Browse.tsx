@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { MapPin, Calendar, Euro, ArrowRightLeft, Search, SlidersHorizontal, Users, Home, Shield, GraduationCap } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import AcademicCalendarPicker from "@/components/AcademicCalendarPicker";
+import SwapCompatibilityIndicator from "@/components/SwapCompatibilityIndicator";
 
 // Mock data for student swaps with university and verification info
 const swapListings = [
@@ -121,6 +122,16 @@ const Browse = () => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [pageTitle, setPageTitle] = useState("Browse Available Swaps");
   const [pageDescription, setPageDescription] = useState("Find your perfect accommodation swap from verified students around the world");
+  
+  // Date filtering state
+  const [userStartDate, setUserStartDate] = useState<Date>();
+  const [userEndDate, setUserEndDate] = useState<Date>();
+
+  const handleDateSelect = (startDate: Date | undefined, endDate: Date | undefined) => {
+    setUserStartDate(startDate);
+    setUserEndDate(endDate);
+    applyFilters();
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,10 +176,21 @@ const Browse = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [selectedUniversity, verificationFilter]);
+  }, [selectedUniversity, verificationFilter, userStartDate, userEndDate]);
+
+  const parseSwapDate = (dateString: string): { startDate: Date; endDate: Date } => {
+    // Parse dates like "Sep 5, 2023 - Feb 20, 2024"
+    const [start, end] = dateString.split(' - ');
+    return {
+      startDate: new Date(start + ', ' + new Date().getFullYear()),
+      endDate: new Date(end)
+    };
+  };
 
   const renderListingCard = (listing: ListingType) => {
     const swapListing = listing as SwapListing;
+    const { startDate, endDate } = parseSwapDate(swapListing.dates);
+    
     return (
       <Card key={swapListing.id} className="overflow-hidden hover:shadow-md transition-shadow">
         <CardHeader className="pb-2">
@@ -212,6 +234,15 @@ const Browse = () => {
               <span>{swapListing.dates}</span>
             </div>
           </div>
+          
+          {/* Compatibility Indicator */}
+          <SwapCompatibilityIndicator
+            userStartDate={userStartDate}
+            userEndDate={userEndDate}
+            swapStartDate={startDate}
+            swapEndDate={endDate}
+            className="mb-4"
+          />
           
           {/* Apartment image */}
           <div className="mb-4 aspect-video rounded-md overflow-hidden">
@@ -283,6 +314,12 @@ const Browse = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">{pageTitle}</h1>
             <p className="text-gray-600">{pageDescription}</p>
+          </div>
+          
+          {/* Academic Calendar Picker */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 className="text-lg font-semibold mb-4">When do you need accommodation?</h2>
+            <AcademicCalendarPicker onDateSelect={handleDateSelect} />
           </div>
           
           {/* Search and filter bar */}
@@ -404,6 +441,8 @@ const Browse = () => {
                 setSearchLocation(''); 
                 setSelectedUniversity('All Universities');
                 setVerificationFilter('all');
+                setUserStartDate(undefined);
+                setUserEndDate(undefined);
                 setDisplayListings(allListings);
               }}>
                 Reset Filters

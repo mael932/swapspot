@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Euro, ArrowRightLeft, Shield, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import SwapCompatibilityIndicator from "./SwapCompatibilityIndicator";
 
 // Updated dummy data with verification info
 const swapListings = [
@@ -82,6 +82,19 @@ const swapListings = [
 export default function FeaturedSwaps() {
   const [visibleSwaps, setVisibleSwaps] = useState(swapListings);
   
+  // For demo purposes, we'll use some sample user dates
+  const sampleUserStartDate = new Date(2023, 8, 15); // Sep 15, 2023
+  const sampleUserEndDate = new Date(2024, 1, 10); // Feb 10, 2024
+
+  const parseSwapDate = (dateString: string): { startDate: Date; endDate: Date } => {
+    // Parse dates like "Sep 5, 2023 - Feb 20, 2024"
+    const [start, end] = dateString.split(' - ');
+    return {
+      startDate: new Date(start + ', ' + new Date().getFullYear()),
+      endDate: new Date(end)
+    };
+  };
+  
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -93,110 +106,123 @@ export default function FeaturedSwaps() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {visibleSwaps.map((swap) => (
-            <Card key={swap.id} className="overflow-hidden hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <img 
-                      src={swap.user.avatar} 
-                      alt={swap.user.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg">{swap.user.name}</CardTitle>
-                        {swap.user.isVerified ? (
-                          <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
-                            <Shield className="h-3 w-3" />
-                            Verified
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
-                            Unverified
-                          </Badge>
+          {visibleSwaps.map((swap) => {
+            const { startDate, endDate } = parseSwapDate(swap.dates);
+            
+            return (
+              <Card key={swap.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={swap.user.avatar} 
+                        alt={swap.user.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-lg">{swap.user.name}</CardTitle>
+                          {swap.user.isVerified ? (
+                            <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                              <Shield className="h-3 w-3" />
+                              Verified
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
+                              Unverified
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <GraduationCap className="h-3 w-3" />
+                          <CardDescription>{swap.user.university}</CardDescription>
+                        </div>
+                        {swap.user.isVerified && swap.user.verificationMethod && (
+                          <p className="text-xs text-green-600">Verified via {swap.user.verificationMethod}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <GraduationCap className="h-3 w-3" />
-                        <CardDescription>{swap.user.university}</CardDescription>
-                      </div>
-                      {swap.user.isVerified && swap.user.verificationMethod && (
-                        <p className="text-xs text-green-600">Verified via {swap.user.verificationMethod}</p>
-                      )}
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="flex items-center justify-between mb-4 pt-2">
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <Calendar className="h-4 w-4 text-swap-blue" />
-                    <span>{swap.dates}</span>
-                  </div>
-                </div>
+                </CardHeader>
                 
-                {/* Apartment image */}
-                <div className="mb-4 aspect-video rounded-md overflow-hidden">
-                  <img 
-                    src={swap.current.image} 
-                    alt={`${swap.current.city} apartment`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-swap-lightBlue rounded-lg p-4">
-                    <h4 className="font-medium mb-2 text-sm uppercase text-gray-500">Current Place</h4>
-                    <div className="mb-2">
-                      <div className="flex items-center gap-1 mb-1">
-                        <MapPin className="h-4 w-4 text-swap-blue" />
-                        <span className="font-medium">{swap.current.city}</span>
-                      </div>
-                      <p className="text-sm text-gray-600">{swap.current.type}</p>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Euro className="h-4 w-4" />
-                      <span>{swap.current.price}</span>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4 pt-2">
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <Calendar className="h-4 w-4 text-swap-blue" />
+                      <span>{swap.dates}</span>
                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="font-medium mb-2 text-sm uppercase text-gray-500">Looking For</h4>
-                    <div className="mb-2">
-                      <div className="flex items-center gap-1 mb-1">
-                        <MapPin className="h-4 w-4 text-swap-blue" />
-                        <span className="font-medium">{swap.wanted.city}</span>
+                  {/* Compatibility Indicator - showing sample compatibility */}
+                  <SwapCompatibilityIndicator
+                    userStartDate={sampleUserStartDate}
+                    userEndDate={sampleUserEndDate}
+                    swapStartDate={startDate}
+                    swapEndDate={endDate}
+                    className="mb-4"
+                  />
+                  
+                  {/* Apartment image */}
+                  <div className="mb-4 aspect-video rounded-md overflow-hidden">
+                    <img 
+                      src={swap.current.image} 
+                      alt={`${swap.current.city} apartment`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-swap-lightBlue rounded-lg p-4">
+                      <h4 className="font-medium mb-2 text-sm uppercase text-gray-500">Current Place</h4>
+                      <div className="mb-2">
+                        <div className="flex items-center gap-1 mb-1">
+                          <MapPin className="h-4 w-4 text-swap-blue" />
+                          <span className="font-medium">{swap.current.city}</span>
+                        </div>
+                        <p className="text-sm text-gray-600">{swap.current.type}</p>
                       </div>
-                      <p className="text-sm text-gray-600">{swap.wanted.type}</p>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Euro className="h-4 w-4" />
+                        <span>{swap.current.price}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Euro className="h-4 w-4" />
-                      <span>{swap.wanted.price}</span>
+                    
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-medium mb-2 text-sm uppercase text-gray-500">Looking For</h4>
+                      <div className="mb-2">
+                        <div className="flex items-center gap-1 mb-1">
+                          <MapPin className="h-4 w-4 text-swap-blue" />
+                          <span className="font-medium">{swap.wanted.city}</span>
+                        </div>
+                        <p className="text-sm text-gray-600">{swap.wanted.type}</p>
+                      </div>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Euro className="h-4 w-4" />
+                        <span>{swap.wanted.price}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {swap.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
                 
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {swap.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-              
-              <CardFooter>
-                <Button asChild className="w-full bg-swap-blue hover:bg-swap-darkBlue">
-                  <Link to={`/swaps/${swap.id}`}>
-                    <ArrowRightLeft className="h-4 w-4 mr-2" />
-                    View Swap Details
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                <CardFooter>
+                  <Button asChild className="w-full bg-swap-blue hover:bg-swap-darkBlue">
+                    <Link to={`/swaps/${swap.id}`}>
+                      <ArrowRightLeft className="h-4 w-4 mr-2" />
+                      View Swap Details
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
         
         <div className="text-center mt-12">

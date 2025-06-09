@@ -139,10 +139,6 @@ const AuPairDetail = () => {
     );
   }
 
-  const favoriteButtonClass = (isFavorited: boolean): string => {
-    return isFavorited ? "bg-purple-50 text-purple-600 border-purple-200" : "";
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -220,8 +216,7 @@ const AuPairDetail = () => {
                   placeholder="I'm interested in your au pair opportunity. I would like to discuss..."
                 />
                 <FavoriteButton 
-                  itemName="au pair opportunity" 
-                  colorClass={favoriteButtonClass}
+                  itemName="au pair opportunity"
                 />
               </div>
               
