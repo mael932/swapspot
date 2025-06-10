@@ -19,6 +19,18 @@ serve(async (req) => {
     const { message, conversationHistory = [] } = await req.json();
 
     console.log('John received message:', message);
+    console.log('OpenAI API Key exists:', !!openAIApiKey);
+    console.log('OpenAI API Key length:', openAIApiKey ? openAIApiKey.length : 0);
+
+    if (!openAIApiKey) {
+      console.error('OpenAI API key is missing');
+      return new Response(JSON.stringify({ 
+        error: 'OpenAI API key is not configured. Please check your Supabase secrets.' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Build the conversation with system prompt
     const messages = [
@@ -49,6 +61,8 @@ Key platform features to mention when relevant:
       { role: 'user', content: message }
     ];
 
+    console.log('Making request to OpenAI with model: gpt-4o-mini');
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -63,14 +77,35 @@ Key platform features to mention when relevant:
       }),
     });
 
+    console.log('OpenAI response status:', response.status);
+
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error details:', errorText);
+      
+      if (response.status === 401) {
+        return new Response(JSON.stringify({ 
+          error: 'OpenAI API key is invalid. Please check your API key in Supabase secrets.' 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } else if (response.status === 429) {
+        return new Response(JSON.stringify({ 
+          error: 'OpenAI API rate limit reached. Please try again in a moment.' 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } else {
+        throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+      }
     }
 
     const data = await response.json();
     const reply = data.choices[0].message.content;
 
-    console.log('John response generated successfully');
+    console.log('John response generated successfully, length:', reply.length);
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
