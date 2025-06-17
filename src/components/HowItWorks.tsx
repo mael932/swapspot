@@ -1,27 +1,27 @@
 
-import { MapPin, Users, Calendar, CheckCircle } from "lucide-react";
+import { Users, Link, School, CheckCircle } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
     {
-      icon: <MapPin className="h-8 w-8 text-swap-blue" />,
-      title: "Select destination & dates",
-      description: "Choose your destination university and study dates to find perfect matches."
+      icon: <School className="h-8 w-8 text-swap-blue" />,
+      title: "Join our student community",
+      description: "Connect with verified university students who share your academic ambitions and housing challenges."
     },
     {
       icon: <Users className="h-8 w-8 text-swap-blue" />,
-      title: "View verified student swaps",
-      description: "Browse accommodation offers from verified students at your destination."
+      title: "Find like-minded matches",
+      description: "Discover students with similar goals, study periods, and housing needs through our intelligent matching system."
     },
     {
-      icon: <Calendar className="h-8 w-8 text-swap-blue" />,
-      title: "Match your dates",
-      description: "Find students whose dates align perfectly with your study period."
+      icon: <Link className="h-8 w-8 text-swap-blue" />,
+      title: "Connect directly",
+      description: "Bridge the gap between students facing the same problems – we facilitate meaningful connections, not transactions."
     },
     {
       icon: <CheckCircle className="h-8 w-8 text-swap-blue" />,
-      title: "Swap and confirm",
-      description: "Connect directly, exchange details, and confirm your housing swap."
+      title: "Build lasting relationships",
+      description: "Form connections that extend beyond housing – create a network of ambitious students worldwide."
     }
   ];
 
@@ -29,9 +29,9 @@ export default function HowItWorks() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">How Student Swaps Work</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Four simple steps to your perfect accommodation exchange
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Connecting Students, Not Just Housing</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            SwapSpot is a bridge between ambitious students who understand each other's challenges and share similar academic goals
           </p>
         </div>
         
@@ -48,6 +48,18 @@ export default function HowItWorks() {
               <p className="text-gray-600">{step.description}</p>
             </div>
           ))}
+        </div>
+        
+        <div className="mt-16 text-center">
+          <div className="bg-swap-lightBlue rounded-lg p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold text-swap-darkBlue mb-4">
+              More Than Housing – We Connect Ambitions
+            </h3>
+            <p className="text-gray-700 text-lg">
+              Every student on SwapSpot shares your drive for academic excellence and understands the unique challenges of studying abroad. 
+              We don't just match accommodations – we connect students with shared values, similar goals, and mutual understanding.
+            </p>
+          </div>
         </div>
       </div>
     </section>
