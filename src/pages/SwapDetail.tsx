@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,12 +5,11 @@ import RoomDetails from "@/components/RoomDetails";
 import StudentProfile from "@/components/StudentProfile";
 import FavoriteButton from "@/components/FavoriteButton";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Users, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactFormDialog from "@/components/shared/ContactFormDialog";
 import SwapAgreementDialog from "@/components/SwapAgreementDialog";
-import InsuranceSupport from "@/components/InsuranceSupport";
 
 interface SwapDetailParams {
   id: string;
@@ -158,171 +156,143 @@ const SwapDetail = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-8">
-          {/* Hero Section with Student & Quick Actions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            {/* Student Profile - Now First */}
-            <div className="lg:col-span-1">
-              <StudentProfile student={mockSwap.host} />
+        <div className="container mx-auto px-4 py-6 max-w-6xl">
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Left Column - Room Details */}
+            <div className="lg:col-span-2">
+              <RoomDetails room={mockSwap.room} />
             </div>
 
-            {/* Quick Summary & Contact Actions - Prominent */}
-            <div className="lg:col-span-2 space-y-4">
-              {/* Quick Summary Card - Larger and More Prominent */}
-              <Card className="border-swap-blue/20 bg-gradient-to-r from-swap-lightBlue/30 to-white">
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <span className="text-swap-blue">Connect with {mockSwap.host.name}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Location</span>
+            {/* Right Column - Student & Contact */}
+            <div className="lg:col-span-1 space-y-4">
+              
+              {/* Price & Quick Info Card */}
+              <Card className="sticky top-4">
+                <CardContent className="p-6">
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-swap-blue mb-1">
+                      {mockSwap.room.pricing.monthlyRent}
+                    </div>
+                    <div className="text-sm text-gray-600">per month</div>
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Location</span>
                       <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm font-medium">{mockSwap.location.city}, {mockSwap.location.country}</span>
+                        <MapPin className="h-4 w-4 text-gray-400" />
+                        <span className="font-medium">{mockSwap.location.city}</span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Duration</span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Duration</span>
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm font-medium">{mockSwap.dates.startDate} - {mockSwap.dates.endDate}</span>
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="font-medium">4 months</span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Monthly Rent</span>
-                      <span className="text-lg font-bold text-swap-blue">{mockSwap.room.pricing.monthlyRent}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Room Type</span>
-                      <Badge variant="outline" className="text-sm border-swap-blue text-swap-blue">{mockSwap.room.type}</Badge>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Room Type</span>
+                      <Badge variant="outline">{mockSwap.room.type}</Badge>
                     </div>
                   </div>
 
-                  {/* Contact Actions - Prominent */}
-                  <div className="border-t pt-4 space-y-3">
-                    <h4 className="font-semibold text-gray-800">Ready to Connect?</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <ContactFormDialog 
-                        recipientName={mockSwap.host.name}
-                        listingTitle={mockSwap.room.title}
-                        listingLocation={`${mockSwap.location.city}, ${mockSwap.location.country}`}
-                        contactInfo={{
-                          instagram: "john_exchange",
-                          whatsapp: "+1 555 123 4567",
-                          snapchat: "johndoe_snap",
-                          email: "john@university-example.edu"
-                        }}
-                        buttonVariant="default"
-                        buttonColor="w-full bg-swap-blue hover:bg-swap-darkBlue"
-                      />
-                      
-                      <SwapAgreementDialog
-                        recipientName={mockSwap.host.name}
-                        listingTitle={mockSwap.room.title}
-                        listingLocation={`${mockSwap.location.city}, ${mockSwap.location.country}`}
-                        listingDates={{
-                          startDate: mockSwap.dates.startDate,
-                          endDate: mockSwap.dates.endDate
-                        }}
-                        userDates={{
-                          startDate: "2025-09-01",
-                          endDate: "2025-12-15"
-                        }}
-                        buttonVariant="secondary"
-                        className="w-full"
-                      />
-                    </div>
+                  {/* Contact Actions */}
+                  <div className="space-y-3">
+                    <ContactFormDialog 
+                      recipientName={mockSwap.host.name}
+                      listingTitle={mockSwap.room.title}
+                      listingLocation={`${mockSwap.location.city}, ${mockSwap.location.country}`}
+                      contactInfo={{
+                        instagram: "john_exchange",
+                        whatsapp: "+1 555 123 4567",
+                        snapchat: "johndoe_snap",
+                        email: "john@university-example.edu"
+                      }}
+                      buttonVariant="default"
+                      buttonColor="w-full bg-swap-blue hover:bg-swap-darkBlue text-lg py-3"
+                    />
+                    
+                    <SwapAgreementDialog
+                      recipientName={mockSwap.host.name}
+                      listingTitle={mockSwap.room.title}
+                      listingLocation={`${mockSwap.location.city}, ${mockSwap.location.country}`}
+                      listingDates={{
+                        startDate: mockSwap.dates.startDate,
+                        endDate: mockSwap.dates.endDate
+                      }}
+                      userDates={{
+                        startDate: "2025-09-01",
+                        endDate: "2025-12-15"
+                      }}
+                      buttonVariant="outline"
+                      className="w-full"
+                    />
                     
                     <FavoriteButton 
                       listingId={mockSwap.id}
-                      variant="outline"
+                      variant="ghost"
                       className="w-full"
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Connection Message */}
-              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              {/* Student Profile - Compact */}
+              <Card>
                 <CardContent className="p-4">
-                  <p className="text-sm text-blue-800 italic text-center">
-                    "SwapSpot connects like-minded students who share similar academic goals and understand the challenges of studying abroad. Connect with {mockSwap.host.name} - a fellow student who gets it!"
+                  <div className="flex items-start gap-3 mb-3">
+                    <img 
+                      src={mockSwap.host.avatar} 
+                      alt={mockSwap.host.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-swap-blue"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold">{mockSwap.host.name}</h3>
+                        {mockSwap.host.isVerified && (
+                          <Shield className="h-4 w-4 text-green-600" />
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">{mockSwap.host.studyProgram}</p>
+                      <p className="text-xs text-gray-500">{mockSwap.host.university}</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-700 mb-3">{mockSwap.host.about}</p>
+                  
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {mockSwap.host.languages.map((language, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {language}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      <span>{mockSwap.stats.views} views</span>
+                    </div>
+                    <div>⭐ Student Verified</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Connection Message - Simplified */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <p className="text-sm text-blue-800 text-center">
+                    Connect with a verified student who understands your exchange experience
                   </p>
                 </CardContent>
               </Card>
             </div>
-          </div>
-
-          {/* Room Details Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-3">
-              <RoomDetails room={mockSwap.room} />
-            </div>
-
-            <div className="space-y-6">
-              {/* Stats */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Interest Stats</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span>Views</span>
-                    <Badge variant="secondary">{mockSwap.stats.views}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Saves</span>
-                    <Badge variant="secondary">{mockSwap.stats.saves}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Shares</span>
-                    <Badge variant="secondary">{mockSwap.stats.shares}</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Student Connection Reminder */}
-              <Card className="border-swap-blue/30">
-                <CardHeader>
-                  <CardTitle className="text-sm text-swap-blue">Why SwapSpot?</CardTitle>
-                </CardHeader>
-                <CardContent className="text-xs space-y-2">
-                  <p>• Connect with verified students</p>
-                  <p>• Shared academic experiences</p>
-                  <p>• Mutual understanding of challenges</p>
-                  <p>• Safe, trusted exchanges</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Safety & Support Section - Bottom */}
-          <div className="mt-16 pt-8 border-t">
-            <InsuranceSupport />
-            
-            {/* Safety Tips */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Safety Tips for Student Connections</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {mockSwap.safety.tips.map((tip, index) => (
-                  <div key={index} className="text-sm text-gray-700">
-                    - {tip}
-                  </div>
-                ))}
-                <div className="flex items-center gap-1 mt-4 pt-2 border-t">
-                  <Badge variant="secondary">Safety Rating: {mockSwap.safety.rating}</Badge>
-                  <span className="text-sm text-gray-500">({mockSwap.safety.reviews} student reviews)</span>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>
