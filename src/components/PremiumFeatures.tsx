@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Shield, Star, Zap } from "lucide-react";
+import { Check, Crown, Shield, Star, Zap, MessageCircle, Users, Eye } from "lucide-react";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
@@ -73,19 +73,31 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
 
   const features = [
     {
-      icon: <Shield className="h-5 w-5" />,
-      title: "Swap Guarantee",
-      description: "Full protection against no-shows and property issues",
+      icon: <MessageCircle className="h-5 w-5" />,
+      title: "Access Contact Information",
+      description: "Get Instagram, WhatsApp, Snapchat handles and email addresses of students",
       premium: true,
+    },
+    {
+      icon: <Users className="h-5 w-5" />,
+      title: "Unlimited Connections",
+      description: "Connect with as many students as you want without restrictions",
+      premium: true,
+    },
+    {
+      icon: <Eye className="h-5 w-5" />,
+      title: "See Who Viewed Your Profile",
+      description: "Track interest in your listings and know who's checking you out",
+      premium: true,
+    },
+    {
+      icon: <Shield className="h-5 w-5" />,
+      title: "Verified Student Network",
+      description: "Access to university-verified students across Europe",
+      premium: false,
     },
     {
       icon: <Star className="h-5 w-5" />,
-      title: "Spotlight Listings",
-      description: "Get your accommodation featured at the top of search results",
-      premium: true,
-    },
-    {
-      icon: <Zap className="h-5 w-5" />,
       title: "Priority Support",
       description: "Get help within 2 hours, 24/7 support available",
       premium: true,
@@ -93,7 +105,7 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
     {
       icon: <Crown className="h-5 w-5" />,
       title: "Premium Badge",
-      description: "Show other users you're a verified premium member",
+      description: "Show other students you're a verified premium member",
       premium: true,
     },
   ];
@@ -125,21 +137,21 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
                   {isPremium ? (
                     <>
                       <Crown className="h-5 w-5 text-yellow-600" />
-                      Premium Plan
+                      Premium Access
                     </>
                   ) : (
-                    "Free Plan"
+                    "Free Browsing"
                   )}
                 </CardTitle>
                 <CardDescription>
                   {isPremium 
-                    ? `Your premium subscription is active${subscriptionData?.subscription_end ? ` until ${new Date(subscriptionData.subscription_end).toLocaleDateString()}` : ''}`
-                    : "Upgrade to unlock premium features and enhance your swapping experience"
+                    ? `You have full access to student contact information${subscriptionData?.subscription_end ? ` until ${new Date(subscriptionData.subscription_end).toLocaleDateString()}` : ''}`
+                    : "Browse student profiles and accommodations. Upgrade to access contact information and connect directly."
                   }
                 </CardDescription>
               </div>
               <Badge variant={isPremium ? "default" : "secondary"}>
-                {isPremium ? "Active" : "Free"}
+                {isPremium ? "Premium" : "Free"}
               </Badge>
             </div>
           </CardHeader>
@@ -152,34 +164,85 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
               ) : (
                 <Button onClick={handleUpgrade} className="bg-yellow-600 hover:bg-yellow-700">
                   <Crown className="h-4 w-4 mr-2" />
-                  Upgrade to Premium - €25/month
+                  Get Premium Access - €25/month
                 </Button>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Premium Features */}
+        {/* How It Works */}
         <Card>
           <CardHeader>
-            <CardTitle>Premium Features</CardTitle>
+            <CardTitle>How SwapSpot Works</CardTitle>
             <CardDescription>
-              Everything you need for a safe and successful swap experience
+              Connecting trusted European university students for accommodation exchanges
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                <div>
+                  <h4 className="font-medium">Browse & Discover</h4>
+                  <p className="text-sm text-gray-600">Find accommodation listings from verified university students across Europe</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                <div>
+                  <h4 className="font-medium">Get Premium Access</h4>
+                  <p className="text-sm text-gray-600">Subscribe to access contact information (Instagram, WhatsApp, Snapchat)</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+                <div>
+                  <h4 className="font-medium">Connect Directly</h4>
+                  <p className="text-sm text-gray-600">Chat with students on their preferred platforms and arrange your accommodation swap</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Features Comparison */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Features Overview</CardTitle>
+            <CardDescription>
+              What you get with each plan
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
-                  <div className={`p-2 rounded-full ${isPremium ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-600'}`}>
+                  <div className={`p-2 rounded-full ${
+                    feature.premium 
+                      ? (isPremium ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-400')
+                      : 'bg-green-100 text-green-600'
+                  }`}>
                     {feature.icon}
                   </div>
                   <div className="flex-grow">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium">{feature.title}</h3>
-                      {isPremium && <Check className="h-4 w-4 text-green-600" />}
+                      <h3 className={`font-medium ${feature.premium && !isPremium ? 'text-gray-500' : ''}`}>
+                        {feature.title}
+                      </h3>
+                      {feature.premium ? (
+                        isPremium ? (
+                          <Check className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <Crown className="h-4 w-4 text-yellow-600" />
+                        )
+                      ) : (
+                        <Check className="h-4 w-4 text-green-600" />
+                      )}
                     </div>
-                    <p className="text-sm text-gray-600">{feature.description}</p>
+                    <p className={`text-sm ${feature.premium && !isPremium ? 'text-gray-500' : 'text-gray-600'}`}>
+                      {feature.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -187,60 +250,26 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
           </CardContent>
         </Card>
 
-        {/* Pricing Comparison */}
-        {!isPremium && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Why Go Premium?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h3 className="font-medium text-gray-900">Free Plan</h3>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Post and browse accommodations
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Basic messaging
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Standard support
-                    </li>
-                  </ul>
-                </div>
-                <div className="space-y-3 p-4 border-2 border-yellow-200 rounded-lg bg-yellow-50">
-                  <h3 className="font-medium text-yellow-800">Premium Plan - €25/month</h3>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Everything in Free
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Swap guarantee protection
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Spotlight your listings
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Priority 24/7 support
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      Premium member badge
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Trust & Safety */}
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-blue-600" />
+              Built on Trust
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-blue-800 mb-3">
+              SwapSpot is designed for European university students who value trust and community. All members are verified through their university email addresses.
+            </p>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• University email verification required</li>
+              <li>• Student-to-student connections only</li>
+              <li>• Safe, familiar social platforms for communication</li>
+              <li>• Community-driven safety guidelines</li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -6,13 +6,11 @@ interface ContactFormDialogProps {
   recipientName: string;
   listingTitle?: string;
   listingLocation?: string;
-  listingDates?: {
-    startDate: string;
-    endDate: string;
-  };
-  userDates?: {
-    startDate: string;
-    endDate: string;
+  contactInfo?: {
+    instagram?: string;
+    whatsapp?: string;
+    snapchat?: string;
+    email?: string;
   };
   buttonVariant?: "default" | "outline" | "destructive" | "secondary" | "ghost" | "link";
   buttonColor?: string;
@@ -24,8 +22,12 @@ const ContactFormDialog = ({
   recipientName,
   listingTitle = "this opportunity",
   listingLocation = "the location",
-  listingDates,
-  userDates,
+  contactInfo = {
+    instagram: "student_exchange_eu",
+    whatsapp: "+31 6 12345678",
+    snapchat: "exchange_student",
+    email: "student@university.edu"
+  },
   buttonVariant = "default", 
   buttonColor = "",
 }: ContactFormDialogProps) => {
@@ -34,8 +36,7 @@ const ContactFormDialog = ({
       recipientName={recipientName}
       listingTitle={listingTitle}
       listingLocation={listingLocation}
-      listingDates={listingDates}
-      userDates={userDates}
+      contactInfo={contactInfo}
       buttonVariant={buttonVariant}
       className={buttonColor}
     />

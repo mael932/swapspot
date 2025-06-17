@@ -1,8 +1,7 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Calendar, MapPin, Clock } from "lucide-react";
+import { MessageCircle, Crown, Instagram, Phone, MessageSquare } from "lucide-react";
 import { 
   Dialog, 
   DialogContent, 
@@ -12,20 +11,21 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useSubscription } from "@/contexts/SubscriptionContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/lib/supabase";
+import { toast } from "@/components/ui/sonner";
 
 interface MessagingDialogProps {
   recipientName: string;
   listingTitle: string;
   listingLocation: string;
-  listingDates?: {
-    startDate: string;
-    endDate: string;
-  };
-  userDates?: {
-    startDate: string;
-    endDate: string;
+  contactInfo?: {
+    instagram?: string;
+    whatsapp?: string;
+    snapchat?: string;
+    email?: string;
   };
   buttonVariant?: "default" | "outline" | "destructive" | "secondary" | "ghost" | "link";
   buttonText?: string;
@@ -36,68 +36,57 @@ export default function MessagingDialog({
   recipientName,
   listingTitle,
   listingLocation,
-  listingDates,
-  userDates,
+  contactInfo,
   buttonVariant = "default",
-  buttonText = "Send Message",
+  buttonText = "View Contact Info",
   className
 }: MessagingDialogProps) {
-  const { toast } = useToast();
-  const [message, setMessage] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const { isPremium, user } = useSubscription();
 
-  const messageTemplates = [
-    {
-      id: "interested",
-      label: "General Interest",
-      icon: <MessageCircle className="h-4 w-4" />,
-      template: `Hi ${recipientName}! I'm interested in your ${listingTitle} listing in ${listingLocation}. I'd love to learn more about the space and discuss a potential swap.`
-    },
-    {
-      id: "dates",
-      label: "Date-Specific Interest", 
-      icon: <Calendar className="h-4 w-4" />,
-      template: userDates ? 
-        `Hi ${recipientName}! I'll be studying abroad from ${new Date(userDates.startDate).toLocaleDateString()} to ${new Date(userDates.endDate).toLocaleDateString()} and would love to swap with your ${listingTitle} in ${listingLocation}. Let me know if these dates work for you!` :
-        `Hi ${recipientName}! I'm planning to study abroad and would love to swap with your ${listingTitle} in ${listingLocation}. Let me know what dates work best for you!`
-    },
-    {
-      id: "questions",
-      label: "Ask Questions",
-      icon: <Clock className="h-4 w-4" />,
-      template: `Hi ${recipientName}! Your ${listingTitle} looks perfect for my study abroad plans. I have a few questions about the space and would love to chat. When would be a good time to connect?`
-    },
-    {
-      id: "offer",
-      label: "Make an Offer",
-      icon: <MapPin className="h-4 w-4" />,
-      template: `Hi ${recipientName}! I have a place to offer in exchange for your ${listingTitle}. I think it could be a great match! Let me share some details about my location and we can discuss further.`
-    }
-  ];
-
-  const handleTemplateSelect = (template: string) => {
-    setMessage(template);
-    setSelectedTemplate(template);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) {
-      toast({
-        title: "Message Required",
-        description: "Please enter a message before sending.",
-        variant: "destructive"
-      });
+  const handleUpgrade = async () => {
+    if (!user) {
+      toast.error("Please log in to upgrade to premium");
       return;
     }
 
-    toast({
-      title: "Message Sent!",
-      description: `Your message has been sent to ${recipientName}. They will receive it in their inbox and can respond directly.`
-    });
-    
-    setMessage("");
-    setSelectedTemplate("");
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error("Checkout error:", error);
+        toast.error("Failed to start checkout. Please try again.");
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      toast.error("An error occurred. Please try again.");
+    }
+  };
+
+  const openSocialLink = (platform: string, handle: string) => {
+    let url = '';
+    switch (platform) {
+      case 'instagram':
+        url = `https://instagram.com/${handle.replace('@', '')}`;
+        break;
+      case 'whatsapp':
+        url = `https://wa.me/${handle.replace(/[^0-9]/g, '')}`;
+        break;
+      case 'snapchat':
+        url = `https://snapchat.com/add/${handle.replace('@', '')}`;
+        break;
+    }
+    if (url) {
+      window.open(url, '_blank');
+    }
   };
 
   return (
@@ -110,85 +99,130 @@ export default function MessagingDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Message {recipientName}</DialogTitle>
+          <DialogTitle>Connect with {recipientName}</DialogTitle>
           <DialogDescription>
-            Send a message about "{listingTitle}" in {listingLocation}
+            Access contact information for "{listingTitle}" in {listingLocation}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Quick Templates */}
-          <div>
-            <label className="text-sm font-medium mb-3 block">Quick Message Templates</label>
-            <div className="grid grid-cols-2 gap-2">
-              {messageTemplates.map((template) => (
-                <Button
-                  key={template.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleTemplateSelect(template.template)}
-                  className="h-auto p-3 flex flex-col items-start gap-1"
-                >
-                  <div className="flex items-center gap-2">
-                    {template.icon}
-                    <span className="text-xs font-medium">{template.label}</span>
+          {isPremium ? (
+            // Show contact information for premium users
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-yellow-600" />
+                  Contact Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {contactInfo?.instagram && (
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Instagram className="h-5 w-5 text-pink-600" />
+                      <span className="font-medium">Instagram</span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => openSocialLink('instagram', contactInfo.instagram!)}
+                    >
+                      @{contactInfo.instagram}
+                    </Button>
                   </div>
+                )}
+                
+                {contactInfo?.whatsapp && (
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-5 w-5 text-green-600" />
+                      <span className="font-medium">WhatsApp</span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => openSocialLink('whatsapp', contactInfo.whatsapp!)}
+                    >
+                      {contactInfo.whatsapp}
+                    </Button>
+                  </div>
+                )}
+                
+                {contactInfo?.snapchat && (
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5 text-yellow-500" />
+                      <span className="font-medium">Snapchat</span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => openSocialLink('snapchat', contactInfo.snapchat!)}
+                    >
+                      @{contactInfo.snapchat}
+                    </Button>
+                  </div>
+                )}
+                
+                {contactInfo?.email && (
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5 text-blue-600" />
+                      <span className="font-medium">Email</span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.open(`mailto:${contactInfo.email}`, '_blank')}
+                    >
+                      {contactInfo.email}
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Trust & Safety:</strong> Remember to verify the person's identity through their university email before meeting. SwapSpot facilitates connections between verified students only.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            // Show upgrade prompt for free users
+            <Card className="border-yellow-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-yellow-600" />
+                  Premium Required
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-600">
+                  To access {recipientName}'s contact information and connect directly, you need a SwapSpot Premium subscription.
+                </p>
+                
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <h4 className="font-medium text-yellow-800 mb-2">What you'll get with Premium:</h4>
+                  <ul className="text-sm text-yellow-700 space-y-1">
+                    <li>• Access to all student contact information</li>
+                    <li>• Instagram, WhatsApp, and Snapchat handles</li>
+                    <li>• Direct communication outside the platform</li>
+                    <li>• Unlimited profile views and connections</li>
+                    <li>• Priority support and verification</li>
+                  </ul>
+                </div>
+
+                <Button onClick={handleUpgrade} className="w-full bg-yellow-600 hover:bg-yellow-700">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade to Premium - €25/month
                 </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Date compatibility info */}
-          {listingDates && userDates && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-800">Date Compatibility</span>
-              </div>
-              <div className="space-y-1 text-xs">
-                <div>
-                  <span className="text-gray-600">Your dates: </span>
-                  <span className="font-medium">
-                    {new Date(userDates.startDate).toLocaleDateString()} - {new Date(userDates.endDate).toLocaleDateString()}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Their dates: </span>
-                  <span className="font-medium">
-                    {new Date(listingDates.startDate).toLocaleDateString()} - {new Date(listingDates.endDate).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
+                
+                <p className="text-xs text-center text-gray-500">
+                  Trusted by European university students • Cancel anytime
+                </p>
+              </CardContent>
+            </Card>
           )}
-
-          {/* Message form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="message" className="text-sm font-medium mb-2 block">
-                Your Message
-              </label>
-              <Textarea
-                id="message"
-                placeholder="Type your message here..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={6}
-                className="w-full"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Your contact information will be shared so they can respond directly.
-              </p>
-            </div>
-
-            <DialogFooter>
-              <Button type="submit" className="w-full">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Send Message
-              </Button>
-            </DialogFooter>
-          </form>
         </div>
       </DialogContent>
     </Dialog>
