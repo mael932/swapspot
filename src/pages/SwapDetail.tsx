@@ -1,15 +1,16 @@
-import React from "react";
+
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RoomDetails from "@/components/RoomDetails";
-import StudentProfile from "@/components/StudentProfile";
 import FavoriteButton from "@/components/FavoriteButton";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Users, Shield } from "lucide-react";
+import { MapPin, Calendar, Shield, Users, Star } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactFormDialog from "@/components/shared/ContactFormDialog";
 import SwapAgreementDialog from "@/components/SwapAgreementDialog";
+import MessagingDialog from "@/components/MessagingDialog";
 
 interface SwapDetailParams {
   id: string;
@@ -81,13 +82,18 @@ interface MockSwap {
 const SwapDetail = () => {
   const { id } = useParams<{ id: string }>();
 
-  // Mock data for the swap detail page
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Mock data with working image URLs
   const mockSwap: MockSwap = {
     id: id || "1",
     host: {
       id: "1",
       name: "John Doe",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00d5a4ee9baa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       university: "University of Example",
       studyProgram: "Computer Science",
       yearOfStudy: "3rd Year",
@@ -104,10 +110,10 @@ const SwapDetail = () => {
       title: "Cozy Studio Apartment",
       type: "Studio",
       images: [
-        "https://images.unsplash.com/photo-1615874955480-11278309c194?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fHN0dWRlbnQlMjByb29tfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-        "https://images.unsplash.com/photo-1588072432829-3f42f6506e96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fHN0dWRlbnQlMjByb29tfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-        "https://images.unsplash.com/photo-1541444445040-625243592752?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fHN0dWRlbnQlMjByb29tfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
-        "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjR8fHN0dWRlbnQlMjByb29tfGVufDB8fDB8fA%3D%3D&w=1000&q=80",
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&w=800&q=80",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&w=800&q=80",
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&w=800&q=80",
+        "https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&w=800&q=80",
       ],
       pricing: {
         monthlyRent: "$1200",
@@ -204,7 +210,7 @@ const SwapDetail = () => {
 
                   {/* Contact Actions */}
                   <div className="space-y-3">
-                    <ContactFormDialog 
+                    <MessagingDialog 
                       recipientName={mockSwap.host.name}
                       listingTitle={mockSwap.room.title}
                       listingLocation={`${mockSwap.location.city}, ${mockSwap.location.country}`}
@@ -215,7 +221,8 @@ const SwapDetail = () => {
                         email: "john@university-example.edu"
                       }}
                       buttonVariant="default"
-                      buttonColor="w-full bg-swap-blue hover:bg-swap-darkBlue text-lg py-3"
+                      buttonText="View Contact Info"
+                      className="w-full bg-swap-blue hover:bg-swap-darkBlue text-lg py-3"
                     />
                     
                     <SwapAgreementDialog
@@ -251,6 +258,10 @@ const SwapDetail = () => {
                       src={mockSwap.host.avatar} 
                       alt={mockSwap.host.name}
                       className="w-12 h-12 rounded-full object-cover border-2 border-swap-blue"
+                      onError={(e) => {
+                        console.log(`Failed to load student avatar: ${mockSwap.host.avatar}`);
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face";
+                      }}
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -279,12 +290,15 @@ const SwapDetail = () => {
                       <Users className="h-3 w-3" />
                       <span>{mockSwap.stats.views} views</span>
                     </div>
-                    <div>⭐ Student Verified</div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 w-3" />
+                      <span>Student Verified</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Connection Message - Simplified */}
+              {/* Connection Message */}
               <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="p-4">
                   <p className="text-sm text-blue-800 text-center">
