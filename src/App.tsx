@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +26,7 @@ import Careers from "./pages/Careers";
 import Support from "./pages/Support";
 import Onboarding from "./pages/Onboarding";
 import Community from "./pages/Community";
+import HelpTips from "./pages/HelpTips";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import FloatingChatTab from "./components/FloatingChatTab";
 
@@ -110,6 +112,7 @@ const App = () => {
               <Route path="/careers" element={<Careers />} />
               <Route path="/support" element={<Support />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/help-tips" element={<HelpTips />} />
               <Route path="/aupair" element={<Browse />} />
               <Route path="/rentals" element={<Browse />} />
               <Route path="*" element={<NotFound />} />

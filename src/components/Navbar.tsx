@@ -56,6 +56,9 @@ const Navbar = () => {
                 <Link to="/post-place">Post a Place</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
+                <Link to="/help-tips">Help & Tips</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link to="#" onClick={handleLoginClick}>Log In</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -108,6 +111,13 @@ const Navbar = () => {
                   <NavigationMenuLink>
                     <Link to="/how-it-works" className={navigationMenuTriggerStyle()}>
                       How it Works
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink>
+                    <Link to="/help-tips" className={navigationMenuTriggerStyle()}>
+                      Help & Tips
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
