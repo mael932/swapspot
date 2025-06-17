@@ -75,6 +75,10 @@ export default function RoomDetails({ room, className }: RoomDetailsProps) {
               src={room.images[activeImageIndex]} 
               alt={`${room.title} - Image ${activeImageIndex + 1}`}
               className="w-full h-full object-cover rounded-t-lg"
+              onError={(e) => {
+                console.log(`Failed to load main image: ${room.images[activeImageIndex]}`);
+                e.currentTarget.src = "https://images.unsplash.com/photo-1615874955480-11278309c194?ixlib=rb-4.0.3&w=1000&q=80";
+              }}
             />
             <div className="absolute top-4 right-4">
               <Badge variant="secondary" className="bg-black/70 text-white">
@@ -88,14 +92,18 @@ export default function RoomDetails({ room, className }: RoomDetailsProps) {
                 <button 
                   key={index}
                   onClick={() => setActiveImageIndex(index)}
-                  className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ${
-                    index === activeImageIndex ? 'ring-2 ring-swap-blue' : ''
+                  className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 transition-all ${
+                    index === activeImageIndex ? 'border-swap-blue' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <img 
                     src={image} 
                     alt={`Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.log(`Failed to load thumbnail: ${image}`);
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1615874955480-11278309c194?ixlib=rb-4.0.3&w=200&q=80";
+                    }}
                   />
                 </button>
               ))}
