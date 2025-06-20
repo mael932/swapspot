@@ -5,7 +5,7 @@ import { User } from "@supabase/supabase-js";
 
 interface SubscriptionData {
   subscribed: boolean;
-  subscription_tier: 'free' | 'premium';
+  subscription_tier: 'free' | 'basic' | 'premium' | 'elite';
   subscription_end?: string;
 }
 
@@ -14,6 +14,8 @@ interface SubscriptionContextType {
   loading: boolean;
   refreshSubscription: () => Promise<void>;
   isPremium: boolean;
+  isBasic: boolean;
+  isElite: boolean;
   user: User | null;
 }
 
@@ -82,6 +84,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const isPremium = subscriptionData?.subscription_tier === 'premium' && subscriptionData?.subscribed;
+  const isBasic = subscriptionData?.subscription_tier === 'basic' && subscriptionData?.subscribed;
+  const isElite = subscriptionData?.subscription_tier === 'elite' && subscriptionData?.subscribed;
 
   return (
     <SubscriptionContext.Provider value={{
@@ -89,6 +93,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       loading,
       refreshSubscription,
       isPremium,
+      isBasic,
+      isElite,
       user
     }}>
       {children}

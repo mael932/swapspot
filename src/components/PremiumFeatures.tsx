@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Shield, Star, Zap, MessageCircle, Users, Eye } from "lucide-react";
+import { Check, Crown, Shield, Star, Zap, MessageCircle, Users, Eye, X } from "lucide-react";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
@@ -15,14 +15,15 @@ interface PremiumFeaturesProps {
 export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
   const { subscriptionData, isPremium, loading, user } = useSubscription();
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = async (tier: 'basic' | 'premium' | 'elite') => {
     if (!user) {
-      toast.error("Please log in to upgrade to premium");
+      toast.error("Please log in to upgrade your subscription");
       return;
     }
 
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { tier },
         headers: {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
@@ -35,7 +36,7 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
       }
 
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
       }
     } catch (error) {
       console.error("Error creating checkout:", error);
@@ -71,44 +72,98 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
     }
   };
 
-  const features = [
+  const subscriptionTiers = [
     {
-      icon: <MessageCircle className="h-5 w-5" />,
-      title: "Access Contact Information",
-      description: "Get Instagram, WhatsApp, Snapchat handles and email addresses of students",
-      premium: true,
+      id: 'free',
+      name: 'Free Browsing',
+      price: '€0',
+      period: 'forever',
+      description: 'Browse student profiles and accommodations',
+      features: [
+        { name: 'Browse all listings', included: true },
+        { name: 'View student profiles', included: true },
+        { name: 'University verification', included: true },
+        { name: 'Basic safety guidelines', included: true },
+        { name: 'Contact information access', included: false },
+        { name: 'Direct messaging', included: false },
+        { name: 'Priority support', included: false },
+        { name: 'Profile views tracking', included: false },
+        { name: 'Premium badge', included: false },
+        { name: 'Advanced matching', included: false },
+        { name: 'Swap guarantee', included: false },
+      ],
+      buttonText: 'Current Plan',
+      highlight: false,
     },
     {
-      icon: <Users className="h-5 w-5" />,
-      title: "Unlimited Connections",
-      description: "Connect with as many students as you want without restrictions",
-      premium: true,
+      id: 'basic',
+      name: 'Basic Connect',
+      price: '€15',
+      period: '/month',
+      description: 'Connect with up to 5 students per month',
+      features: [
+        { name: 'Everything in Free', included: true },
+        { name: '5 contact reveals per month', included: true },
+        { name: 'Direct messaging (5 chats/month)', included: true },
+        { name: 'Email support', included: true },
+        { name: 'Profile views tracking', included: true },
+        { name: 'Premium badge', included: false },
+        { name: 'Priority support', included: false },
+        { name: 'Advanced matching', included: false },
+        { name: 'Swap guarantee', included: false },
+        { name: 'Spotlighted listings', included: false },
+        { name: 'Unlimited connections', included: false },
+      ],
+      buttonText: 'Get Basic',
+      highlight: false,
     },
     {
-      icon: <Eye className="h-5 w-5" />,
-      title: "See Who Viewed Your Profile",
-      description: "Track interest in your listings and know who's checking you out",
-      premium: true,
+      id: 'premium',
+      name: 'Premium Connect',
+      price: '€25',
+      period: '/month',
+      description: 'Unlimited connections with premium features',
+      features: [
+        { name: 'Everything in Basic', included: true },
+        { name: 'Unlimited contact reveals', included: true },
+        { name: 'Unlimited direct messaging', included: true },
+        { name: 'Priority support (2h response)', included: true },
+        { name: 'Advanced matching algorithm', included: true },
+        { name: 'Premium badge', included: true },
+        { name: 'Profile boost (2x visibility)', included: true },
+        { name: 'Swap guarantee protection', included: false },
+        { name: 'Spotlighted listings', included: false },
+        { name: 'Concierge service', included: false },
+        { name: 'Legal assistance', included: false },
+      ],
+      buttonText: 'Get Premium',
+      highlight: true,
     },
     {
-      icon: <Shield className="h-5 w-5" />,
-      title: "Verified Student Network",
-      description: "Access to university-verified students across Europe",
-      premium: false,
-    },
-    {
-      icon: <Star className="h-5 w-5" />,
-      title: "Priority Support",
-      description: "Get help within 2 hours, 24/7 support available",
-      premium: true,
-    },
-    {
-      icon: <Crown className="h-5 w-5" />,
-      title: "Premium Badge",
-      description: "Show other students you're a verified premium member",
-      premium: true,
+      id: 'elite',
+      name: 'Elite Experience',
+      price: '€45',
+      period: '/month',
+      description: 'Everything included with VIP treatment',
+      features: [
+        { name: 'Everything in Premium', included: true },
+        { name: 'Swap guarantee protection', included: true },
+        { name: 'Spotlighted listings (top placement)', included: true },
+        { name: 'Personal concierge service', included: true },
+        { name: 'Legal assistance & contracts', included: true },
+        { name: '24/7 priority support', included: true },
+        { name: 'Custom matching preferences', included: true },
+        { name: 'Exclusive events access', included: true },
+        { name: 'Travel insurance discount', included: true },
+        { name: 'Multi-city planning', included: true },
+        { name: 'VIP badge', included: true },
+      ],
+      buttonText: 'Get Elite',
+      highlight: false,
     },
   ];
+
+  const currentTier = subscriptionData?.subscription_tier || 'free';
 
   if (loading) {
     return (
@@ -127,31 +182,45 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
 
   return (
     <div className={className}>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Current Plan Status */}
         <Card className={isPremium ? "border-yellow-200 bg-yellow-50" : ""}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  {isPremium ? (
+                  {currentTier === 'elite' ? (
+                    <>
+                      <Crown className="h-5 w-5 text-purple-600" />
+                      Elite Experience
+                    </>
+                  ) : currentTier === 'premium' ? (
                     <>
                       <Crown className="h-5 w-5 text-yellow-600" />
-                      Premium Access
+                      Premium Connect
+                    </>
+                  ) : currentTier === 'basic' ? (
+                    <>
+                      <Star className="h-5 w-5 text-blue-600" />
+                      Basic Connect
                     </>
                   ) : (
                     "Free Browsing"
                   )}
                 </CardTitle>
                 <CardDescription>
-                  {isPremium 
-                    ? `You have full access to student contact information${subscriptionData?.subscription_end ? ` until ${new Date(subscriptionData.subscription_end).toLocaleDateString()}` : ''}`
-                    : "Browse student profiles and accommodations. Upgrade to access contact information and connect directly."
+                  {currentTier === 'elite' 
+                    ? `You have elite access with all features${subscriptionData?.subscription_end ? ` until ${new Date(subscriptionData.subscription_end).toLocaleDateString()}` : ''}`
+                    : currentTier === 'premium'
+                    ? `You have unlimited connections and premium features${subscriptionData?.subscription_end ? ` until ${new Date(subscriptionData.subscription_end).toLocaleDateString()}` : ''}`
+                    : currentTier === 'basic'
+                    ? `You can connect with up to 5 students per month${subscriptionData?.subscription_end ? ` until ${new Date(subscriptionData.subscription_end).toLocaleDateString()}` : ''}`
+                    : "Browse student profiles and accommodations. Upgrade to start connecting directly."
                   }
                 </CardDescription>
               </div>
               <Badge variant={isPremium ? "default" : "secondary"}>
-                {isPremium ? "Premium" : "Free"}
+                {currentTier === 'elite' ? 'Elite' : currentTier === 'premium' ? 'Premium' : currentTier === 'basic' ? 'Basic' : 'Free'}
               </Badge>
             </div>
           </CardHeader>
@@ -162,88 +231,83 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
                   Manage Subscription
                 </Button>
               ) : (
-                <Button onClick={handleUpgrade} className="bg-yellow-600 hover:bg-yellow-700">
-                  <Crown className="h-4 w-4 mr-2" />
-                  Get Premium Access - €25/month
+                <Button onClick={() => handleUpgrade('basic')} className="bg-blue-600 hover:bg-blue-700">
+                  <Star className="h-4 w-4 mr-2" />
+                  Start with Basic - €15/month
                 </Button>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* How It Works */}
+        {/* Subscription Plans */}
         <Card>
           <CardHeader>
-            <CardTitle>How SwapSpot Works</CardTitle>
+            <CardTitle>Choose Your Plan</CardTitle>
             <CardDescription>
-              Connecting trusted European university students for accommodation exchanges
+              Select the plan that best fits your student accommodation needs
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">1</div>
-                <div>
-                  <h4 className="font-medium">Browse & Discover</h4>
-                  <p className="text-sm text-gray-600">Find accommodation listings from verified university students across Europe</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm font-medium">2</div>
-                <div>
-                  <h4 className="font-medium">Get Premium Access</h4>
-                  <p className="text-sm text-gray-600">Subscribe to access contact information (Instagram, WhatsApp, Snapchat)</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">3</div>
-                <div>
-                  <h4 className="font-medium">Connect Directly</h4>
-                  <p className="text-sm text-gray-600">Chat with students on their preferred platforms and arrange your accommodation swap</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Features Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Features Overview</CardTitle>
-            <CardDescription>
-              What you get with each plan
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
-                  <div className={`p-2 rounded-full ${
-                    feature.premium 
-                      ? (isPremium ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-400')
-                      : 'bg-green-100 text-green-600'
-                  }`}>
-                    {feature.icon}
-                  </div>
-                  <div className="flex-grow">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className={`font-medium ${feature.premium && !isPremium ? 'text-gray-500' : ''}`}>
-                        {feature.title}
-                      </h3>
-                      {feature.premium ? (
-                        isPremium ? (
-                          <Check className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <Crown className="h-4 w-4 text-yellow-600" />
-                        )
-                      ) : (
-                        <Check className="h-4 w-4 text-green-600" />
-                      )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {subscriptionTiers.map((tier) => (
+                <div
+                  key={tier.id}
+                  className={`relative rounded-lg border p-6 ${
+                    tier.highlight
+                      ? 'border-yellow-300 bg-yellow-50 ring-2 ring-yellow-300'
+                      : currentTier === tier.id
+                      ? 'border-green-300 bg-green-50'
+                      : 'border-gray-200'
+                  }`}
+                >
+                  {tier.highlight && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-yellow-600 text-white">Most Popular</Badge>
                     </div>
-                    <p className={`text-sm ${feature.premium && !isPremium ? 'text-gray-500' : 'text-gray-600'}`}>
-                      {feature.description}
-                    </p>
+                  )}
+                  {currentTier === tier.id && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-green-600 text-white">Current Plan</Badge>
+                    </div>
+                  )}
+                  
+                  <div className="text-center mb-4">
+                    <h3 className="text-lg font-semibold mb-2">{tier.name}</h3>
+                    <div className="mb-2">
+                      <span className="text-3xl font-bold">{tier.price}</span>
+                      <span className="text-gray-500">{tier.period}</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{tier.description}</p>
                   </div>
+
+                  <ul className="space-y-2 mb-6">
+                    {tier.features.map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2 text-sm">
+                        {feature.included ? (
+                          <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                        ) : (
+                          <X className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        )}
+                        <span className={feature.included ? '' : 'text-gray-500'}>
+                          {feature.name}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    className="w-full"
+                    variant={currentTier === tier.id ? "outline" : tier.highlight ? "default" : "outline"}
+                    disabled={currentTier === tier.id}
+                    onClick={() => {
+                      if (tier.id !== 'free' && currentTier !== tier.id) {
+                        handleUpgrade(tier.id as 'basic' | 'premium' | 'elite');
+                      }
+                    }}
+                  >
+                    {currentTier === tier.id ? 'Current Plan' : tier.buttonText}
+                  </Button>
                 </div>
               ))}
             </div>
@@ -267,6 +331,7 @@ export default function PremiumFeatures({ className }: PremiumFeaturesProps) {
               <li>• Student-to-student connections only</li>
               <li>• Safe, familiar social platforms for communication</li>
               <li>• Community-driven safety guidelines</li>
+              <li>• Swap guarantee for Premium+ members</li>
             </ul>
           </CardContent>
         </Card>
