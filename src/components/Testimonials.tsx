@@ -5,21 +5,21 @@ export default function Testimonials() {
   const testimonials = [
     {
       id: 1,
-      quote: "SwapSpot connected me with Emma, who was also doing her semester abroad for the first time. We understood each other's anxieties and excitement – it felt like connecting with a friend, not just a housing swap.",
+      quote: "I was dreading spending weeks searching for a housing swap. SwapSpot found my perfect match in just 3 days without me having to do anything. They literally did all the work while I focused on preparing for my semester abroad.",
       name: "Marco Rodriguez",
       role: "Business Student, Universitat Pompeu Fabra",
       avatar: "https://i.pravatar.cc/150?img=53"
     },
     {
       id: 2,
-      quote: "What I love about SwapSpot is that everyone here shares the same ambition – making the most of their exchange. We're all students who understand the challenges and support each other.",
+      quote: "Finally, a service that actually works FOR students instead of making us work. I got three perfect matches delivered to my email - no browsing, no endless scrolling. SwapSpot did everything.",
       name: "Sophie Chen",
       role: "International Relations, LSE",
       avatar: "https://i.pravatar.cc/150?img=20"
     },
     {
       id: 3,
-      quote: "Through SwapSpot, I didn't just find accommodation – I found a network of like-minded students. We stay in touch and support each other's academic goals even after our exchanges ended.",
+      quote: "The best part? I literally did nothing except fill out my preferences once. SwapSpot's system found my ideal housing partner and handled all the matching. I could focus entirely on my studies.",
       name: "Emma Thompson",
       role: "Medical Student, King's College London",
       avatar: "https://i.pravatar.cc/150?img=32"
@@ -30,9 +30,9 @@ export default function Testimonials() {
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Students Connecting with Students</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Students Love How We Work For Them</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Hear from ambitious students who found more than housing – they found a community of peers who understand their journey.
+            Hear from students who saved dozens of hours by letting SwapSpot handle all the searching and matching work.
           </p>
         </div>
         
@@ -63,11 +63,12 @@ export default function Testimonials() {
         <div className="mt-16 text-center">
           <div className="bg-swap-blue rounded-lg p-8 text-white max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold mb-4">
-              Connecting Dreams, Not Just Dorms
+              We Do The Heavy Lifting, You Get The Results
             </h3>
             <p className="text-lg text-white/90">
-              Every connection on SwapSpot is between students who share your passion for learning, your courage to study abroad, 
-              and your determination to make the most of every opportunity. We bridge the gap between like-minded ambitious students worldwide.
+              Every day, our system processes thousands of student profiles, analyzes compatibility factors, and identifies perfect matches. 
+              While you sleep, study, or enjoy your life, we're working 24/7 to find your ideal housing partner. 
+              <span className="font-semibold"> That's the SwapSpot difference - maximum results with zero effort from you.</span>
             </p>
           </div>
         </div>
