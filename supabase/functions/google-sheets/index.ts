@@ -21,6 +21,19 @@ interface UserData {
   hasUploadedProof: boolean;
   verificationMethod: string;
   createdAt: string;
+  // New apartment details
+  apartmentTitle: string;
+  apartmentLocation: string;
+  apartmentPrice: number;
+  apartmentBedrooms: string;
+  apartmentSurface: string;
+  apartmentDescription: string;
+  apartmentAmenities: string[];
+  // New preferences
+  preferredCountries: string[];
+  preferredAmenities: string[];
+  minBedrooms: string;
+  minSurface: string;
 }
 
 serve(async (req) => {
@@ -40,7 +53,7 @@ serve(async (req) => {
       throw new Error('Missing Google Sheets configuration');
     }
 
-    // Prepare row data for Google Sheets
+    // Prepare row data for Google Sheets with expanded columns
     const rowData = [
       userData.createdAt,
       userData.email,
@@ -56,6 +69,19 @@ serve(async (req) => {
       userData.amenities.join(', '),
       userData.hasUploadedProof ? 'Yes' : 'No',
       userData.verificationMethod,
+      // Apartment details
+      userData.apartmentTitle,
+      userData.apartmentLocation,
+      userData.apartmentPrice.toString(),
+      userData.apartmentBedrooms,
+      userData.apartmentSurface,
+      userData.apartmentDescription,
+      userData.apartmentAmenities.join(', '),
+      // Preferences
+      userData.preferredCountries.join(', '),
+      userData.preferredAmenities.join(', '),
+      userData.minBedrooms,
+      userData.minSurface,
     ];
 
     // Add data to Google Sheet

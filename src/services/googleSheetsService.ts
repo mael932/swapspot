@@ -14,6 +14,19 @@ interface UserData {
   hasUploadedProof: boolean;
   verificationMethod: string;
   createdAt: string;
+  // New apartment details
+  apartmentTitle: string;
+  apartmentLocation: string;
+  apartmentPrice: number;
+  apartmentBedrooms: string;
+  apartmentSurface: string;
+  apartmentDescription: string;
+  apartmentAmenities: string[];
+  // New preferences
+  preferredCountries: string[];
+  preferredAmenities: string[];
+  minBedrooms: string;
+  minSurface: string;
 }
 
 export const addUserToGoogleSheet = async (userData: UserData) => {
@@ -43,15 +56,28 @@ export const formatUserDataForSheet = (signupData: any, onboardingData?: any): U
     fullName: signupData.fullName || '',
     university: signupData.university || onboardingData?.university || '',
     program: onboardingData?.program || '',
-    startDate: onboardingData?.preferredDates?.startDate || '',
-    endDate: onboardingData?.preferredDates?.endDate || '',
+    startDate: signupData.preferences?.startDate || onboardingData?.preferredDates?.startDate || '',
+    endDate: signupData.preferences?.endDate || onboardingData?.preferredDates?.endDate || '',
     minPrice: onboardingData?.requirements?.priceRange?.min || 0,
-    maxPrice: onboardingData?.requirements?.priceRange?.max || 0,
+    maxPrice: parseInt(signupData.preferences?.maxPrice) || onboardingData?.requirements?.priceRange?.max || 0,
     location: onboardingData?.requirements?.location || '',
     accommodationType: onboardingData?.requirements?.accommodationType || '',
     amenities: onboardingData?.requirements?.amenities || [],
     hasUploadedProof: signupData.hasUploadedProof || false,
     verificationMethod: onboardingData?.verificationMethod || '',
     createdAt: new Date().toISOString(),
+    // Apartment details
+    apartmentTitle: signupData.apartmentDetails?.title || '',
+    apartmentLocation: signupData.apartmentDetails?.location || '',
+    apartmentPrice: parseInt(signupData.apartmentDetails?.price) || 0,
+    apartmentBedrooms: signupData.apartmentDetails?.bedrooms || '',
+    apartmentSurface: signupData.apartmentDetails?.surface || '',
+    apartmentDescription: signupData.apartmentDetails?.description || '',
+    apartmentAmenities: signupData.apartmentDetails?.amenities || [],
+    // Preferences
+    preferredCountries: signupData.preferences?.preferredCountries || [],
+    preferredAmenities: signupData.preferences?.preferredAmenities || [],
+    minBedrooms: signupData.preferences?.minBedrooms || '',
+    minSurface: signupData.preferences?.minSurface || '',
   };
 };
