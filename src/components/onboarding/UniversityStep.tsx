@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { OnboardingData } from "./OnboardingFlow";
+import { GraduationCap } from "lucide-react";
 
 interface UniversityStepProps {
   data: OnboardingData;
@@ -42,18 +43,19 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
   ];
 
   const programs = [
-    "Computer Science",
-    "Business Administration", 
-    "International Relations",
-    "Engineering",
-    "Medicine",
-    "Law",
-    "Economics",
-    "Psychology",
-    "Architecture",
-    "Art & Design",
-    "Exchange Program",
-    "Other"
+    "Exchange Program - Computer Science",
+    "Exchange Program - Business Administration", 
+    "Exchange Program - International Relations",
+    "Exchange Program - Engineering",
+    "Exchange Program - Medicine",
+    "Exchange Program - Law",
+    "Exchange Program - Economics",
+    "Exchange Program - Psychology",
+    "Exchange Program - Architecture",
+    "Exchange Program - Art & Design",
+    "Erasmus+ Exchange",
+    "Study Abroad Program",
+    "Other Exchange Program"
   ];
 
   const canProceed = data.university && data.program;
@@ -61,16 +63,20 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold mb-2">Tell us about your studies</h3>
-        <p className="text-gray-600">This helps us find the best matches for your academic schedule</p>
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <GraduationCap className="h-6 w-6 text-swap-blue" />
+          <span className="text-swap-blue font-semibold">Exchange Student Information</span>
+        </div>
+        <h3 className="text-lg font-semibold mb-2">Tell us about your exchange studies</h3>
+        <p className="text-gray-600">This helps us find the best matches for your study abroad experience and academic schedule</p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="university">University</Label>
+          <Label htmlFor="university">Your Home University</Label>
           <Select value={data.university} onValueChange={(value) => onUpdate({ university: value })}>
             <SelectTrigger>
-              <SelectValue placeholder="Select your university" />
+              <SelectValue placeholder="Select your home university" />
             </SelectTrigger>
             <SelectContent>
               {universities.map((uni) => (
@@ -80,13 +86,14 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
               ))}
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-500 mt-1">The university you're currently enrolled at</p>
         </div>
 
         <div>
-          <Label htmlFor="program">Program/Field of Study</Label>
+          <Label htmlFor="program">Exchange Program/Field of Study</Label>
           <Select value={data.program} onValueChange={(value) => onUpdate({ program: value })}>
             <SelectTrigger>
-              <SelectValue placeholder="Select your program" />
+              <SelectValue placeholder="Select your exchange program" />
             </SelectTrigger>
             <SelectContent>
               {programs.map((program) => (
@@ -96,6 +103,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
               ))}
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-500 mt-1">Your field of study for the exchange program</p>
         </div>
       </div>
 
@@ -105,7 +113,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
           disabled={!canProceed || !canGoNext}
           className="px-8"
         >
-          Continue
+          Continue to Exchange Dates
         </Button>
       </div>
     </div>
