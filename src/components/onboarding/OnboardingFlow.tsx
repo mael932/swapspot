@@ -1,8 +1,11 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 import UniversityStep from "./UniversityStep";
 import DatesStep from "./DatesStep";
 import RequirementsStep from "./RequirementsStep";
@@ -33,6 +36,7 @@ export interface OnboardingData {
 
 const OnboardingFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const navigate = useNavigate();
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     university: "",
     program: "",
@@ -68,6 +72,27 @@ const OnboardingFlow = () => {
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+    } else {
+      // Complete onboarding
+      handleCompleteOnboarding();
+    }
+  };
+
+  const handleCompleteOnboarding = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Mark onboarding as completed
+        localStorage.setItem(`onboarding_completed_${user.id}`, 'true');
+        localStorage.setItem(`onboarding_data_${user.id}`, JSON.stringify(onboardingData));
+      }
+      
+      // Redirect to browse page to see matches
+      navigate("/browse");
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      // Still redirect even if there's an error
+      navigate("/browse");
     }
   };
 

@@ -1,10 +1,11 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Mail, Lock, User, Upload } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Loader2, LogIn, UserPlus } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/lib/supabase";
 
@@ -12,102 +13,122 @@ interface LoginFormProps {
   onMagicLinkSent: (email: string) => void;
 }
 
-const LoginForm = ({ onMagicLinkSent }: LoginFormProps) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!email || !password) {
-      setError("Please enter both email and password");
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      setError("Please enter a valid email address");
       return;
     }
-    
-    // Clear any previous errors
+
+    if (!isLogin && password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
+    if (!isLogin && password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
     setError("");
     setIsLoading(true);
-    
+
     try {
-      if (isSignUp) {
+      if (isLogin) {
+        // Login flow
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          if (error.message.includes("Email not confirmed")) {
+            setError("Please check your email and click the confirmation link before logging in.");
+          } else if (error.message.includes("Invalid login credentials")) {
+            setError("Invalid email or password. Please try again.");
+          } else {
+            setError(error.message);
+          }
+          return;
+        }
+
+        if (data.user) {
+          toast.success("Welcome back!", {
+            description: "You've been logged in successfully"
+          });
+          
+          // Check if user has completed onboarding
+          const hasCompletedOnboarding = localStorage.getItem(`onboarding_completed_${data.user.id}`);
+          
+          if (!hasCompletedOnboarding) {
+            // Redirect to onboarding if not completed
+            navigate("/onboarding");
+          } else {
+            // Redirect to home if onboarding is completed
+            navigate("/");
+          }
+        }
+      } else {
         // Sign up flow
-        const { data, error: signUpError } = await supabase.auth.signUp({
+        const redirectUrl = `${window.location.origin}/`;
+        
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/browse`,
-          },
+            emailRedirectTo: redirectUrl,
+            data: {
+              full_name: fullName,
+              has_uploaded_proof: !!file
+            }
+          }
         });
-        
-        if (signUpError) {
-          console.error("Sign up error:", signUpError);
-          setError(signUpError.message);
-        } else if (data?.user) {
-          toast.success("Account created successfully!", {
-            description: "Please check your email to verify your account"
-          });
-          // Switch to login mode after successful signup
-          setIsSignUp(false);
+
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            setError("An account with this email already exists. Please try logging in instead.");
+          } else {
+            setError(error.message);
+          }
+          return;
         }
-      } else {
-        // Login flow
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-        
-        if (signInError) {
-          console.error("Login error:", signInError);
-          setError("Invalid email or password. Please try again.");
-        } else if (data?.user) {
-          toast.success("Login successful", {
-            description: "Welcome back to SwapSpot!"
-          });
-          navigate("/browse");
+
+        if (data.user) {
+          if (data.user.email_confirmed_at) {
+            // Email is already confirmed, redirect to onboarding
+            toast.success("Account created successfully!", {
+              description: "Let's complete your profile setup"
+            });
+            navigate("/onboarding");
+          } else {
+            // Email confirmation required
+            onMagicLinkSent(email);
+          }
         }
       }
     } catch (error) {
-      console.error("Error during auth:", error);
-      setError("An unexpected error occurred. Please try again later.");
+      console.error("Auth error:", error);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
-  
-  const handleMagicLinkLogin = async () => {
-    if (!email) {
-      setError("Please enter your email address");
-      return;
-    }
-    
-    setError("");
-    setIsLoading(true);
-    
-    try {
-      // Send magic link email
-      const { error: magicLinkError } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/browse`,
-        },
-      });
-      
-      if (magicLinkError) {
-        console.error("Magic link error:", magicLinkError);
-        setError("Failed to send magic link. Please try again.");
-      } else {
-        onMagicLinkSent(email);
-      }
-    } catch (error) {
-      console.error("Error sending magic link:", error);
-      setError("An unexpected error occurred. Please try again later.");
-    } finally {
-      setIsLoading(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
     }
   };
 
@@ -115,18 +136,41 @@ const LoginForm = ({ onMagicLinkSent }: LoginFormProps) => {
     <div className="w-full max-w-md">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-swap-blue">
-          {isSignUp ? "Join SwapSpot" : "Welcome Back"}
+          {isLogin ? "Welcome Back" : "Join SwapSpot"}
         </h1>
         <p className="mt-2 text-gray-600">
-          {isSignUp ? "Create your account to get started" : "Log in to continue your SwapSpot experience"}
+          {isLogin 
+            ? "Sign in to your account to continue" 
+            : "Create your account and start swapping"
+          }
         </p>
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
+        {!isLogin && (
+          <div className="space-y-2">
+            <Label htmlFor="fullName" className="flex items-center gap-2">
+              <User className="h-4 w-4 text-swap-blue" />
+              Full Name
+            </Label>
+            <Input
+              id="fullName"
+              type="text"
+              placeholder="Your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full"
+              required={!isLogin}
+              disabled={isLoading}
+            />
+          </div>
+        )}
+        
         <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
+          <Label htmlFor="email" className="flex items-center gap-2">
+            <Mail className="h-4 w-4 text-swap-blue" />
+            Email Address
+          </Label>
           <Input
             id="email"
             type="email"
@@ -140,28 +184,66 @@ const LoginForm = ({ onMagicLinkSent }: LoginFormProps) => {
         </div>
         
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            {!isSignUp && (
-              <Link to="/forgot-password" className="text-xs text-swap-blue hover:underline">
-                Forgot password?
-              </Link>
-            )}
-          </div>
+          <Label htmlFor="password" className="flex items-center gap-2">
+            <Lock className="h-4 w-4 text-swap-blue" />
+            Password
+          </Label>
           <Input
             id="password"
             type="password"
-            placeholder={isSignUp ? "At least 6 characters" : "Enter your password"}
+            placeholder="Your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full"
             required
             disabled={isLoading}
-            minLength={isSignUp ? 6 : undefined}
           />
         </div>
+
+        {!isLogin && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-swap-blue" />
+                Confirm Password
+              </Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full"
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="proof" className="flex items-center gap-2">
+                <Upload className="h-4 w-4 text-swap-blue" />
+                Proof of enrollment (Optional)
+              </Label>
+              <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                <label className="cursor-pointer">
+                  <Input
+                    id="proof"
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="h-8 w-8 text-gray-400" />
+                    <span className="text-sm text-gray-600">
+                      {file ? file.name : "Upload student card or university letter"}
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </>
+        )}
         
         {error && (
           <Alert variant="destructive">
@@ -173,62 +255,30 @@ const LoginForm = ({ onMagicLinkSent }: LoginFormProps) => {
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {isSignUp ? "Creating Account..." : "Logging in..."}
+              {isLogin ? "Signing in..." : "Creating Account..."}
             </>
           ) : (
-            <>
-              {isSignUp ? (
-                <>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Sign Up
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Log In
-                </>
-              )}
-            </>
-          )}
-        </Button>
-        
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-gray-50 px-2 text-gray-500">Or</span>
-          </div>
-        </div>
-        
-        <Button 
-          type="button"
-          variant="outline"
-          onClick={handleMagicLinkLogin}
-          className="w-full"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Sending...
-            </>
-          ) : (
-            "Login with Magic Link"
+            isLogin ? "Sign In" : "Create Account & Start Setup"
           )}
         </Button>
       </form>
       
-      <div className="mt-8 text-center">
+      <div className="mt-6 text-center">
         <button
           type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="text-swap-blue hover:underline text-sm"
-          disabled={isLoading}
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setError("");
+            setPassword("");
+            setConfirmPassword("");
+            setFullName("");
+            setFile(null);
+          }}
+          className="text-swap-blue font-semibold hover:underline"
         >
-          {isSignUp 
-            ? "Already have an account? Log in" 
-            : "Don't have an account? Sign up"
+          {isLogin 
+            ? "Don't have an account? Sign up" 
+            : "Already have an account? Sign in"
           }
         </button>
       </div>
