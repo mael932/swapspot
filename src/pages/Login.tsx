@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Loader2, LogIn, MailCheck } from "lucide-react";
+import { Loader2, LogIn, MailCheck, UserPlus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "@/components/ui/sonner";
@@ -15,6 +16,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isMagicLinkSent, setIsMagicLinkSent] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -46,23 +48,45 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      // Attempt to log in with Supabase Auth
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (signInError) {
-        console.error("Login error:", signInError);
-        setError("Invalid email or password. Please try again.");
-      } else if (data?.user) {
-        toast.success("Login successful", {
-          description: "Welcome back to SwapSpot!"
+      if (isSignUp) {
+        // Sign up flow
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/browse`,
+          },
         });
-        navigate("/browse");
+        
+        if (signUpError) {
+          console.error("Sign up error:", signUpError);
+          setError(signUpError.message);
+        } else if (data?.user) {
+          toast.success("Account created successfully!", {
+            description: "Please check your email to verify your account"
+          });
+          // Switch to login mode after successful signup
+          setIsSignUp(false);
+        }
+      } else {
+        // Login flow
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (signInError) {
+          console.error("Login error:", signInError);
+          setError("Invalid email or password. Please try again.");
+        } else if (data?.user) {
+          toast.success("Login successful", {
+            description: "Welcome back to SwapSpot!"
+          });
+          navigate("/browse");
+        }
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during auth:", error);
       setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
@@ -135,9 +159,11 @@ const Login = () => {
       <main className="flex-grow flex items-center justify-center p-4 bg-gray-50">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-swap-blue">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-swap-blue">
+              {isSignUp ? "Join SwapSpot" : "Welcome Back"}
+            </h1>
             <p className="mt-2 text-gray-600">
-              Log in to continue your SwapSpot experience
+              {isSignUp ? "Create your account to get started" : "Log in to continue your SwapSpot experience"}
             </p>
           </div>
           
@@ -163,18 +189,22 @@ const Login = () => {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-xs text-swap-blue hover:underline">
-                  Forgot password?
-                </Link>
+                {!isSignUp && (
+                  <Link to="/forgot-password" className="text-xs text-swap-blue hover:underline">
+                    Forgot password?
+                  </Link>
+                )}
               </div>
               <Input
                 id="password"
                 type="password"
+                placeholder={isSignUp ? "At least 6 characters" : "Enter your password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full"
                 required
                 disabled={isLoading}
+                minLength={isSignUp ? 6 : undefined}
               />
             </div>
             
@@ -188,12 +218,21 @@ const Login = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Logging in...
+                  {isSignUp ? "Creating Account..." : "Logging in..."}
                 </>
               ) : (
                 <>
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Log In
+                  {isSignUp ? (
+                    <>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Sign Up
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Log In
+                    </>
+                  )}
                 </>
               )}
             </Button>
@@ -225,9 +264,19 @@ const Login = () => {
             </Button>
           </form>
           
-          <p className="mt-8 text-center text-sm text-gray-500">
-            Don't have an account yet? <Link to="/signup" className="text-swap-blue font-semibold hover:underline">Sign up</Link>
-          </p>
+          <div className="mt-8 text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-swap-blue hover:underline text-sm"
+              disabled={isLoading}
+            >
+              {isSignUp 
+                ? "Already have an account? Log in" 
+                : "Don't have an account? Sign up"
+              }
+            </button>
+          </div>
         </div>
       </main>
       <Footer />

@@ -64,10 +64,7 @@ const Navbar = () => {
                 <Link to="/community">Community</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="#" onClick={handleLoginClick}>Log In</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/signup">Sign Up</Link>
+                <Link to="#" onClick={handleLoginClick}>Login / Sign Up</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -105,11 +102,8 @@ const Navbar = () => {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-            <Button variant="outline" asChild>
-              <Link to="#" onClick={handleLoginClick}>Log In</Link>
-            </Button>
             <Button asChild>
-              <Link to="/signup">Sign Up</Link>
+              <Link to="#" onClick={handleLoginClick}>Login / Sign Up</Link>
             </Button>
           </div>
         )}
