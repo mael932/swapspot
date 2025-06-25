@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Menu } from 'lucide-react';
+import { Menu, ArrowRightLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -34,7 +33,12 @@ const Navbar = () => {
   return (
     <div className="bg-white border-b shadow-sm sticky top-0 z-50">
       <div className="container flex items-center justify-between py-4">
-        <Link to="/" className="font-bold text-2xl text-swap-blue">
+        <Link to="/" className="flex items-center gap-2 font-bold text-2xl text-swap-blue">
+          <div className="relative">
+            <ArrowRightLeft 
+              className="h-8 w-8 text-swap-blue animate-pulse hover:animate-spin transition-all duration-300" 
+            />
+          </div>
           SwapSpot
         </Link>
 
