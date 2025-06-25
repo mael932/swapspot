@@ -16,7 +16,10 @@ import {
   Filter,
   Bot,
   Crown,
-  Lock
+  Lock,
+  Globe,
+  MapPin,
+  Calendar
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,6 +27,7 @@ import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import PubertChat from "@/components/PubertChat";
 import CommunityChat from "@/components/CommunityChat";
+import ConnectForums from "@/components/ConnectForums";
 import { useState } from "react";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 
@@ -87,45 +91,6 @@ const Community = () => {
     }
   ];
 
-  const forumDiscussions = [
-    {
-      title: "Best cities for student exchanges in Europe?",
-      author: "Sarah M.",
-      replies: 23,
-      lastActivity: "2 hours ago",
-      category: "General Discussion",
-      pinned: true
-    },
-    {
-      title: "Tips for swapping with someone from a different culture",
-      author: "Miguel R.",
-      replies: 15,
-      lastActivity: "4 hours ago",
-      category: "Cultural Exchange"
-    },
-    {
-      title: "How to handle time zone differences for communication",
-      author: "Emma L.",
-      replies: 8,
-      lastActivity: "6 hours ago",
-      category: "Communication"
-    },
-    {
-      title: "Emergency contact lists - what to include?",
-      author: "David K.",
-      replies: 12,
-      lastActivity: "1 day ago",
-      category: "Safety"
-    },
-    {
-      title: "Packing essentials for a 6-month swap",
-      author: "Lisa P.",
-      replies: 31,
-      lastActivity: "2 days ago",
-      category: "Preparation"
-    }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -154,14 +119,19 @@ const Community = () => {
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <Tabs defaultValue="wiki" className="space-y-8">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+              <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3">
                 <TabsTrigger value="wiki" className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
                   Swap Wiki
                 </TabsTrigger>
+                <TabsTrigger value="connect" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Connect
+                  {hasAccess && <Crown className="h-3 w-3 text-yellow-500" />}
+                </TabsTrigger>
                 <TabsTrigger value="community" className="flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
-                  Community Chat
+                  Chat
                   {hasAccess && <Crown className="h-3 w-3 text-yellow-500" />}
                 </TabsTrigger>
               </TabsList>
@@ -259,7 +229,56 @@ const Community = () => {
                 </div>
               </TabsContent>
 
-              {/* Community Tab */}
+              {/* Connect Tab */}
+              <TabsContent value="connect" className="space-y-8">
+                {!hasAccess ? (
+                  <div className="text-center py-12">
+                    <Card className="max-w-2xl mx-auto">
+                      <CardHeader>
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="bg-swap-lightBlue p-4 rounded-full">
+                            <Users className="h-8 w-8 text-swap-blue" />
+                          </div>
+                        </div>
+                        <CardTitle className="text-2xl mb-2">Members Only Forums</CardTitle>
+                        <CardDescription className="text-lg">
+                          Connect with other exchange students before your stay
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Alert className="mb-6">
+                          <Crown className="h-4 w-4" />
+                          <AlertDescription>
+                            Access exclusive forums to connect with verified students, find travel buddies, and get destination-specific advice from locals.
+                          </AlertDescription>
+                        </Alert>
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Connect Features:</h4>
+                          <ul className="text-left space-y-2 text-sm text-gray-600">
+                            <li>• Destination-specific forums</li>
+                            <li>• Find students going to your city</li>
+                            <li>• Connect before your exchange</li>
+                            <li>• Local recommendations and tips</li>
+                            <li>• Travel buddy matching</li>
+                          </ul>
+                        </div>
+                        <div className="mt-8 space-y-4">
+                          <Button asChild size="lg" className="w-full">
+                            <Link to="/signup">Upgrade to Premium</Link>
+                          </Button>
+                          <Button variant="outline" asChild className="w-full">
+                            <Link to="/help-tips">Browse Free Resources</Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ) : (
+                  <ConnectForums />
+                )}
+              </TabsContent>
+
+              {/* Community Chat Tab */}
               <TabsContent value="community" className="space-y-8">
                 {!hasAccess ? (
                   <div className="text-center py-12">
