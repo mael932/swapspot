@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import UniversityStep from "./UniversityStep";
 import DatesStep from "./DatesStep";
+import RequirementsStep from "./RequirementsStep";
 import PhotosStep from "./PhotosStep";
 import VerificationStep from "./VerificationStep";
 import MatchesStep from "./MatchesStep";
@@ -16,6 +16,15 @@ export interface OnboardingData {
   preferredDates: {
     startDate: string;
     endDate: string;
+  };
+  requirements: {
+    priceRange: {
+      min: number;
+      max: number;
+    };
+    location: string;
+    accommodationType: string;
+    amenities: string[];
   };
   photos: File[];
   verificationMethod: 'email' | 'id';
@@ -31,19 +40,29 @@ const OnboardingFlow = () => {
       startDate: "",
       endDate: ""
     },
+    requirements: {
+      priceRange: {
+        min: 0,
+        max: 2000
+      },
+      location: "",
+      accommodationType: "",
+      amenities: []
+    },
     photos: [],
     verificationMethod: 'email'
   });
 
-  const totalSteps = 5;
+  const totalSteps = 6;
   const progress = (currentStep / totalSteps) * 100;
 
   const steps = [
     { number: 1, title: "University & Program", component: UniversityStep },
     { number: 2, title: "Preferred Dates", component: DatesStep },
-    { number: 3, title: "Room Photos", component: PhotosStep },
-    { number: 4, title: "Student Verification", component: VerificationStep },
-    { number: 5, title: "Your First Matches", component: MatchesStep }
+    { number: 3, title: "Requirements & Budget", component: RequirementsStep },
+    { number: 4, title: "Room Photos", component: PhotosStep },
+    { number: 5, title: "Student Verification", component: VerificationStep },
+    { number: 6, title: "Your First Matches", component: MatchesStep }
   ];
 
   const handleNext = () => {
