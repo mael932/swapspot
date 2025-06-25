@@ -18,6 +18,7 @@ import RentalDetail from "./pages/RentalDetail";
 import VerifyEmail from "./pages/VerifyEmail";
 import Account from "./pages/Account";
 import PostPlace from "./pages/PostPlace";
+import RequiredSignup from "./pages/RequiredSignup";
 import { supabase } from "./lib/supabase";
 import Safety from "./pages/Safety";
 import FAQ from "./pages/FAQ";
