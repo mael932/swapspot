@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   BookOpen, 
   MessageSquare, 
@@ -13,17 +14,24 @@ import {
   ThumbsUp,
   Search,
   Filter,
-  Bot
+  Bot,
+  Crown,
+  Lock
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import PubertChat from "@/components/PubertChat";
+import CommunityChat from "@/components/CommunityChat";
 import { useState } from "react";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 const Community = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const { subscriptionData, isPremium, isBasic, isElite, loading } = useSubscription();
+  
+  const hasAccess = isPremium || isBasic || isElite;
   
   const wikiGuides = [
     {
@@ -154,6 +162,7 @@ const Community = () => {
                 <TabsTrigger value="community" className="flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
                   Community Chat
+                  {hasAccess && <Crown className="h-3 w-3 text-yellow-500" />}
                 </TabsTrigger>
               </TabsList>
 
@@ -252,88 +261,71 @@ const Community = () => {
 
               {/* Community Tab */}
               <TabsContent value="community" className="space-y-8">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                  <div className="flex items-start gap-4">
-                    <Users className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">Community Guidelines</h3>
-                      <p className="text-blue-700 text-sm">
-                        This is a safe space for sharing experiences and helping fellow students. 
-                        Please be respectful, helpful, and keep discussions relevant to accommodation swaps.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 items-center">
-                  <div className="relative flex-grow">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input 
-                      placeholder="Search discussions..." 
-                      className="pl-10"
-                    />
-                  </div>
-                  <Button className="flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4" />
-                    Start New Discussion
-                  </Button>
-                </div>
-
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Recent Discussions</h2>
-                  <div className="space-y-4">
-                    {forumDiscussions.map((discussion, index) => (
-                      <Card key={index} className="hover:shadow-md transition-shadow">
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-grow">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="text-lg font-semibold hover:text-swap-blue cursor-pointer">
-                                  {discussion.title}
-                                </h3>
-                                {discussion.pinned && (
-                                  <Badge variant="default" className="text-xs">
-                                    Pinned
-                                  </Badge>
-                                )}
-                                <Badge variant="outline" className="text-xs">
-                                  {discussion.category}
-                                </Badge>
-                              </div>
-                              <p className="text-gray-600 text-sm mb-2">
-                                Started by {discussion.author}
-                              </p>
-                              <div className="flex items-center gap-4 text-sm text-gray-500">
-                                <div className="flex items-center gap-1">
-                                  <MessageSquare className="h-3 w-3" />
-                                  {discussion.replies} replies
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  {discussion.lastActivity}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button variant="ghost" size="sm">
-                                <ThumbsUp className="h-4 w-4" />
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                Reply
-                              </Button>
-                            </div>
+                {!hasAccess ? (
+                  <div className="text-center py-12">
+                    <Card className="max-w-2xl mx-auto">
+                      <CardHeader>
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="bg-swap-lightBlue p-4 rounded-full">
+                            <Lock className="h-8 w-8 text-swap-blue" />
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                        </div>
+                        <CardTitle className="text-2xl mb-2">Premium Feature</CardTitle>
+                        <CardDescription className="text-lg">
+                          Community chat is available for premium subscribers only
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Alert className="mb-6">
+                          <Crown className="h-4 w-4" />
+                          <AlertDescription>
+                            Join our premium community to connect with verified students, share experiences, and get real-time help from fellow swappers.
+                          </AlertDescription>
+                        </Alert>
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Premium Community Features:</h4>
+                          <ul className="text-left space-y-2 text-sm text-gray-600">
+                            <li>• Real-time chat with verified students</li>
+                            <li>• Ask questions and get instant answers</li>
+                            <li>• Share your swap experiences</li>
+                            <li>• Get tips from experienced swappers</li>
+                            <li>• Priority support from our team</li>
+                          </ul>
+                        </div>
+                        <div className="mt-8 space-y-4">
+                          <Button asChild size="lg" className="w-full">
+                            <Link to="/signup">Upgrade to Premium</Link>
+                          </Button>
+                          <Button variant="outline" asChild className="w-full">
+                            <Link to="/help-tips">Browse Free Resources</Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-6 w-6 text-blue-600 flex-shrink-0" />
+                          <Crown className="h-4 w-4 text-yellow-500" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                            Premium Community Guidelines
+                          </h3>
+                          <p className="text-blue-700 text-sm">
+                            Welcome to our premium community! This is a safe space for verified subscribers to share experiences and help fellow students. 
+                            Please be respectful, helpful, and keep discussions relevant to accommodation swaps.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                <div className="text-center">
-                  <Button variant="outline" size="lg">
-                    Load More Discussions
-                  </Button>
-                </div>
+                    <CommunityChat />
+                  </>
+                )}
               </TabsContent>
             </Tabs>
           </div>

@@ -55,9 +55,6 @@ const Navbar = () => {
                 <Link to="/">Home</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/browse">Browse</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
                 <Link to="/post-place">Post a Place</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -78,13 +75,6 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <NavigationMenu>
               <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink>
-                    <Link to="/browse" className={navigationMenuTriggerStyle()}>
-                      Browse
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuLink>
                     <Link to="/how-it-works" className={navigationMenuTriggerStyle()}>
