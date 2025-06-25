@@ -9,6 +9,8 @@ import { OnboardingData } from "./OnboardingFlow";
 import SwapCompatibilityIndicator from "../SwapCompatibilityIndicator";
 import { saveOnboardingData } from "@/utils/excelExport";
 import { useToast } from "@/hooks/use-toast";
+import { formatUserDataForSheet } from "@/services/googleSheetsService";
+import { supabase } from "@/lib/supabase";
 
 interface MatchesStepProps {
   data: OnboardingData;
@@ -64,10 +66,33 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
     }
   ];
 
-  const handleFinishOnboarding = () => {
+  const handleFinishOnboarding = async () => {
     try {
       // Save onboarding data to localStorage for Excel export
       const submissionId = saveOnboardingData(data);
+      
+      // Get signup data from localStorage
+      const signupDataStr = localStorage.getItem('signupData');
+      const signupData = signupDataStr ? JSON.parse(signupDataStr) : {};
+      
+      // Send data to Google Sheets
+      try {
+        const userData = formatUserDataForSheet(signupData, data);
+        
+        const { error } = await supabase.functions.invoke('google-sheets', {
+          body: userData
+        });
+        
+        if (error) {
+          console.error('Error sending to Google Sheets:', error);
+          // Continue with onboarding completion even if Google Sheets fails
+        } else {
+          console.log('Successfully sent data to Google Sheets');
+        }
+      } catch (sheetsError) {
+        console.error('Error with Google Sheets integration:', sheetsError);
+        // Continue with onboarding completion even if Google Sheets fails
+      }
       
       // Set completion status
       localStorage.setItem('onboardingComplete', 'true');

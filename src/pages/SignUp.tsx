@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [university, setUniversity] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -37,13 +38,16 @@ const SignUp = () => {
       // Store the demo user data temporarily
       const demoUserData = {
         email,
+        fullName,
         university: university || "University of Amsterdam",
         hasUploadedProof: !!file,
         timestamp: new Date().toISOString(),
         isDemoUser: true
       };
       
+      // Store user data for later use in onboarding completion
       localStorage.setItem('demoUserData', JSON.stringify(demoUserData));
+      localStorage.setItem('signupData', JSON.stringify(demoUserData));
       
       toast.success("Account created successfully!", {
         description: "Let's complete your profile setup"
@@ -113,6 +117,22 @@ const SignUp = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="Your full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email Address
