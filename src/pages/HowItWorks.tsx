@@ -3,58 +3,58 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Users, Search, HomeIcon, CalendarCheck, MessageCircle, Star, Shield } from "lucide-react";
+import { ArrowRight, Users, Search, UserCheck, CalendarCheck, MessageCircle, Star, Shield } from "lucide-react";
 
 const HowItWorksPage = () => {
   const steps = [
     {
-      icon: <Users className="h-12 w-12 text-swap-blue" />,
-      title: "Create your profile",
-      description: "Sign up with your university email and verify your account. Fill in details about yourself, your current accommodation, and what you're looking for in a swap."
-    },
-    {
-      icon: <HomeIcon className="h-12 w-12 text-swap-blue" />,
-      title: "List your place",
-      description: "Add details about your accommodation, including photos, amenities, location, and the dates it will be available for a swap."
+      icon: <UserCheck className="h-12 w-12 text-swap-blue" />,
+      title: "Tell us about yourself",
+      description: "Create your profile with your university details, study dates, accommodation preferences, and what you're looking for in a swap partner."
     },
     {
       icon: <Search className="h-12 w-12 text-swap-blue" />,
-      title: "Find your match",
-      description: "Browse available listings or wait for potential matches based on your preferences. Our algorithm will suggest swaps that match your criteria."
+      title: "We find your matches",
+      description: "Our smart matching algorithm analyzes your preferences and finds compatible students who share your academic goals and housing needs."
     },
     {
       icon: <MessageCircle className="h-12 w-12 text-swap-blue" />,
-      title: "Connect and discuss",
-      description: "When you find a potential match, message them directly through our platform to discuss details and ask questions."
+      title: "Get notified of matches",
+      description: "When we find suitable matches, you'll receive email notifications with their contact details and accommodation information."
+    },
+    {
+      icon: <Users className="h-12 w-12 text-swap-blue" />,
+      title: "Connect directly",
+      description: "Reach out to your matches through the provided contact information to discuss details and plan your accommodation swap."
     },
     {
       icon: <CalendarCheck className="h-12 w-12 text-swap-blue" />,
-      title: "Confirm your swap",
-      description: "Once you've found a suitable match and agreed on the details, confirm the swap through our platform to make it official."
+      title: "Confirm your match",
+      description: "Once you've found a compatible partner and agreed on terms, confirm your match and prepare for your exchange experience."
     },
     {
       icon: <Star className="h-12 w-12 text-swap-blue" />,
-      title: "Enjoy your experience",
-      description: "Move into your swap accommodation and enjoy your study abroad experience without the stress of finding housing in an unfamiliar city."
+      title: "Enjoy your exchange",
+      description: "Move into your matched accommodation and focus on your studies while building meaningful connections with fellow students."
     }
   ];
 
   const faq = [
     {
-      question: "How does the matching process work?",
-      answer: "Our algorithm matches students based on location preferences, dates, and accommodation types. You'll be shown potential matches that align with your needs, and you can also browse all available listings manually."
+      question: "How does the matching algorithm work?",
+      answer: "Our algorithm considers your location preferences, study dates, university program, accommodation type preferences, and personal compatibility factors to find the most suitable matches from our verified student community."
     },
     {
-      question: "What if my dates don't exactly match with a potential swap partner?",
-      answer: "Partial overlaps are common in student exchanges. Our platform allows you to specify your flexibility with dates, and you can discuss specific arrangements with your potential swap partner."
+      question: "How quickly will I receive matches?",
+      answer: "Most users receive their first potential matches within 24-48 hours of completing their profile. We continuously search for new matches as more students join the platform."
     },
     {
-      question: "How do I know the other person's accommodation is as described?",
-      answer: "All listings require photos and detailed descriptions. We encourage video calls between potential swap partners to tour the accommodations virtually. We also have a verification system and reviews from previous swappers."
+      question: "What information do I receive about my matches?",
+      answer: "You'll receive detailed profiles including their accommodation photos, location, university information, study dates, and direct contact details so you can connect immediately."
     },
     {
-      question: "What happens if there's a problem during my stay?",
-      answer: "We provide a mediation service for any issues that arise during swaps. We recommend creating a swap agreement that outlines expectations for both parties before confirming."
+      question: "What if I don't like the matches I receive?",
+      answer: "You can update your preferences anytime to refine future matches. Our algorithm learns from your feedback to provide increasingly better matches over time."
     }
   ];
 
@@ -66,10 +66,10 @@ const HowItWorksPage = () => {
         <section className="bg-gradient-to-b from-white to-swap-lightBlue py-20">
           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              How SwapSpot Works
+              We Find Your Perfect Match
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto">
-              Your guide to finding the perfect accommodation swap for your study abroad experience
+              Skip the endless browsing. Tell us what you need, and we'll connect you with compatible students automatically.
             </p>
           </div>
         </section>
@@ -78,9 +78,9 @@ const HowItWorksPage = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">The SwapSpot Process</h2>
+              <h2 className="text-3xl font-bold mb-4">How SwapSpot Matching Works</h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Follow these simple steps to find your perfect accommodation swap
+                Our intelligent system does the work for you - just provide your details and we'll find compatible matches
               </p>
             </div>
             
@@ -109,7 +109,7 @@ const HowItWorksPage = () => {
           </div>
         </section>
 
-        {/* Safety Section */}
+        {/* Matching Benefits Section */}
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <div className="flex flex-col md:flex-row items-center gap-12">
@@ -117,10 +117,10 @@ const HowItWorksPage = () => {
                 <div className="bg-swap-blue p-8 rounded-full inline-block mb-6">
                   <Shield className="h-16 w-16 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold mb-6">Safety is Our Priority</h2>
+                <h2 className="text-3xl font-bold mb-6">Why Our Matching System Works</h2>
                 <div className="space-y-4">
                   <p className="text-lg text-gray-700">
-                    SwapSpot is built with student safety in mind. Our comprehensive verification system ensures that only real university students can access the platform.
+                    Unlike traditional listing platforms, SwapSpot uses intelligent matching to connect compatible students based on shared academic goals and housing preferences.
                   </p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
@@ -129,7 +129,7 @@ const HowItWorksPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <span className="text-gray-700">Verified university email addresses</span>
+                      <span className="text-gray-700">AI-powered compatibility matching</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <div className="bg-swap-blue rounded-full p-1 mt-1 flex-shrink-0">
@@ -137,7 +137,7 @@ const HowItWorksPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <span className="text-gray-700">Secure in-platform messaging</span>
+                      <span className="text-gray-700">Verified university students only</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <div className="bg-swap-blue rounded-full p-1 mt-1 flex-shrink-0">
@@ -145,7 +145,7 @@ const HowItWorksPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <span className="text-gray-700">Detailed user profiles and reviews</span>
+                      <span className="text-gray-700">Automatic match notifications</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <div className="bg-swap-blue rounded-full p-1 mt-1 flex-shrink-0">
@@ -153,21 +153,21 @@ const HowItWorksPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <span className="text-gray-700">24/7 support for urgent issues</span>
+                      <span className="text-gray-700">Direct contact information provided</span>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="w-full md:w-1/2 bg-white p-8 rounded-lg shadow-sm">
-                <h3 className="text-xl font-semibold mb-4">Tips for a Successful Swap</h3>
+                <h3 className="text-xl font-semibold mb-4">What Makes a Good Match?</h3>
                 <ul className="space-y-4">
                   <li className="flex gap-3">
                     <div className="bg-swap-lightBlue p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0">
                       <span className="font-bold text-swap-blue">1</span>
                     </div>
                     <div>
-                      <p className="font-medium">Be clear and honest in your listing</p>
-                      <p className="text-sm text-gray-600">Accurate descriptions and photos help set the right expectations</p>
+                      <p className="font-medium">Compatible study schedules</p>
+                      <p className="text-sm text-gray-600">Matching academic calendars and exchange periods</p>
                     </div>
                   </li>
                   <li className="flex gap-3">
@@ -175,8 +175,8 @@ const HowItWorksPage = () => {
                       <span className="font-bold text-swap-blue">2</span>
                     </div>
                     <div>
-                      <p className="font-medium">Video chat before confirming</p>
-                      <p className="text-sm text-gray-600">Have a virtual tour to see the accommodation and meet your swap partner</p>
+                      <p className="font-medium">Similar accommodation standards</p>
+                      <p className="text-sm text-gray-600">Matching quality and type of housing preferences</p>
                     </div>
                   </li>
                   <li className="flex gap-3">
@@ -184,8 +184,8 @@ const HowItWorksPage = () => {
                       <span className="font-bold text-swap-blue">3</span>
                     </div>
                     <div>
-                      <p className="font-medium">Create a swap agreement</p>
-                      <p className="text-sm text-gray-600">Document expectations about utilities, rules, and conditions</p>
+                      <p className="font-medium">Complementary locations</p>
+                      <p className="text-sm text-gray-600">You want to go where they are, they want to come where you are</p>
                     </div>
                   </li>
                   <li className="flex gap-3">
@@ -193,8 +193,8 @@ const HowItWorksPage = () => {
                       <span className="font-bold text-swap-blue">4</span>
                     </div>
                     <div>
-                      <p className="font-medium">Keep communication on platform</p>
-                      <p className="text-sm text-gray-600">For your safety, use our messaging system until you're comfortable</p>
+                      <p className="font-medium">Shared academic focus</p>
+                      <p className="text-sm text-gray-600">Similar fields of study and academic goals</p>
                     </div>
                   </li>
                 </ul>
@@ -209,7 +209,7 @@ const HowItWorksPage = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Common questions about using SwapSpot
+                Common questions about our matching process
               </p>
             </div>
             
@@ -228,13 +228,13 @@ const HowItWorksPage = () => {
         <section className="py-16 bg-swap-blue">
           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
             <h2 className="text-3xl font-bold text-white mb-6">
-              Ready to Find Your Perfect Swap?
+              Ready to Find Your Perfect Match?
             </h2>
             <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">
-              Join thousands of students who have already found their ideal accommodation through SwapSpot
+              Join thousands of students who have found their ideal accommodation matches through our intelligent system
             </p>
             <Button asChild size="lg" className="text-lg px-8 py-6 bg-white text-swap-blue hover:bg-gray-100">
-              <Link to="/signup">Sign Up Now</Link>
+              <Link to="/signup">Start Matching Now</Link>
             </Button>
           </div>
         </section>

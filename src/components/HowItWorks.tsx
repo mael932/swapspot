@@ -1,27 +1,27 @@
 
-import { Users, Link, School, CheckCircle } from "lucide-react";
+import { Users, Search, UserCheck, CheckCircle } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
     {
-      icon: <School className="h-8 w-8 text-swap-blue" />,
-      title: "Join our student community",
-      description: "Connect with verified university students who share your academic ambitions and housing challenges."
+      icon: <UserCheck className="h-8 w-8 text-swap-blue" />,
+      title: "Complete your profile",
+      description: "Tell us about your university, study dates, location preferences, and what you're looking for in an accommodation match."
+    },
+    {
+      icon: <Search className="h-8 w-8 text-swap-blue" />,
+      title: "We find your matches",
+      description: "Our intelligent algorithm analyzes your preferences and finds compatible students with complementary housing needs."
     },
     {
       icon: <Users className="h-8 w-8 text-swap-blue" />,
-      title: "Find like-minded matches",
-      description: "Discover students with similar goals, study periods, and housing needs through our intelligent matching system."
-    },
-    {
-      icon: <Link className="h-8 w-8 text-swap-blue" />,
-      title: "Connect directly",
-      description: "Bridge the gap between students facing the same problems – we facilitate meaningful connections, not transactions."
+      title: "Get match notifications",
+      description: "Receive email notifications with detailed profiles and contact information when we find suitable matches for you."
     },
     {
       icon: <CheckCircle className="h-8 w-8 text-swap-blue" />,
-      title: "Build lasting relationships",
-      description: "Form connections that extend beyond housing – create a network of ambitious students worldwide."
+      title: "Connect and swap",
+      description: "Reach out directly to your matches to discuss details and finalize your perfect accommodation exchange."
     }
   ];
 
@@ -29,9 +29,9 @@ export default function HowItWorks() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Connecting Students, Not Just Housing</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">We Find Your Perfect Match</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            SwapSpot is a bridge between ambitious students who understand each other's challenges and share similar academic goals
+            Skip the endless browsing. Complete your profile and let our intelligent matching system connect you with compatible students automatically.
           </p>
         </div>
         
@@ -53,11 +53,12 @@ export default function HowItWorks() {
         <div className="mt-16 text-center">
           <div className="bg-swap-lightBlue rounded-lg p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-swap-darkBlue mb-4">
-              More Than Housing – We Connect Ambitions
+              Smart Matching, Not Endless Searching
             </h3>
             <p className="text-gray-700 text-lg">
-              Every student on SwapSpot shares your drive for academic excellence and understands the unique challenges of studying abroad. 
-              We don't just match accommodations – we connect students with shared values, similar goals, and mutual understanding.
+              Our AI-powered system analyzes compatibility factors like study schedules, accommodation preferences, 
+              and academic goals to find students who are genuinely compatible for housing exchanges. 
+              No more scrolling through hundreds of listings – we bring the perfect matches directly to you.
             </p>
           </div>
         </div>

@@ -16,7 +16,10 @@ import {
   CreditCard,
   Shield,
   Phone,
-  Mail
+  Mail,
+  Target,
+  Star,
+  Clock
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -128,6 +131,53 @@ const HelpTips = () => {
 
   const countries = Object.keys(subletLaws);
 
+  const profileTips = [
+    {
+      title: "Complete Your Academic Profile",
+      description: "Include your university, program, and study period details",
+      icon: <UserCheck className="h-5 w-5 text-green-600" />,
+      tips: [
+        "Use your official university email for verification",
+        "Be specific about your exchange program dates",
+        "Include your field of study and year level",
+        "Mention any specific academic requirements"
+      ]
+    },
+    {
+      title: "Define Your Housing Preferences",
+      description: "Be clear about what type of accommodation you're seeking",
+      icon: <Home className="h-5 w-5 text-blue-600" />,
+      tips: [
+        "Specify preferred location or neighborhood",
+        "Indicate accommodation type (studio, shared, etc.)",
+        "Mention important amenities (WiFi, kitchen, etc.)",
+        "Set realistic expectations for housing standards"
+      ]
+    },
+    {
+      title: "Set Accurate Availability",
+      description: "Provide precise dates for your exchange period",
+      icon: <Clock className="h-5 w-5 text-purple-600" />,
+      tips: [
+        "Include some flexibility in your dates if possible",
+        "Consider travel time before and after studies",
+        "Account for visa processing time",
+        "Update dates if your plans change"
+      ]
+    },
+    {
+      title: "Optimize for Better Matches",
+      description: "Help our algorithm find the most compatible partners",
+      icon: <Target className="h-5 w-5 text-orange-600" />,
+      tips: [
+        "Be honest about your lifestyle and habits",
+        "Include information about your academic goals",
+        "Mention language skills and preferences",
+        "Add details about your home city/accommodation"
+      ]
+    }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -137,36 +187,98 @@ const HelpTips = () => {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-swap-blue mb-4">Help & Tips</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to know about subletting legally and moving abroad smoothly
+              Get the most out of SwapSpot's matching system and prepare for your exchange
             </p>
           </div>
 
-          {/* Country Selector */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Select Your Country</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {countries.map((country) => (
-                <Button
-                  key={country}
-                  variant={selectedCountry === country ? "default" : "outline"}
-                  onClick={() => setSelectedCountry(country)}
-                  className="capitalize"
-                >
-                  {subletLaws[country].name}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          <Tabs defaultValue="subletting" className="space-y-6">
+          <Tabs defaultValue="matching" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="subletting">Subletting Laws</TabsTrigger>
-              <TabsTrigger value="registration">Registration Guide</TabsTrigger>
-              <TabsTrigger value="resources">Resources & Links</TabsTrigger>
+              <TabsTrigger value="matching">Matching Tips</TabsTrigger>
+              <TabsTrigger value="legal">Legal Info</TabsTrigger>
+              <TabsTrigger value="preparation">Exchange Prep</TabsTrigger>
             </TabsList>
 
-            {/* Subletting Laws Tab */}
-            <TabsContent value="subletting" className="space-y-6">
+            {/* Matching Tips Tab */}
+            <TabsContent value="matching" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5" />
+                    How to Get Better Matches
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {profileTips.map((tip, index) => (
+                      <div key={index} className="border rounded-lg p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          {tip.icon}
+                          <h3 className="font-semibold">{tip.title}</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">{tip.description}</p>
+                        <ul className="space-y-2">
+                          {tip.tips.map((tipItem, tipIndex) => (
+                            <li key={tipIndex} className="flex items-start gap-2 text-sm">
+                              <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0 mt-0.5" />
+                              <span>{tipItem}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Alert className="mt-6">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>Pro Tip:</strong> The more complete and accurate your profile, the better matches you'll receive. Our algorithm works best with detailed information about your preferences and requirements.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Understanding Your Match Notifications</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-green-800 mb-2">High Compatibility (90%+)</h4>
+                      <p className="text-sm text-green-700">Excellent match with aligned dates, location preferences, and academic goals.</p>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-blue-800 mb-2">Good Match (70-89%)</h4>
+                      <p className="text-sm text-blue-700">Strong compatibility with minor differences that may be negotiable.</p>
+                    </div>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-yellow-800 mb-2">Potential Match (50-69%)</h4>
+                      <p className="text-sm text-yellow-700">Some compatibility factors align, but may require more discussion.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Legal Info Tab */}
+            <TabsContent value="legal" className="space-y-6">
+              {/* Country Selector */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">Select Your Country</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {countries.map((country) => (
+                    <Button
+                      key={country}
+                      variant={selectedCountry === country ? "default" : "outline"}
+                      onClick={() => setSelectedCountry(country)}
+                      className="capitalize"
+                    >
+                      {subletLaws[country].name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -220,8 +332,8 @@ const HelpTips = () => {
               </Card>
             </TabsContent>
 
-            {/* Registration Guide Tab */}
-            <TabsContent value="registration" className="space-y-6">
+            {/* Exchange Preparation Tab */}
+            <TabsContent value="preparation" className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -252,18 +364,14 @@ const HelpTips = () => {
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
 
-            {/* Resources Tab */}
-            <TabsContent value="resources" className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
-                
-                {/* Essential Services */}
+                {/* Essential Resources */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Globe className="h-5 w-5" />
-                      Essential Services
+                      Essential Resources
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -283,44 +391,6 @@ const HelpTips = () => {
                         <Globe className="h-4 w-4" />
                         World Time Zones
                       </a>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Moving Checklist */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      Moving Checklist
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Passport & Visa documents</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">University acceptance letter</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Health insurance documents</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Bank statements</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Housing contract/proof</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">Emergency contact information</span>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -356,33 +426,6 @@ const HelpTips = () => {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Legal Support */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Mail className="h-5 w-5" />
-                      Legal Support
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <a href="https://www.eurodesk.eu/" target="_blank" rel="noopener noreferrer"
-                       className="flex items-center gap-2 text-swap-blue hover:underline">
-                      <ExternalLink className="h-4 w-4" />
-                      Eurodesk - Youth Mobility
-                    </a>
-                    <a href="https://europa.eu/youreurope/citizens/" target="_blank" rel="noopener noreferrer"
-                       className="flex items-center gap-2 text-swap-blue hover:underline">
-                      <ExternalLink className="h-4 w-4" />
-                      Your Europe - EU Rights
-                    </a>
-                    <a href="https://eures.ec.europa.eu/" target="_blank" rel="noopener noreferrer"
-                       className="flex items-center gap-2 text-swap-blue hover:underline">
-                      <ExternalLink className="h-4 w-4" />
-                      EURES - Job Mobility
-                    </a>
-                  </CardContent>
-                </Card>
               </div>
             </TabsContent>
           </Tabs>
@@ -390,14 +433,14 @@ const HelpTips = () => {
           {/* CTA Section */}
           <Card className="mt-8 bg-gradient-to-r from-swap-blue to-swap-darkBlue text-white">
             <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4">Need Personal Assistance?</h3>
-              <p className="mb-6">Our community of experienced students and legal advisors can help with specific questions</p>
+              <h3 className="text-2xl font-bold mb-4">Ready to Find Your Perfect Match?</h3>
+              <p className="mb-6">Complete your profile and let our intelligent matching system find compatible students for you</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button variant="secondary" asChild>
-                  <a href="/community">Join Community Chat</a>
+                  <a href="/signup">Create Your Profile</a>
                 </Button>
                 <Button variant="outline" className="text-white border-white hover:bg-white hover:text-swap-blue" asChild>
-                  <a href="/support">Contact Support</a>
+                  <a href="/community">Join Community Chat</a>
                 </Button>
               </div>
             </CardContent>
