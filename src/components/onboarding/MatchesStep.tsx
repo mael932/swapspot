@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Heart, MapPin, Calendar, Users, Star } from "lucide-react";
+import { Heart, MapPin, Calendar, Users, Star, Download } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
 import SwapCompatibilityIndicator from "../SwapCompatibilityIndicator";
+import { saveOnboardingData } from "@/utils/excelExport";
+import { useToast } from "@/hooks/use-toast";
 
 interface MatchesStepProps {
   data: OnboardingData;
@@ -23,6 +25,7 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
   canGoPrevious
 }) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Mock matches based on user's data
   const mockMatches = [
@@ -62,10 +65,28 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
   ];
 
   const handleFinishOnboarding = () => {
-    // Save onboarding data to localStorage or send to backend
-    localStorage.setItem('onboardingComplete', 'true');
-    localStorage.setItem('userProfile', JSON.stringify(data));
-    navigate('/browse');
+    try {
+      // Save onboarding data to localStorage for Excel export
+      const submissionId = saveOnboardingData(data);
+      
+      // Set completion status
+      localStorage.setItem('onboardingComplete', 'true');
+      localStorage.setItem('userProfile', JSON.stringify(data));
+      
+      toast({
+        title: "Profile Submitted!",
+        description: `Your preferences have been recorded (ID: ${submissionId.slice(0, 8)}...). We'll review your information and find perfect matches for your exchange!`,
+      });
+      
+      navigate('/browse');
+    } catch (error) {
+      console.error('Error saving onboarding data:', error);
+      toast({
+        title: "Error",
+        description: "There was an issue saving your preferences. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -127,10 +148,10 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
       <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
         <h4 className="font-semibold text-blue-800 mb-2">🎉 Profile Complete!</h4>
         <p className="text-sm text-blue-700 mb-3">
-          You're all set! Start browsing matches and connect with other students.
+          Your preferences will be sent to our team for manual matching. We'll contact you with perfect exchange opportunities!
         </p>
         <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-          Found {mockMatches.length} potential matches
+          Ready for manual review
         </Badge>
       </div>
 
@@ -146,7 +167,7 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
           onClick={handleFinishOnboarding}
           className="px-8 bg-green-600 hover:bg-green-700"
         >
-          Start Browsing Matches
+          Submit My Preferences
         </Button>
       </div>
     </div>
