@@ -11,17 +11,22 @@ import SmartRecommendations from "@/components/SmartRecommendations";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Lock, Users, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [hasPaid, setHasPaid] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Index page loaded");
     
-    // Test Supabase connection and get user
-    const checkSupabaseConnection = async () => {
+    const checkUserAndPayment = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
         
@@ -31,20 +36,43 @@ const Index = () => {
         } else {
           console.log("Supabase connection successful:", data.session ? "User is logged in" : "No active session");
           setUser(data.session?.user || null);
+          
+          // Check payment status if user is logged in
+          if (data.session?.user) {
+            const { data: paymentData } = await supabase
+              .from('user_payments')
+              .select('has_paid')
+              .eq('user_id', data.session.user.id)
+              .single();
+            
+            setHasPaid(paymentData?.has_paid || false);
+          }
         }
       } catch (err) {
-        console.error("Error checking Supabase connection:", err);
+        console.error("Error checking user session:", err);
         setError("An unexpected error occurred while connecting to Supabase.");
       } finally {
         setLoading(false);
       }
     };
     
-    checkSupabaseConnection();
+    checkUserAndPayment();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null);
+      
+      if (session?.user) {
+        const { data: paymentData } = await supabase
+          .from('user_payments')
+          .select('has_paid')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setHasPaid(paymentData?.has_paid || false);
+      } else {
+        setHasPaid(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -78,12 +106,72 @@ const Index = () => {
     );
   }
 
+  // Show paywall for users without payment
+  if (user && !hasPaid) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center p-4 bg-gray-50">
+          <div className="max-w-2xl mx-auto text-center">
+            <Card className="border-blue-200 bg-white shadow-lg">
+              <CardContent className="p-8">
+                <Lock className="h-16 w-16 text-blue-600 mx-auto mb-6" />
+                <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to SwapSpot!</h1>
+                <p className="text-xl text-gray-600 mb-6">
+                  You're signed in, but need access to connect with verified students.
+                </p>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <h3 className="font-semibold text-blue-800 mb-3">What you'll get with SwapSpot Access:</h3>
+                  <ul className="text-left text-blue-700 space-y-2">
+                    <li>✓ Connect with unlimited verified students</li>
+                    <li>✓ Email notifications when you match</li>
+                    <li>✓ Access to all contact information</li>
+                    <li>✓ Priority support</li>
+                  </ul>
+                </div>
+
+                <div className="flex items-baseline justify-center gap-1 mb-6">
+                  <span className="text-4xl font-bold text-blue-800">€25</span>
+                  <span className="text-lg text-blue-600">one-time payment</span>
+                </div>
+
+                <Button 
+                  onClick={() => navigate('/required-signup')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                >
+                  Get SwapSpot Access
+                </Button>
+
+                <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t">
+                  <div className="text-center">
+                    <Shield className="h-6 w-6 text-green-600 mx-auto mb-1" />
+                    <p className="text-xs text-gray-600">Verified Students</p>
+                  </div>
+                  <div className="text-center">
+                    <Users className="h-6 w-6 text-blue-600 mx-auto mb-1" />
+                    <p className="text-xs text-gray-600">10,000+ Members</p>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-yellow-500 text-lg">★★★★★</span>
+                    <p className="text-xs text-gray-600">4.8/5 Rating</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-        {user ? (
-          // Show personalized content for logged-in users
+        {user && hasPaid ? (
+          // Show personalized content for paid users
           <div className="container mx-auto px-4 py-8">
             <SmartRecommendations 
               userPreferences={{
@@ -99,7 +187,7 @@ const Index = () => {
             <FeaturedSwaps />
           </div>
         ) : (
-          // Show standard homepage for visitors
+          // Show standard homepage for visitors (not logged in)
           <>
             <HeroSection />
             <AccommodationModes />

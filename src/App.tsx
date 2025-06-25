@@ -95,6 +95,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/required-signup" element={<RequiredSignup />} />
               <Route path="/login" element={<Login />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/browse" element={<Browse />} />

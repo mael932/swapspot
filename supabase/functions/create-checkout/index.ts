@@ -25,33 +25,6 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
-    // Get the requested tier from the request body
-    const { tier = 'premium' } = await req.json();
-
-    // Define subscription tiers with pricing
-    const subscriptionTiers = {
-      basic: {
-        name: "SwapSpot Basic Connect",
-        description: "Connect with up to 5 students per month",
-        amount: 1500, // €15.00
-      },
-      premium: {
-        name: "SwapSpot Premium Connect", 
-        description: "Unlimited connections with premium features",
-        amount: 2500, // €25.00
-      },
-      elite: {
-        name: "SwapSpot Elite Experience",
-        description: "Everything included with VIP treatment", 
-        amount: 4500, // €45.00
-      }
-    };
-
-    const selectedTier = subscriptionTiers[tier as keyof typeof subscriptionTiers];
-    if (!selectedTier) {
-      throw new Error("Invalid subscription tier");
-    }
-
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
@@ -67,21 +40,20 @@ serve(async (req) => {
           price_data: {
             currency: "eur",
             product_data: { 
-              name: selectedTier.name,
-              description: selectedTier.description
+              name: "SwapSpot Access",
+              description: "Lifetime access to connect with verified students"
             },
-            unit_amount: selectedTier.amount,
-            recurring: { interval: "month" },
+            unit_amount: 2500, // €25.00
           },
           quantity: 1,
         },
       ],
-      mode: "subscription",
-      success_url: `${req.headers.get("origin")}/account?success=true&tier=${tier}`,
-      cancel_url: `${req.headers.get("origin")}/account?canceled=true`,
+      mode: "payment", // One-time payment instead of subscription
+      success_url: `${req.headers.get("origin")}/?payment=success`,
+      cancel_url: `${req.headers.get("origin")}/?payment=cancelled`,
       metadata: {
         user_id: user.id,
-        subscription_tier: tier,
+        payment_type: "swapspot_access",
       },
     });
 
