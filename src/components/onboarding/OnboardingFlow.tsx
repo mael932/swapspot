@@ -9,6 +9,7 @@ import { toast } from "@/components/ui/sonner";
 import UniversityStep from "./UniversityStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
+import CompletionStep from "./CompletionStep";
 import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
 
 export interface OnboardingData {
@@ -36,6 +37,19 @@ export interface OnboardingData {
   budget: string;
   preferredDestinations: string[];
   
+  // Legacy fields for compatibility with existing components
+  preferredDates?: { startDate: string; endDate: string; flexible: boolean };
+  photos?: File[];
+  requirements?: {
+    smokingPolicy: string;
+    petPolicy: string;
+    genderPreference: string;
+    ageRange: string;
+    cleanlinessLevel: string;
+  };
+  verificationMethod?: string;
+  verificationFile?: File;
+  
   // Consent
   gdprConsent: boolean;
 }
@@ -62,13 +76,14 @@ const OnboardingFlow = () => {
     gdprConsent: true
   });
 
-  const totalSteps = 3;
+  const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
 
   const steps = [
     { number: 1, title: "University & Contact Info", component: UniversityStep },
     { number: 2, title: "Proof of Enrollment", component: ProofOfEnrollmentStep },
-    { number: 3, title: "Your Preferences", component: EnhancedPreferencesStep }
+    { number: 3, title: "Your Preferences", component: EnhancedPreferencesStep },
+    { number: 4, title: "Complete", component: CompletionStep }
   ];
 
   const handleNext = () => {
@@ -180,6 +195,7 @@ const OnboardingFlow = () => {
               onPrevious={handlePrevious}
               canGoNext={currentStep < totalSteps}
               canGoPrevious={currentStep > 1}
+              onComplete={handleCompleteRegistration}
             />
           </CardContent>
         </Card>
