@@ -41,10 +41,20 @@ interface UserData {
 async function getAccessToken() {
   const serviceAccountJson = Deno.env.get('GOOGLE_SERVICE_ACCOUNT_JSON');
   if (!serviceAccountJson) {
+    console.error('GOOGLE_SERVICE_ACCOUNT_JSON environment variable not found');
     throw new Error('Google service account JSON not found');
   }
 
-  const serviceAccount = JSON.parse(serviceAccountJson);
+  console.log('Service account JSON found, length:', serviceAccountJson.length);
+  
+  let serviceAccount;
+  try {
+    serviceAccount = JSON.parse(serviceAccountJson);
+    console.log('Service account parsed successfully, client_email:', serviceAccount.client_email);
+  } catch (error) {
+    console.error('Error parsing service account JSON:', error);
+    throw new Error('Invalid service account JSON format');
+  }
   
   // Create JWT for Google OAuth
   const now = Math.floor(Date.now() / 1000);
@@ -104,10 +114,13 @@ async function getAccessToken() {
   });
 
   if (!tokenResponse.ok) {
+    const errorText = await tokenResponse.text();
+    console.error('Token exchange failed:', tokenResponse.status, errorText);
     throw new Error(`Failed to get access token: ${tokenResponse.status}`);
   }
 
   const tokenData = await tokenResponse.json();
+  console.log('Access token obtained successfully');
   return tokenData.access_token;
 }
 
@@ -118,16 +131,22 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Google Sheets function called');
     const userData: UserData = await req.json();
+    console.log('User data received:', { email: userData.email, university: userData.university });
     
     // Get spreadsheet ID from environment
     const spreadsheetId = Deno.env.get('GOOGLE_SHEETS_SPREADSHEET_ID');
     
     if (!spreadsheetId) {
+      console.error('GOOGLE_SHEETS_SPREADSHEET_ID not found');
       throw new Error('Missing Google Sheets spreadsheet ID');
     }
 
+    console.log('Spreadsheet ID found:', spreadsheetId);
+
     // Get access token
+    console.log('Getting access token...');
     const accessToken = await getAccessToken();
 
     // Prepare row data for your centralized Google Sheet with clear column headers
@@ -162,9 +181,12 @@ serve(async (req) => {
       userData.minSurface,
     ];
 
+    console.log('Prepared row data for Google Sheets');
+
     // Add data to your centralized Google Sheet
     const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1:append?valueInputOption=RAW`;
     
+    console.log('Making request to Google Sheets API...');
     const response = await fetch(sheetsUrl, {
       method: 'POST',
       headers: {
@@ -178,7 +200,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Google Sheets API error:', errorText);
+      console.error('Google Sheets API error:', response.status, errorText);
       throw new Error(`Google Sheets API error: ${response.status}`);
     }
 
