@@ -98,7 +98,7 @@ const OnboardingFlow = () => {
     try {
       console.log('Starting registration completion...');
       
-      // Format data for Google Sheets
+      // Format data for Google Sheets - allow partial data
       const userData = {
         email: onboardingData.email || '',
         fullName: onboardingData.fullName || '',
@@ -147,7 +147,7 @@ const OnboardingFlow = () => {
       localStorage.setItem('registrationData', JSON.stringify(onboardingData));
       
       toast.success("Registration completed successfully!", {
-        description: `We'll email you at ${onboardingData.email} when we find matches. Our team will verify your student status within 24-48 hours.`
+        description: `We'll email you at ${onboardingData.email || 'your registered email'} when we find matches. Our team will verify your student status within 24-48 hours.`
       });
       
       // Navigate to home page instead of paywall

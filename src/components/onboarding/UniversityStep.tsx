@@ -73,13 +73,13 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
           Let's get to know you
         </h3>
         <p className="text-gray-600 text-lg">
-          Tell us about yourself and your studies
+          Tell us about yourself and your studies (you can skip fields and come back later)
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="full-name" className="text-base font-medium">Full Name *</Label>
+          <Label htmlFor="full-name" className="text-base font-medium">Full Name</Label>
           <div className="relative">
             <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
             <Input
@@ -91,13 +91,12 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
                 updateData({ fullName: e.target.value });
               }}
               className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
-              required
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-base font-medium">Email Address *</Label>
+          <Label htmlFor="email" className="text-base font-medium">Email Address</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
             <Input
@@ -110,7 +109,6 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
                 updateData({ email: e.target.value });
               }}
               className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
-              required
             />
           </div>
         </div>
@@ -123,8 +121,8 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setUniversity(value);
             updateData({ university: value });
           }}
-          placeholder="Select your current university"
-          label="Current University *"
+          placeholder="Select your current university (optional)"
+          label="Current University"
           universities={europeanUniversities}
         />
 
@@ -134,8 +132,8 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setExchangeUniversity(value);
             updateData({ exchangeUniversity: value });
           }}
-          placeholder="Select your exchange destination university"
-          label="Exchange University *"
+          placeholder="Select your exchange destination university (optional)"
+          label="Exchange University"
           universities={europeanUniversities}
         />
 
@@ -145,9 +143,15 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setProgram(value);
             updateData({ program: value });
           }}
-          placeholder="Select your program of study"
-          label="Program of Study *"
+          placeholder="Select your program of study (optional)"
+          label="Program of Study"
         />
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <p className="text-sm text-blue-700">
+          💡 <strong>Tip:</strong> You can skip any fields and continue. We'll still process your application with whatever information you provide.
+        </p>
       </div>
 
       <div className="flex gap-4 pt-6">
@@ -163,10 +167,9 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
         )}
         <Button 
           onClick={handleNext}
-          disabled={!fullName || !email || !university || !exchangeUniversity || !program}
           className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
-          Next
+          Continue
         </Button>
       </div>
     </div>
