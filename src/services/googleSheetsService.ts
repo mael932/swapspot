@@ -1,4 +1,6 @@
 
+import { supabase } from "@/lib/supabase";
+
 interface UserData {
   email: string;
   fullName: string;
@@ -30,24 +32,25 @@ interface UserData {
   minSurface: string;
 }
 
-// This function sends data to your centralized Google Sheet
+// This function sends data to your centralized Google Sheet via Supabase Edge Function
 export const addUserToGoogleSheet = async (userData: UserData) => {
   try {
-    const response = await fetch('/api/google-sheets', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+    console.log('Calling Supabase Edge Function: google-sheets');
+    console.log('User data being sent:', userData);
+
+    const { data, error } = await supabase.functions.invoke('google-sheets', {
+      body: userData
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to add user to centralized Google Sheet');
+    if (error) {
+      console.error('Supabase Edge Function error:', error);
+      throw error;
     }
 
-    return await response.json();
+    console.log('Google Sheets function response:', data);
+    return data;
   } catch (error) {
-    console.error('Error adding user to centralized Google Sheet:', error);
+    console.error('Error calling google-sheets Edge Function:', error);
     throw error;
   }
 };

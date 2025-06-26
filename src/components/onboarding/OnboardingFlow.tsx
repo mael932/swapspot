@@ -10,7 +10,7 @@ import UniversityStep from "./UniversityStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
 import CompletionStep from "./CompletionStep";
-import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
+import { supabase } from "@/lib/supabase";
 
 export interface OnboardingData {
   // Basic info
@@ -96,8 +96,54 @@ const OnboardingFlow = () => {
 
   const handleCompleteRegistration = async () => {
     try {
-      const formattedData = formatUserDataForSheet(onboardingData, onboardingData);
-      await addUserToGoogleSheet(formattedData);
+      console.log('Starting registration completion...');
+      
+      // Format data for Google Sheets
+      const userData = {
+        email: onboardingData.email || '',
+        fullName: onboardingData.fullName || '',
+        university: onboardingData.university || '',
+        program: onboardingData.program || '',
+        startDate: onboardingData.startDate || '',
+        endDate: onboardingData.endDate || '',
+        minPrice: 0,
+        maxPrice: parseInt(onboardingData.budget) || 0,
+        location: onboardingData.currentLocation || '',
+        accommodationType: '',
+        amenities: [],
+        hasUploadedProof: onboardingData.hasUploadedProof || false,
+        verificationMethod: onboardingData.verificationMethod || '',
+        createdAt: new Date().toISOString(),
+        gdprConsent: onboardingData.gdprConsent || false,
+        // Apartment details
+        apartmentTitle: '',
+        apartmentLocation: onboardingData.currentLocation || '',
+        apartmentPrice: parseInt(onboardingData.budget) || 0,
+        apartmentBedrooms: '',
+        apartmentSurface: '',
+        apartmentDescription: onboardingData.apartmentDescription || '',
+        apartmentAmenities: [],
+        // Preferences
+        preferredCountries: onboardingData.preferredDestinations || [],
+        preferredAmenities: [],
+        minBedrooms: '',
+        minSurface: '',
+      };
+
+      console.log('Formatted user data:', userData);
+      console.log('Calling Supabase Edge Function: google-sheets');
+
+      // Call the Supabase Edge Function directly
+      const { data, error } = await supabase.functions.invoke('google-sheets', {
+        body: userData
+      });
+
+      if (error) {
+        console.error("Supabase Edge Function error:", error);
+        throw error;
+      }
+
+      console.log('Google Sheets function response:', data);
       localStorage.setItem('registrationData', JSON.stringify(onboardingData));
       
       toast.success("Registration completed successfully!", {
