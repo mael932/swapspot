@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -90,27 +89,20 @@ const OnboardingFlow = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Complete registration
       handleCompleteRegistration();
     }
   };
 
   const handleCompleteRegistration = async () => {
     try {
-      // Format data for Google Sheets
       const formattedData = formatUserDataForSheet(onboardingData, onboardingData);
-      
-      // Send to Google Sheets
       await addUserToGoogleSheet(formattedData);
-      
-      // Store in localStorage for demo purposes
       localStorage.setItem('registrationData', JSON.stringify(onboardingData));
       
       toast.success("Registration completed successfully!", {
         description: `We'll email you at ${onboardingData.email} when we find matches. Our team will verify your student status within 24-48 hours.`
       });
       
-      // Redirect to home page
       navigate("/");
     } catch (error) {
       console.error("Error completing registration:", error);
@@ -134,46 +126,48 @@ const OnboardingFlow = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header with Progress */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Join SwapSpot</h1>
-            <span className="text-sm text-gray-600">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Join SwapSpot</h1>
+            <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border">
               Step {currentStep} of {totalSteps}
             </span>
           </div>
           
-          <Progress value={progress} className="h-3 mb-2" />
-          <p className="text-sm text-gray-600 text-center">
-            {Math.round(progress)}% Complete
-          </p>
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <Progress value={progress} className="h-2 mb-3" />
+            <p className="text-sm text-gray-600 text-center font-medium">
+              {Math.round(progress)}% Complete
+            </p>
+          </div>
         </div>
 
         {/* Steps Overview */}
         <div className="flex justify-center mb-8">
-          <div className="flex space-x-4">
+          <div className="flex space-x-2">
             {steps.map((step) => (
               <div key={step.number} className="flex items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold border-2 ${
                     currentStep > step.number
-                      ? "bg-green-600 text-white"
+                      ? "bg-green-500 border-green-500 text-white"
                       : currentStep === step.number
-                      ? "bg-swap-blue text-white"
-                      : "bg-gray-300 text-gray-600"
+                      ? "bg-swap-blue border-swap-blue text-white"
+                      : "bg-white border-gray-300 text-gray-400"
                   }`}
                 >
                   {currentStep > step.number ? (
-                    <CheckCircle className="h-4 w-4" />
+                    <CheckCircle className="h-5 w-5" />
                   ) : (
                     step.number
                   )}
                 </div>
                 {step.number < totalSteps && (
                   <div
-                    className={`w-8 h-0.5 ${
-                      currentStep > step.number ? "bg-green-600" : "bg-gray-300"
+                    className={`w-12 h-0.5 ${
+                      currentStep > step.number ? "bg-green-500" : "bg-gray-300"
                     }`}
                   />
                 )}
@@ -184,10 +178,10 @@ const OnboardingFlow = () => {
 
         {/* Current Step Content */}
         <Card className="bg-white border-gray-200 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-gray-900">{steps[currentStep - 1].title}</CardTitle>
+          <CardHeader className="bg-gray-50 border-b">
+            <CardTitle className="text-gray-900 text-xl">{steps[currentStep - 1].title}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-8">
             {currentStep === 4 ? (
               <CurrentStepComponent
                 data={onboardingData}
