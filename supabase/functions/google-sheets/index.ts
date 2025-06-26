@@ -21,7 +21,7 @@ interface UserData {
   hasUploadedProof: boolean;
   verificationMethod: string;
   createdAt: string;
-  // New apartment details
+  // Apartment details
   apartmentTitle: string;
   apartmentLocation: string;
   apartmentPrice: number;
@@ -29,7 +29,7 @@ interface UserData {
   apartmentSurface: string;
   apartmentDescription: string;
   apartmentAmenities: string[];
-  // New preferences
+  // Preferences
   preferredCountries: string[];
   preferredAmenities: string[];
   minBedrooms: string;
@@ -53,7 +53,7 @@ serve(async (req) => {
       throw new Error('Missing Google Sheets configuration');
     }
 
-    // Prepare row data for Google Sheets with expanded columns
+    // Prepare row data for your centralized Google Sheet with clear column headers
     const rowData = [
       userData.createdAt,
       userData.email,
@@ -69,7 +69,7 @@ serve(async (req) => {
       userData.amenities.join(', '),
       userData.hasUploadedProof ? 'Yes' : 'No',
       userData.verificationMethod,
-      // Apartment details
+      // Their apartment details
       userData.apartmentTitle,
       userData.apartmentLocation,
       userData.apartmentPrice.toString(),
@@ -77,14 +77,14 @@ serve(async (req) => {
       userData.apartmentSurface,
       userData.apartmentDescription,
       userData.apartmentAmenities.join(', '),
-      // Preferences
+      // Their destination preferences
       userData.preferredCountries.join(', '),
       userData.preferredAmenities.join(', '),
       userData.minBedrooms,
       userData.minSurface,
     ];
 
-    // Add data to Google Sheet
+    // Add data to your centralized Google Sheet
     const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1:append?valueInputOption=RAW&key=${googleSheetsApiKey}`;
     
     const response = await fetch(sheetsUrl, {
@@ -104,7 +104,7 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log('Successfully added user to Google Sheet:', result);
+    console.log('Successfully added user to centralized Google Sheet:', result);
 
     return new Response(
       JSON.stringify({ success: true, result }),

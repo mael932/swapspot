@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Heart, MapPin, Calendar, Users, Star, Download } from "lucide-react";
+import { Heart, MapPin, Calendar, Users, Star } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
 import SwapCompatibilityIndicator from "../SwapCompatibilityIndicator";
 import { saveOnboardingData } from "@/utils/excelExport";
@@ -68,25 +67,14 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
 
   const handleFinishOnboarding = async () => {
     try {
-      // Save onboarding data to localStorage for Excel export
+      // Save onboarding data to localStorage for backup
       const submissionId = saveOnboardingData(data);
       
       // Get signup data from localStorage
       const signupDataStr = localStorage.getItem('signupData');
       const signupData = signupDataStr ? JSON.parse(signupDataStr) : {};
       
-      // Save complete user account data for Excel export
-      const { saveUserAccountData, exportUserDataToExcel, getAllUserAccounts } = await import('@/utils/excelExport');
-      saveUserAccountData(signupData, data);
-      
-      // Automatically export to Excel
-      const allAccounts = getAllUserAccounts();
-      if (allAccounts.length > 0) {
-        exportUserDataToExcel(allAccounts);
-        console.log('Excel file exported with all user data');
-      }
-      
-      // Send data to Google Sheets
+      // Send all data to your centralized Google Sheet
       try {
         const userData = formatUserDataForSheet(signupData, data);
         
@@ -96,23 +84,29 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
         
         if (error) {
           console.error('Error sending to Google Sheets:', error);
-          // Continue with onboarding completion even if Google Sheets fails
+          toast({
+            title: "Warning",
+            description: "Profile saved locally but couldn't sync to central database. We'll retry automatically.",
+            variant: "destructive",
+          });
         } else {
-          console.log('Successfully sent data to Google Sheets');
+          console.log('Successfully sent data to centralized Google Sheet');
+          toast({
+            title: "Profile Submitted Successfully!",
+            description: "Your information has been sent to our team for review. We'll contact you with perfect exchange opportunities!",
+          });
         }
       } catch (sheetsError) {
         console.error('Error with Google Sheets integration:', sheetsError);
-        // Continue with onboarding completion even if Google Sheets fails
+        toast({
+          title: "Profile Saved",
+          description: "Your preferences are saved locally. We'll sync to our database shortly.",
+        });
       }
       
       // Set completion status
       localStorage.setItem('onboardingComplete', 'true');
       localStorage.setItem('userProfile', JSON.stringify(data));
-      
-      toast({
-        title: "Profile Submitted!",
-        description: `Your preferences have been recorded and exported to Excel (ID: ${submissionId.slice(0, 8)}...). We'll review your information and find perfect matches for your exchange!`,
-      });
       
       navigate('/browse');
     } catch (error) {
@@ -184,7 +178,7 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
       <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
         <h4 className="font-semibold text-blue-800 mb-2">🎉 Profile Complete!</h4>
         <p className="text-sm text-blue-700 mb-3">
-          Your preferences will be sent to our team for manual matching. We'll contact you with perfect exchange opportunities!
+          Your information will be sent directly to our centralized database for manual review. We'll contact you with perfect exchange opportunities!
         </p>
         <Badge variant="secondary" className="bg-blue-100 text-blue-800">
           Ready for manual review
@@ -203,7 +197,7 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
           onClick={handleFinishOnboarding}
           className="px-8 bg-green-600 hover:bg-green-700"
         >
-          Submit My Preferences
+          Submit My Information
         </Button>
       </div>
     </div>

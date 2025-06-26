@@ -14,7 +14,7 @@ interface UserData {
   hasUploadedProof: boolean;
   verificationMethod: string;
   createdAt: string;
-  // New apartment details
+  // Apartment details
   apartmentTitle: string;
   apartmentLocation: string;
   apartmentPrice: number;
@@ -22,13 +22,14 @@ interface UserData {
   apartmentSurface: string;
   apartmentDescription: string;
   apartmentAmenities: string[];
-  // New preferences
+  // Preferences
   preferredCountries: string[];
   preferredAmenities: string[];
   minBedrooms: string;
   minSurface: string;
 }
 
+// This function sends data to your centralized Google Sheet
 export const addUserToGoogleSheet = async (userData: UserData) => {
   try {
     const response = await fetch('/api/google-sheets', {
@@ -40,12 +41,12 @@ export const addUserToGoogleSheet = async (userData: UserData) => {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to add user to Google Sheet');
+      throw new Error('Failed to add user to centralized Google Sheet');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error adding user to Google Sheet:', error);
+    console.error('Error adding user to centralized Google Sheet:', error);
     throw error;
   }
 };
