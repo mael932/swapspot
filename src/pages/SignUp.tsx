@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [gdprConsent, setGdprConsent] = useState(false);
 
   // Apartment details
   const [apartmentDetails, setApartmentDetails] = useState({
@@ -64,11 +64,18 @@ const SignUp = () => {
     e.preventDefault();
     
     if (currentStep < 3) {
+      // For first two steps, validate basic info and proceed
+      if (currentStep === 1) {
+        if (!email || !email.includes('@') || !email.includes('.')) {
+          setError("Please enter a valid email address");
+          return;
+        }
+      }
       setCurrentStep(currentStep + 1);
       return;
     }
 
-    // Final validation
+    // Final validation for step 3
     if (!email || !email.includes('@') || !email.includes('.')) {
       setError("Please enter a valid email address");
       return;
@@ -81,6 +88,11 @@ const SignUp = () => {
 
     if (!preferences.maxPrice || !preferences.startDate || !preferences.endDate) {
       setError("Please fill in all required preferences");
+      return;
+    }
+
+    if (!gdprConsent) {
+      setError("You must agree to the Privacy Policy to create an account");
       return;
     }
     
@@ -96,7 +108,8 @@ const SignUp = () => {
         timestamp: new Date().toISOString(),
         isDemoUser: true,
         apartmentDetails,
-        preferences
+        preferences,
+        gdprConsent: true
       };
       
       localStorage.setItem('demoUserData', JSON.stringify(demoUserData));
@@ -507,6 +520,31 @@ const SignUp = () => {
                     </div>
                   </div>
 
+                  {/* GDPR Consent Checkbox */}
+                  <div className="space-y-2">
+                    <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                      <Checkbox
+                        id="gdpr-consent"
+                        checked={gdprConsent}
+                        onCheckedChange={(checked) => setGdprConsent(checked === true)}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="gdpr-consent" className="text-sm leading-relaxed">
+                          I agree to the collection and processing of my data in accordance with the{" "}
+                          <Link 
+                            to="/privacy-policy" 
+                            target="_blank"
+                            className="text-swap-blue font-semibold hover:underline"
+                          >
+                            Privacy Policy
+                          </Link>
+                          . I understand that my data will be used to match me with accommodation exchange opportunities and that I can withdraw my consent at any time.
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
                   {error && (
                     <Alert variant="destructive">
                       <AlertDescription>{error}</AlertDescription>
@@ -517,7 +555,7 @@ const SignUp = () => {
                     <Button type="button" variant="outline" onClick={() => setCurrentStep(2)} className="flex-1">
                       Previous
                     </Button>
-                    <Button type="submit" className="flex-1" disabled={isLoading}>
+                    <Button type="submit" className="flex-1" disabled={isLoading || !gdprConsent}>
                       {isLoading ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -23,6 +23,7 @@ import { supabase } from "./lib/supabase";
 import Safety from "./pages/Safety";
 import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Careers from "./pages/Careers";
 import Support from "./pages/Support";
 import Onboarding from "./pages/Onboarding";
@@ -111,6 +112,7 @@ const App = () => {
               <Route path="/safety" element={<Safety />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/careers" element={<Careers />} />
               <Route path="/support" element={<Support />} />
               <Route path="/community" element={<Community />} />

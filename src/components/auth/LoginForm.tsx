@@ -8,6 +8,7 @@ import { Loader2, Mail, Lock, User, Upload } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/lib/supabase";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface LoginFormProps {
   onMagicLinkSent: (email: string) => void;
@@ -22,6 +23,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [gdprConsent, setGdprConsent] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +41,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
 
     if (!isLogin && password.length < 6) {
       setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (!isLogin && !gdprConsent) {
+      setError("You must agree to the Privacy Policy to create an account");
       return;
     }
 
@@ -91,7 +98,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             emailRedirectTo: redirectUrl,
             data: {
               full_name: fullName,
-              has_uploaded_proof: !!file
+              has_uploaded_proof: !!file,
+              gdpr_consent: true
             }
           }
         });
@@ -242,6 +250,31 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
                 </label>
               </div>
             </div>
+
+            {/* GDPR Consent Checkbox */}
+            <div className="space-y-2">
+              <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                <Checkbox
+                  id="gdpr-consent-login"
+                  checked={gdprConsent}
+                  onCheckedChange={(checked) => setGdprConsent(checked === true)}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="gdpr-consent-login" className="text-sm leading-relaxed">
+                    I agree to the collection and processing of my data in accordance with the{" "}
+                    <Link 
+                      to="/privacy-policy" 
+                      target="_blank"
+                      className="text-swap-blue font-semibold hover:underline"
+                    >
+                      Privacy Policy
+                    </Link>
+                    . I understand that my data will be used to match me with accommodation exchange opportunities.
+                  </Label>
+                </div>
+              </div>
+            </div>
           </>
         )}
         
@@ -251,7 +284,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
           </Alert>
         )}
         
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading || (!isLogin && !gdprConsent)}>
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -273,6 +306,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             setConfirmPassword("");
             setFullName("");
             setFile(null);
+            setGdprConsent(false);
           }}
           className="text-swap-blue font-semibold hover:underline"
         >

@@ -14,6 +14,7 @@ interface UserData {
   hasUploadedProof: boolean;
   verificationMethod: string;
   createdAt: string;
+  gdprConsent: boolean;
   // Apartment details
   apartmentTitle: string;
   apartmentLocation: string;
@@ -67,6 +68,7 @@ export const formatUserDataForSheet = (signupData: any, onboardingData?: any): U
     hasUploadedProof: signupData.hasUploadedProof || false,
     verificationMethod: onboardingData?.verificationMethod || '',
     createdAt: new Date().toISOString(),
+    gdprConsent: signupData.gdprConsent || false,
     // Apartment details
     apartmentTitle: signupData.apartmentDetails?.title || '',
     apartmentLocation: signupData.apartmentDetails?.location || '',

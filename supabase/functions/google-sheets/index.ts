@@ -21,6 +21,7 @@ interface UserData {
   hasUploadedProof: boolean;
   verificationMethod: string;
   createdAt: string;
+  gdprConsent: boolean;
   // Apartment details
   apartmentTitle: string;
   apartmentLocation: string;
@@ -145,6 +146,7 @@ serve(async (req) => {
       userData.amenities.join(', '),
       userData.hasUploadedProof ? 'Yes' : 'No',
       userData.verificationMethod,
+      userData.gdprConsent ? 'Yes' : 'No',
       // Their apartment details
       userData.apartmentTitle,
       userData.apartmentLocation,
