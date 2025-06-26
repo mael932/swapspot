@@ -5,94 +5,103 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { toast } from "@/components/ui/sonner";
 import UniversityStep from "./UniversityStep";
-import DatesStep from "./DatesStep";
-import RequirementsStep from "./RequirementsStep";
-import PhotosStep from "./PhotosStep";
-import VerificationStep from "./VerificationStep";
-import MatchesStep from "./MatchesStep";
+import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
+import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
+import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
 
 export interface OnboardingData {
+  // Basic info
+  fullName: string;
+  email: string;
   university: string;
   program: string;
-  preferredDates: {
-    startDate: string;
-    endDate: string;
-  };
-  requirements: {
-    priceRange: {
-      min: number;
-      max: number;
-    };
-    location: string;
-    accommodationType: string;
-    amenities: string[];
-  };
-  photos: File[];
-  verificationMethod: 'email' | 'id';
-  verificationFile?: File;
+  
+  // Proof of enrollment
+  proofOfEnrollment?: File;
+  hasUploadedProof: boolean;
+  additionalInfo: string;
+  
+  // Current location & apartment
+  currentLocation: string;
+  currentAddress: string;
+  apartmentDescription: string;
+  apartmentPhotos: File[];
+  
+  // Exchange preferences
+  duration: string;
+  startDate: string;
+  endDate: string;
+  budget: string;
+  preferredDestinations: string[];
+  
+  // Consent
+  gdprConsent: boolean;
 }
 
 const OnboardingFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
+    fullName: "",
+    email: "",
     university: "",
     program: "",
-    preferredDates: {
-      startDate: "",
-      endDate: ""
-    },
-    requirements: {
-      priceRange: {
-        min: 0,
-        max: 2000
-      },
-      location: "",
-      accommodationType: "",
-      amenities: []
-    },
-    photos: [],
-    verificationMethod: 'email'
+    hasUploadedProof: false,
+    additionalInfo: "",
+    currentLocation: "",
+    currentAddress: "",
+    apartmentDescription: "",
+    apartmentPhotos: [],
+    duration: "",
+    startDate: "",
+    endDate: "",
+    budget: "",
+    preferredDestinations: [],
+    gdprConsent: true
   });
 
-  const totalSteps = 6;
+  const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
 
   const steps = [
-    { number: 1, title: "University & Program", component: UniversityStep },
-    { number: 2, title: "Preferred Dates", component: DatesStep },
-    { number: 3, title: "Requirements & Budget", component: RequirementsStep },
-    { number: 4, title: "Room Photos", component: PhotosStep },
-    { number: 5, title: "Student Verification", component: VerificationStep },
-    { number: 6, title: "Your First Matches", component: MatchesStep }
+    { number: 1, title: "University & Contact Info", component: UniversityStep },
+    { number: 2, title: "Proof of Enrollment", component: ProofOfEnrollmentStep },
+    { number: 3, title: "Your Preferences", component: EnhancedPreferencesStep }
   ];
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Complete onboarding
-      handleCompleteOnboarding();
+      // Complete registration
+      handleCompleteRegistration();
     }
   };
 
-  const handleCompleteOnboarding = async () => {
+  const handleCompleteRegistration = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        // Mark onboarding as completed
-        localStorage.setItem(`onboarding_completed_${user.id}`, 'true');
-        localStorage.setItem(`onboarding_data_${user.id}`, JSON.stringify(onboardingData));
-      }
+      // Format data for Google Sheets
+      const formattedData = formatUserDataForSheet(onboardingData, onboardingData);
       
-      // Redirect to browse page to see matches
-      navigate("/browse");
+      // Send to Google Sheets
+      await addUserToGoogleSheet(formattedData);
+      
+      // Store in localStorage for demo purposes
+      localStorage.setItem('registrationData', JSON.stringify(onboardingData));
+      
+      toast.success("Registration completed successfully!", {
+        description: `We'll email you at ${onboardingData.email} when we find matches. Our team will verify your student status within 24-48 hours.`
+      });
+      
+      // Redirect to home page
+      navigate("/");
     } catch (error) {
-      console.error("Error completing onboarding:", error);
-      // Still redirect even if there's an error
-      navigate("/browse");
+      console.error("Error completing registration:", error);
+      toast.error("Registration failed", {
+        description: "There was an error submitting your information. Please try again."
+      });
     }
   };
 
@@ -110,11 +119,11 @@ const OnboardingFlow = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         {/* Header with Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-swap-blue">Complete Your Profile</h1>
+            <h1 className="text-2xl font-bold text-swap-blue">Join SwapSpot</h1>
             <span className="text-sm text-gray-600">
               Step {currentStep} of {totalSteps}
             </span>

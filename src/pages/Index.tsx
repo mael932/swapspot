@@ -3,7 +3,6 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AccommodationModes from "@/components/AccommodationModes";
 import HowItWorks from "@/components/HowItWorks";
-import FeaturedSwaps from "@/components/FeaturedSwaps";
 import Testimonials from "@/components/Testimonials";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
@@ -184,15 +183,13 @@ const Index = () => {
               }}
               className="mb-12"
             />
-            <FeaturedSwaps />
           </div>
         ) : (
-          // Show standard homepage for visitors (not logged in)
+          // Show standard homepage for visitors (not logged in) - removed FeaturedSwaps
           <>
             <HeroSection />
             <AccommodationModes />
             <HowItWorks />
-            <FeaturedSwaps />
             <Testimonials />
             <CtaSection />
           </>
