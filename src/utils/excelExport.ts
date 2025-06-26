@@ -7,6 +7,20 @@ export interface ExportableOnboardingData extends OnboardingData {
   email: string; // Make email required for export
 }
 
+export interface UserAccountData {
+  id: string;
+  email: string;
+  fullName: string;
+  university: string;
+  program: string;
+  currentLocation: string;
+  apartmentDescription: string;
+  preferredDestinations: string[];
+  budget: string;
+  duration: string;
+  createdAt: string;
+}
+
 export const saveOnboardingData = (data: OnboardingData): string => {
   try {
     // Create a simplified version for export
@@ -92,6 +106,49 @@ export const exportToExcel = (data: ExportableOnboardingData[]): void => {
   }
 };
 
+export const exportUserDataToExcel = (data: UserAccountData[]): void => {
+  try {
+    // Prepare data for Excel export
+    const excelData = data.map((item, index) => ({
+      'Account #': index + 1,
+      'Full Name': item.fullName,
+      'Email': item.email,
+      'University': item.university,
+      'Program': item.program,
+      'Current Location': item.currentLocation,
+      'Apartment Description': item.apartmentDescription,
+      'Preferred Destinations': item.preferredDestinations?.join(', ') || '',
+      'Budget': item.budget,
+      'Duration': item.duration,
+      'Created At': new Date(item.createdAt).toLocaleDateString()
+    }));
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    
+    // Auto-size columns
+    const colWidths = Object.keys(excelData[0] || {}).map(key => ({
+      wch: Math.max(key.length, 15)
+    }));
+    ws['!cols'] = colWidths;
+    
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'SwapSpot User Accounts');
+    
+    // Generate filename with timestamp
+    const filename = `swapspot_user_accounts_${new Date().toISOString().split('T')[0]}.xlsx`;
+    
+    // Save file
+    XLSX.writeFile(wb, filename);
+    
+    console.log('Excel file exported:', filename);
+  } catch (error) {
+    console.error('Error exporting to Excel:', error);
+    throw error;
+  }
+};
+
 export const getAllSubmissions = (): ExportableOnboardingData[] => {
   try {
     const existingData = localStorage.getItem('swapspot_submissions');
@@ -103,6 +160,21 @@ export const getAllSubmissions = (): ExportableOnboardingData[] => {
     return submissions.map((submission: any) => submission.data);
   } catch (error) {
     console.error('Error getting submissions:', error);
+    return [];
+  }
+};
+
+export const getAllUserAccounts = (): UserAccountData[] => {
+  try {
+    const existingData = localStorage.getItem('swapspot_user_accounts');
+    if (!existingData) {
+      return [];
+    }
+    
+    const accounts = JSON.parse(existingData);
+    return accounts;
+  } catch (error) {
+    console.error('Error getting user accounts:', error);
     return [];
   }
 };

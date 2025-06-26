@@ -188,15 +188,26 @@ const OnboardingFlow = () => {
             <CardTitle>{steps[currentStep - 1].title}</CardTitle>
           </CardHeader>
           <CardContent>
-            <CurrentStepComponent
-              data={onboardingData}
-              onUpdate={updateOnboardingData}
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-              canGoNext={currentStep < totalSteps}
-              canGoPrevious={currentStep > 1}
-              onComplete={handleCompleteRegistration}
-            />
+            {currentStep === 4 ? (
+              <CurrentStepComponent
+                data={onboardingData}
+                onUpdate={updateOnboardingData}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                canGoNext={currentStep < totalSteps}
+                canGoPrevious={currentStep > 1}
+                onComplete={handleCompleteRegistration}
+              />
+            ) : (
+              <CurrentStepComponent
+                data={onboardingData}
+                onUpdate={updateOnboardingData}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                canGoNext={currentStep < totalSteps}
+                canGoPrevious={currentStep > 1}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

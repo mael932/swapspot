@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, Shield, AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { OnboardingData } from "./OnboardingFlow";
 
 interface ProofOfEnrollmentStepProps {
-  data: any;
-  onUpdate: (data: any) => void;
+  data: OnboardingData;
+  onUpdate: (data: Partial<OnboardingData>) => void;
   onNext: () => void;
   onPrevious: () => void;
   canGoNext: boolean;
