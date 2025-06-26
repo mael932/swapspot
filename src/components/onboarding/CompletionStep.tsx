@@ -31,10 +31,10 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
           </div>
         </div>
         <h3 className="text-2xl font-bold text-green-800 mb-2">
-          Almost There!
+          Registration Complete!
         </h3>
         <p className="text-lg text-gray-600">
-          Your application has been submitted successfully
+          Thank you for joining SwapSpot. We'll process your application and notify you of any matches.
         </p>
       </div>
 
@@ -51,9 +51,9 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
                 1
               </div>
               <div>
-                <p className="font-medium text-blue-800">Student Verification</p>
+                <p className="font-medium text-blue-800">Application Review</p>
                 <p className="text-sm text-blue-700">
-                  Our team will review your proof of enrollment within 24-48 hours
+                  Our team will review your application and verify your student status within 24-48 hours
                 </p>
               </div>
             </div>
@@ -63,9 +63,9 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
                 2
               </div>
               <div>
-                <p className="font-medium text-blue-800">Match Finding</p>
+                <p className="font-medium text-blue-800">Match Search</p>
                 <p className="text-sm text-blue-700">
-                  We'll search for perfect exchange opportunities based on your preferences
+                  We'll actively search for suitable exchange partners based on your preferences
                 </p>
               </div>
             </div>
@@ -77,7 +77,7 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
               <div>
                 <p className="font-medium text-blue-800">Email Notification</p>
                 <p className="text-sm text-blue-700">
-                  You'll receive an email at <strong>{data.email}</strong> when we find suitable matches
+                  You'll receive an email at <strong>{data.email}</strong> when we find potential matches
                 </p>
               </div>
             </div>
@@ -102,8 +102,8 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
           <span className="font-medium text-yellow-800">Expected Timeline</span>
         </div>
         <ul className="text-sm text-yellow-700 space-y-1">
-          <li>• Verification: 24-48 hours</li>
-          <li>• First matches: Within 1 week (if available)</li>
+          <li>• Application review: 24-48 hours</li>
+          <li>• First potential matches: Within 1-2 weeks (if available)</li>
           <li>• Ongoing notifications: As new opportunities arise</li>
         </ul>
       </div>

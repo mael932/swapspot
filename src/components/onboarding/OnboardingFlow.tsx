@@ -104,8 +104,8 @@ const OnboardingFlow = () => {
         description: `We'll email you at ${onboardingData.email} when we find matches. Our team will verify your student status within 24-48 hours.`
       });
       
-      // Navigate to paywall instead of home
-      navigate("/required-signup");
+      // Navigate to home page instead of paywall
+      navigate("/");
     } catch (error) {
       console.error("Error completing registration:", error);
       toast.error("Registration failed", {
