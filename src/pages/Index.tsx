@@ -79,10 +79,10 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
-          <p className="text-lg">Loading...</p>
+          <p className="text-lg text-gray-700">Loading...</p>
         </div>
         <Footer />
       </div>
@@ -91,10 +91,10 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
         <div className="flex-grow flex items-center justify-center p-4">
-          <div className="bg-red-50 border border-red-200 p-4 rounded-md max-w-md">
+          <div className="bg-red-50 border border-red-200 p-6 rounded-lg max-w-md shadow-sm">
             <h2 className="text-lg font-semibold text-red-800 mb-2">Error</h2>
             <p className="text-red-700">{error}</p>
             <p className="mt-2 text-sm text-gray-600">Please check the browser console for more details.</p>
@@ -108,15 +108,15 @@ const Index = () => {
   // Show paywall for users without payment
   if (user && !hasPaid) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
-        <main className="flex-grow flex items-center justify-center p-4 bg-gray-50">
+        <main className="flex-grow flex items-center justify-center p-4">
           <div className="max-w-2xl mx-auto text-center">
             <Card className="border-blue-200 bg-white shadow-lg">
               <CardContent className="p-8">
-                <Lock className="h-16 w-16 text-blue-600 mx-auto mb-6" />
+                <Lock className="h-16 w-16 text-swap-blue mx-auto mb-6" />
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to SwapSpot!</h1>
-                <p className="text-xl text-gray-600 mb-6">
+                <p className="text-xl text-gray-700 mb-6">
                   You're signed in, but need access to connect with verified students.
                 </p>
                 
@@ -137,18 +137,18 @@ const Index = () => {
 
                 <Button 
                   onClick={() => navigate('/required-signup')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                  className="bg-swap-blue hover:bg-swap-blue/90 text-white px-8 py-3 text-lg"
                 >
                   Get SwapSpot Access
                 </Button>
 
-                <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t">
+                <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200">
                   <div className="text-center">
                     <Shield className="h-6 w-6 text-green-600 mx-auto mb-1" />
                     <p className="text-xs text-gray-600">Verified Students</p>
                   </div>
                   <div className="text-center">
-                    <Users className="h-6 w-6 text-blue-600 mx-auto mb-1" />
+                    <Users className="h-6 w-6 text-swap-blue mx-auto mb-1" />
                     <p className="text-xs text-gray-600">10,000+ Members</p>
                   </div>
                   <div className="text-center">
@@ -166,7 +166,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
         {user && hasPaid ? (
@@ -185,7 +185,7 @@ const Index = () => {
             />
           </div>
         ) : (
-          // Show standard homepage for visitors (not logged in) - removed FeaturedSwaps
+          // Show standard homepage for visitors (not logged in)
           <>
             <HeroSection />
             <AccommodationModes />

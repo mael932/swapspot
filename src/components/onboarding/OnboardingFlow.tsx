@@ -138,7 +138,7 @@ const OnboardingFlow = () => {
         {/* Header with Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-swap-blue">Join SwapSpot</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Join SwapSpot</h1>
             <span className="text-sm text-gray-600">
               Step {currentStep} of {totalSteps}
             </span>
@@ -158,10 +158,10 @@ const OnboardingFlow = () => {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     currentStep > step.number
-                      ? "bg-green-500 text-white"
+                      ? "bg-green-600 text-white"
                       : currentStep === step.number
                       ? "bg-swap-blue text-white"
-                      : "bg-gray-200 text-gray-600"
+                      : "bg-gray-300 text-gray-600"
                   }`}
                 >
                   {currentStep > step.number ? (
@@ -173,7 +173,7 @@ const OnboardingFlow = () => {
                 {step.number < totalSteps && (
                   <div
                     className={`w-8 h-0.5 ${
-                      currentStep > step.number ? "bg-green-500" : "bg-gray-200"
+                      currentStep > step.number ? "bg-green-600" : "bg-gray-300"
                     }`}
                   />
                 )}
@@ -183,9 +183,9 @@ const OnboardingFlow = () => {
         </div>
 
         {/* Current Step Content */}
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm">
           <CardHeader>
-            <CardTitle>{steps[currentStep - 1].title}</CardTitle>
+            <CardTitle className="text-gray-900">{steps[currentStep - 1].title}</CardTitle>
           </CardHeader>
           <CardContent>
             {currentStep === 4 ? (
