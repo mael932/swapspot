@@ -75,6 +75,17 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
       const signupDataStr = localStorage.getItem('signupData');
       const signupData = signupDataStr ? JSON.parse(signupDataStr) : {};
       
+      // Save complete user account data for Excel export
+      const { saveUserAccountData, exportUserDataToExcel, getAllUserAccounts } = await import('@/utils/excelExport');
+      saveUserAccountData(signupData, data);
+      
+      // Automatically export to Excel
+      const allAccounts = getAllUserAccounts();
+      if (allAccounts.length > 0) {
+        exportUserDataToExcel(allAccounts);
+        console.log('Excel file exported with all user data');
+      }
+      
       // Send data to Google Sheets
       try {
         const userData = formatUserDataForSheet(signupData, data);
@@ -100,7 +111,7 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
       
       toast({
         title: "Profile Submitted!",
-        description: `Your preferences have been recorded (ID: ${submissionId.slice(0, 8)}...). We'll review your information and find perfect matches for your exchange!`,
+        description: `Your preferences have been recorded and exported to Excel (ID: ${submissionId.slice(0, 8)}...). We'll review your information and find perfect matches for your exchange!`,
       });
       
       navigate('/browse');
