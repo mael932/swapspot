@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import TestimonialCarousel from "./TestimonialCarousel";
 
 export default function HeroSection() {
   return (
@@ -32,12 +33,7 @@ export default function HeroSection() {
         </div>
         
         {/* 10% - Accent Content */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto border border-gray-200 shadow-sm">
-          <p className="text-gray-800 font-medium text-sm">
-            "Found my Barcelona housing match in 2 days"
-          </p>
-          <p className="text-xs text-gray-600 mt-1">- Sarah M.</p>
-        </div>
+        <TestimonialCarousel />
       </div>
     </section>
   );

@@ -1,257 +1,160 @@
-
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/sonner";
+import React, { useState, useCallback } from "react";
 import UniversityStep from "./UniversityStep";
-import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
+import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
+import PhotosStep from "./PhotosStep";
+import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
+import VerificationStep from "./VerificationStep";
+import MatchesStep from "./MatchesStep";
 import CompletionStep from "./CompletionStep";
-import { supabase } from "@/lib/supabase";
 
-export interface OnboardingData {
-  // Basic info
-  fullName: string;
-  email: string;
-  university: string;
-  program: string;
-  
-  // Proof of enrollment
-  proofOfEnrollment?: File;
-  hasUploadedProof: boolean;
-  additionalInfo: string;
-  
-  // Current location & apartment
-  currentLocation: string;
-  currentAddress: string;
-  apartmentDescription: string;
-  apartmentPhotos: File[];
-  
-  // Exchange preferences
-  duration: string;
-  startDate: string;
-  endDate: string;
-  budget: string;
-  preferredDestinations: string[];
-  
-  // Legacy fields for compatibility with existing components
-  preferredDates?: { startDate: string; endDate: string; flexible: boolean };
-  photos?: File[];
-  requirements?: {
-    smokingPolicy: string;
-    petPolicy: string;
-    genderPreference: string;
-    ageRange: string;
-    cleanlinessLevel: string;
+interface OnboardingData {
+  fullName?: string;
+  email?: string;
+  university?: string;
+  exchangeUniversity?: string;
+  program?: string;
+  dates?: {
+    startDate?: string;
+    endDate?: string;
   };
-  verificationMethod?: string;
-  verificationFile?: File;
-  
-  // Consent
-  gdprConsent: boolean;
+  preferences?: {
+    cleanliness?: number;
+    noiseLevel?: number;
+    socialBattery?: number;
+  };
+  photos?: string[];
+  proofOfEnrollment?: string;
+  verificationStatus?: "pending" | "verified" | "rejected";
+  matches?: string[];
 }
 
 const OnboardingFlow = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const navigate = useNavigate();
-  const [onboardingData, setOnboardingData] = useState<OnboardingData>({
-    fullName: "",
-    email: "",
-    university: "",
-    program: "",
-    hasUploadedProof: false,
-    additionalInfo: "",
-    currentLocation: "",
-    currentAddress: "",
-    apartmentDescription: "",
-    apartmentPhotos: [],
-    duration: "",
-    startDate: "",
-    endDate: "",
-    budget: "",
-    preferredDestinations: [],
-    gdprConsent: true
-  });
-
-  const totalSteps = 4;
-  const progress = (currentStep / totalSteps) * 100;
-
-  const steps = [
-    { number: 1, title: "University & Contact Info", component: UniversityStep },
-    { number: 2, title: "Proof of Enrollment", component: ProofOfEnrollmentStep },
-    { number: 3, title: "Your Preferences", component: EnhancedPreferencesStep },
-    { number: 4, title: "Complete", component: CompletionStep }
-  ];
+  const [currentStep, setCurrentStep] = useState(0);
+  const [data, setData] = useState<OnboardingData>({});
+  const [canGoNext, setCanGoNext] = useState(true);
+  const [canGoPrevious, setCanGoPrevious] = useState(true);
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
+    if (currentStep < 7) {
       setCurrentStep(currentStep + 1);
-    } else {
-      handleCompleteRegistration();
-    }
-  };
-
-  const handleCompleteRegistration = async () => {
-    try {
-      console.log('Starting registration completion...');
-      
-      // Format data for Google Sheets - allow partial data
-      const userData = {
-        email: onboardingData.email || '',
-        fullName: onboardingData.fullName || '',
-        university: onboardingData.university || '',
-        program: onboardingData.program || '',
-        startDate: onboardingData.startDate || '',
-        endDate: onboardingData.endDate || '',
-        minPrice: 0,
-        maxPrice: parseInt(onboardingData.budget) || 0,
-        location: onboardingData.currentLocation || '',
-        accommodationType: '',
-        amenities: [],
-        hasUploadedProof: onboardingData.hasUploadedProof || false,
-        verificationMethod: onboardingData.verificationMethod || '',
-        createdAt: new Date().toISOString(),
-        gdprConsent: onboardingData.gdprConsent || false,
-        // Apartment details
-        apartmentTitle: '',
-        apartmentLocation: onboardingData.currentLocation || '',
-        apartmentPrice: parseInt(onboardingData.budget) || 0,
-        apartmentBedrooms: '',
-        apartmentSurface: '',
-        apartmentDescription: onboardingData.apartmentDescription || '',
-        apartmentAmenities: [],
-        // Preferences
-        preferredCountries: onboardingData.preferredDestinations || [],
-        preferredAmenities: [],
-        minBedrooms: '',
-        minSurface: '',
-      };
-
-      console.log('Formatted user data:', userData);
-      console.log('Calling Supabase Edge Function: google-sheets');
-
-      // Call the Supabase Edge Function directly
-      const { data, error } = await supabase.functions.invoke('google-sheets', {
-        body: userData
-      });
-
-      if (error) {
-        console.error("Supabase Edge Function error:", error);
-        throw error;
-      }
-
-      console.log('Google Sheets function response:', data);
-      localStorage.setItem('registrationData', JSON.stringify(onboardingData));
-      
-      toast.success("Registration completed successfully!", {
-        description: `We'll email you at ${onboardingData.email || 'your registered email'} when we find matches. Our team will verify your student status within 24-48 hours.`
-      });
-      
-      // Navigate to home page instead of paywall
-      navigate("/");
-    } catch (error) {
-      console.error("Error completing registration:", error);
-      toast.error("Registration failed", {
-        description: "There was an error submitting your information. Please try again."
-      });
     }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const updateOnboardingData = (stepData: Partial<OnboardingData>) => {
-    setOnboardingData(prev => ({ ...prev, ...stepData }));
+  const handleStepUpdate = (newData: OnboardingData) => {
+    setData(newData);
   };
 
-  const CurrentStepComponent = steps[currentStep - 1].component;
+  const handleComplete = () => {
+    alert("Onboarding complete!");
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <UniversityStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 1:
+        return (
+          <DatesStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 2:
+        return (
+          <EnhancedPreferencesStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 3:
+        return (
+          <PhotosStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 4:
+        return (
+          <ProofOfEnrollmentStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 5:
+        return (
+          <VerificationStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 6:
+        return (
+          <MatchesStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+          />
+        );
+      case 7:
+        return (
+          <CompletionStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+            onComplete={handleComplete}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header with Progress */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Join SwapSpot</h1>
-            <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border">
-              Step {currentStep} of {totalSteps}
-            </span>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <Progress value={progress} className="h-2 mb-3" />
-            <p className="text-sm text-gray-600 text-center font-medium">
-              {Math.round(progress)}% Complete
-            </p>
-          </div>
-        </div>
-
-        {/* Steps Overview */}
-        <div className="flex justify-center mb-8">
-          <div className="flex space-x-2">
-            {steps.map((step) => (
-              <div key={step.number} className="flex items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold border-2 ${
-                    currentStep > step.number
-                      ? "bg-green-500 border-green-500 text-white"
-                      : currentStep === step.number
-                      ? "bg-swap-blue border-swap-blue text-white"
-                      : "bg-white border-gray-300 text-gray-400"
-                  }`}
-                >
-                  {currentStep > step.number ? (
-                    <CheckCircle className="h-5 w-5" />
-                  ) : (
-                    step.number
-                  )}
-                </div>
-                {step.number < totalSteps && (
-                  <div
-                    className={`w-12 h-0.5 ${
-                      currentStep > step.number ? "bg-green-500" : "bg-gray-300"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Current Step Content */}
-        <Card className="bg-white border-gray-200 shadow-sm">
-          <CardHeader className="bg-gray-50 border-b">
-            <CardTitle className="text-gray-900 text-xl">{steps[currentStep - 1].title}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            {currentStep === 4 ? (
-              <CurrentStepComponent
-                data={onboardingData}
-                onUpdate={updateOnboardingData}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                canGoNext={currentStep < totalSteps}
-                canGoPrevious={currentStep > 1}
-                onComplete={handleCompleteRegistration}
-              />
-            ) : (
-              <CurrentStepComponent
-                data={onboardingData}
-                onUpdate={updateOnboardingData}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                canGoNext={currentStep < totalSteps}
-                canGoPrevious={currentStep > 1}
-              />
-            )}
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-gray-50 py-6 flex items-center justify-center">
+      <div className="max-w-2xl w-full mx-auto p-8 bg-white shadow-lg rounded-lg">
+        {renderCurrentStep()}
       </div>
     </div>
   );
