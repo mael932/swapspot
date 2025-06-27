@@ -42,6 +42,7 @@ export interface OnboardingData {
   apartmentDescription?: string;
   gdprConsent?: boolean;
   apartmentPhotos?: File[];
+  amenities?: string[];
 }
 
 const OnboardingFlow = () => {

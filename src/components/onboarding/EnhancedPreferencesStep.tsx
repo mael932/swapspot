@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   Home, 
@@ -20,6 +20,7 @@ import {
   DollarSign
 } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
+import AmenitiesSelector from "./AmenitiesSelector";
 
 interface EnhancedPreferencesStepProps {
   data: OnboardingData;
@@ -43,11 +44,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
   const [budget, setBudget] = useState(data.budget || "");
   const [apartmentDescription, setApartmentDescription] = useState(data.apartmentDescription || "");
   const [apartmentPhotos, setApartmentPhotos] = useState<File[]>(data.apartmentPhotos || []);
-  const [preferences, setPreferences] = useState(data.preferences || {
-    cleanliness: 3,
-    noiseLevel: 3,
-    socialBattery: 3,
-  });
+  const [amenities, setAmenities] = useState<string[]>(data.amenities || []);
   const [gdprConsent, setGdprConsent] = useState(data.gdprConsent || false);
 
   const handleUpdate = (updates: Partial<OnboardingData>) => {
@@ -73,10 +70,9 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
     handleUpdate({ apartmentPhotos: newPhotos });
   };
 
-  const updatePreference = (key: string, value: number) => {
-    const newPreferences = { ...preferences, [key]: value };
-    setPreferences(newPreferences);
-    handleUpdate({ preferences: newPreferences });
+  const handleAmenitiesChange = (selectedAmenities: string[]) => {
+    setAmenities(selectedAmenities);
+    handleUpdate({ amenities: selectedAmenities });
   };
 
   const canProceed = currentLocation.trim() !== "" && budget;
@@ -233,65 +229,11 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           )}
         </div>
 
-        <div className="space-y-4">
-          <h4 className="text-lg font-semibold">Lifestyle Preferences</h4>
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-base font-medium">Cleanliness Level</Label>
-              <div className="px-3">
-                <Slider
-                  value={[preferences.cleanliness]}
-                  onValueChange={(value) => updatePreference('cleanliness', value[0])}
-                  max={5}
-                  min={1}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>Relaxed</span>
-                  <span>Very Tidy</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-base font-medium">Noise Tolerance</Label>
-              <div className="px-3">
-                <Slider
-                  value={[preferences.noiseLevel]}
-                  onValueChange={(value) => updatePreference('noiseLevel', value[0])}
-                  max={5}
-                  min={1}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>Quiet</span>
-                  <span>Social/Lively</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-base font-medium">Social Energy</Label>
-              <div className="px-3">
-                <Slider
-                  value={[preferences.socialBattery]}
-                  onValueChange={(value) => updatePreference('socialBattery', value[0])}
-                  max={5}
-                  min={1}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>Introverted</span>
-                  <span>Extroverted</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AmenitiesSelector
+          selectedAmenities={amenities}
+          onAmenitiesChange={handleAmenitiesChange}
+          title="Available Amenities"
+        />
 
         <div className="flex items-center space-x-2">
           <Checkbox

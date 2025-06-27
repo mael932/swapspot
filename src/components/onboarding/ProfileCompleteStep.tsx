@@ -6,6 +6,7 @@ import { OnboardingData } from "./OnboardingFlow";
 import { useNavigate } from "react-router-dom";
 import { saveUserProfile } from "@/services/emailService";
 import { toast } from "@/components/ui/sonner";
+import { supabase } from "@/lib/supabase";
 
 interface ProfileCompleteStepProps {
   data: OnboardingData;
@@ -38,7 +39,7 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
       
       if (saveSuccess) {
         toast.success("Profile saved successfully!", {
-          description: "Welcome to SwapSpot community"
+          description: "We'll email you when we find potential swaps"
         });
         
         // Mark onboarding as completed in localStorage
@@ -72,9 +73,17 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
         <h3 className="text-4xl font-bold text-gray-900 mb-4">
           Welcome to SwapSpot!
         </h3>
-        <p className="text-xl text-gray-600 mb-8">
+        <p className="text-xl text-gray-600 mb-4">
           Your profile is complete and ready to connect with other students
         </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p className="text-blue-800 font-medium">
+            📧 We'll email you when we find potential swaps that match your preferences
+          </p>
+          <p className="text-blue-600 text-sm mt-1">
+            Check your inbox at <strong>{data.email}</strong> for updates
+          </p>
+        </div>
       </div>
 
       {/* 30% - Secondary Content */}
