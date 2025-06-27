@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Users, MessageCircle, Calendar } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
 import { useNavigate } from "react-router-dom";
-import { saveUserProfile } from "@/services/emailService";
 import { toast } from "@/components/ui/sonner";
-import { supabase } from "@/lib/supabase";
+import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
 
 interface ProfileCompleteStepProps {
   data: OnboardingData;
@@ -34,29 +33,26 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
     setIsLoading(true);
     
     try {
-      // Save user profile data to the profiles table
-      const saveSuccess = await saveUserProfile(data);
+      // Format and send data to Google Sheets
+      const formattedData = formatUserDataForSheet(data);
+      console.log('Sending data to Google Sheets:', formattedData);
       
-      if (saveSuccess) {
-        toast.success("Profile saved successfully!", {
+      const result = await addUserToGoogleSheet(formattedData);
+      
+      if (result.success) {
+        toast.success("Registration completed successfully!", {
           description: "We'll email you when we find potential swaps"
         });
-        
-        // Mark onboarding as completed in localStorage
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          localStorage.setItem(`onboarding_completed_${user.id}`, 'true');
-        }
         
         // Navigate to community page
         navigate("/community");
       } else {
-        toast.error("Failed to save profile", {
+        toast.error("Failed to complete registration", {
           description: "Please try again"
         });
       }
     } catch (error) {
-      console.error("Error completing profile:", error);
+      console.error("Error completing registration:", error);
       toast.error("An error occurred", {
         description: "Please try again"
       });
@@ -74,7 +70,7 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
           Welcome to SwapSpot!
         </h3>
         <p className="text-xl text-gray-600 mb-4">
-          Your profile is complete and ready to connect with other students
+          Your registration is complete and ready to connect with other students
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
           <p className="text-blue-800 font-medium">
@@ -134,7 +130,7 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
           disabled={isLoading}
           className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
-          {isLoading ? "Saving..." : "Join Community"}
+          {isLoading ? "Completing..." : "Join Community"}
         </Button>
       </div>
     </div>
