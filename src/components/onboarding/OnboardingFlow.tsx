@@ -5,10 +5,8 @@ import { ArrowRightLeft } from "lucide-react";
 import UniversityStep from "./UniversityStep";
 import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
-import PhotosStep from "./PhotosStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
 import ProfileCompleteStep from "./ProfileCompleteStep";
-import CompletionStep from "./CompletionStep";
 
 export interface OnboardingData {
   fullName?: string;
@@ -58,7 +56,7 @@ const OnboardingFlow = () => {
   const [canGoPrevious, setCanGoPrevious] = useState(true);
 
   const handleNext = () => {
-    if (currentStep < 6) {
+    if (currentStep < 4) { // Updated max step count
       setCurrentStep(currentStep + 1);
     }
   };
@@ -114,7 +112,7 @@ const OnboardingFlow = () => {
         );
       case 3:
         return (
-          <PhotosStep
+          <ProofOfEnrollmentStep
             data={data}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
@@ -125,30 +123,7 @@ const OnboardingFlow = () => {
         );
       case 4:
         return (
-          <ProofOfEnrollmentStep
-            data={data}
-            onUpdate={handleStepUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-            canGoNext={canGoNext}
-            canGoPrevious={canGoPrevious}
-          />
-        );
-      case 5:
-        return (
           <ProfileCompleteStep
-            data={data}
-            onUpdate={handleStepUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-            canGoNext={canGoNext}
-            canGoPrevious={canGoPrevious}
-            onComplete={handleComplete}
-          />
-        );
-      case 6:
-        return (
-          <CompletionStep
             data={data}
             onUpdate={handleStepUpdate}
             onNext={handleNext}

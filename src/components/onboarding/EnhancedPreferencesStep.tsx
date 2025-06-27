@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, MapPin, Calendar, Home, Euro } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Upload, MapPin, Calendar, Home, Euro, Info } from "lucide-react";
 import AmenitiesSelector from "./AmenitiesSelector";
 
 interface EnhancedPreferencesStepProps {
@@ -56,7 +57,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
     if (e.target.files) {
       const files = Array.from(e.target.files);
       setApartmentPhotos(files);
-      updateData({ apartmentPhotos: files });
+      updateData({ apartmentPhotos: files, photos: files }); // Update both fields for compatibility
     }
   };
 
@@ -235,6 +236,18 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           </div>
         </div>
 
+        {/* Budget Disclaimer */}
+        <Alert className="mb-6 border-blue-200 bg-blue-50">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-blue-800">
+            <strong>Why we ask for budget range:</strong> We use this information to make the most fair matches possible. 
+            This helps us connect you with partners who have similar expectations about accommodation costs and living standards.
+            <br /><br />
+            <strong>Our service fee:</strong> SwapSpot charges a small verification and matching fee. We'll provide full pricing details 
+            before you confirm any exchange to ensure complete transparency.
+          </AlertDescription>
+        </Alert>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="space-y-2">
             <Label htmlFor="start-date" className="text-base font-medium">Preferred Start Date *</Label>
@@ -292,7 +305,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           disabled={!currentLocation || !currentAddress || !duration || !budget || !startDate || !endDate || apartmentPhotos.length === 0}
           className="flex-1 h-12 bg-[#EA6B4A] hover:bg-[#EA6B4A]/90 text-white font-medium"
         >
-          Complete Registration
+          Continue
         </Button>
       </div>
     </div>

@@ -72,7 +72,8 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
       localStorage.setItem('onboardingComplete', 'true');
       localStorage.setItem('userProfile', JSON.stringify(data));
       
-      navigate('/browse');
+      // Redirect to community page instead of browse
+      navigate('/community');
     } catch (error) {
       console.error('Error saving onboarding data:', error);
       toast({
@@ -95,7 +96,7 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
           Profile Complete!
         </h3>
         <p className="text-lg text-gray-600">
-          Thank you for joining SwapSpot. We'll review your profile and notify you when we find perfect matches.
+          Thank you for joining SwapSpot. We'll review your profile and email you when we find perfect matches.
         </p>
       </div>
 
@@ -181,7 +182,7 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
           onClick={handleFinishOnboarding}
           className="px-8 bg-green-600 hover:bg-green-700"
         >
-          Complete Profile
+          Complete Profile & Join Community
         </Button>
       </div>
     </div>
