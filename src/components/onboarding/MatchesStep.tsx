@@ -70,13 +70,9 @@ const MatchesStep: React.FC<MatchesStepProps> = ({
       // Save onboarding data to localStorage for backup
       const submissionId = saveOnboardingData(data);
       
-      // Get signup data from localStorage
-      const signupDataStr = localStorage.getItem('signupData');
-      const signupData = signupDataStr ? JSON.parse(signupDataStr) : {};
-      
       // Send all data to your centralized Google Sheet
       try {
-        const userData = formatUserDataForSheet(signupData, data);
+        const userData = formatUserDataForSheet(data);
         
         const { error } = await supabase.functions.invoke('google-sheets', {
           body: userData
