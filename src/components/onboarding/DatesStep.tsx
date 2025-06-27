@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ const DatesStep: React.FC<DatesStepProps> = ({
   canGoPrevious
 }) => {
   const handleDateChange = (field: 'startDate' | 'endDate', value: string) => {
+    // Only update the specific field, keeping other data intact
     onUpdate({
       [field]: value
     });
@@ -48,7 +48,7 @@ const DatesStep: React.FC<DatesStepProps> = ({
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="startDate" className="text-base font-medium">Start Date *</Label>
+            <Label htmlFor="startDate" className="text-base font-medium">Start Date</Label>
             <Input
               id="startDate"
               type="date"
@@ -61,7 +61,7 @@ const DatesStep: React.FC<DatesStepProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="endDate" className="text-base font-medium">End Date *</Label>
+            <Label htmlFor="endDate" className="text-base font-medium">End Date</Label>
             <Input
               id="endDate"
               type="date"

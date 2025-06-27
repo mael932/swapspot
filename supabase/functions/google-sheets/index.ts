@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -128,7 +129,7 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
   console.log('Checking if headers exist...');
   
   // First, check if there's any data in row 1
-  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:O1`;
+  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:N1`;
   
   const checkResponse = await fetch(checkUrl, {
     method: 'GET',
@@ -162,11 +163,10 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
       'Wants Flatmate',
       'Smoker',
       'Pets',
-      'Preferences Notes',
-      'Max Rent Final'
+      'Preferences Notes'
     ];
 
-    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:O1?valueInputOption=RAW`;
+    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:N1?valueInputOption=RAW`;
     
     const headerResponse = await fetch(headerUrl, {
       method: 'PUT',
@@ -219,7 +219,7 @@ serve(async (req) => {
     // Ensure headers exist
     await ensureHeaders(accessToken, spreadsheetId);
 
-    // Prepare row data that matches the headers
+    // Prepare row data that matches the headers exactly
     const rowData = [
       userData.createdAt,                                    // Timestamp
       userData.email,                                        // Email
@@ -235,10 +235,9 @@ serve(async (req) => {
       userData.amenities.includes('smoking') ? 'Yes' : 'No', // Smoker
       userData.amenities.includes('pets') ? 'Yes' : 'No',    // Pets
       userData.amenities.join(', '),                         // Preferences Notes
-      userData.maxPrice.toString(),                          // Max Rent Final
     ];
 
-    console.log('Prepared row data for Google Sheets');
+    console.log('Prepared row data for Google Sheets:', rowData);
 
     // Append data as a new row (this will automatically find the next empty row)
     const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1:append?valueInputOption=RAW`;
