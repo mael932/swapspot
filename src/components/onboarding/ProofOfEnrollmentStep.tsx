@@ -1,10 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Shield, AlertCircle, CheckCircle } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card } from "@/components/ui/card";
+import { Upload, Shield, AlertCircle, CheckCircle, Mail, CreditCard } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OnboardingData } from "./OnboardingFlow";
 
@@ -25,16 +27,24 @@ const ProofOfEnrollmentStep: React.FC<ProofOfEnrollmentStepProps> = ({
   canGoNext,
   canGoPrevious,
 }) => {
-  const [proofFile, setProofFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [additionalInfo, setAdditionalInfo] = useState(data.additionalInfo || "");
+
+  const handleVerificationMethodChange = (method: 'email' | 'id') => {
+    onUpdate({ 
+      ...data, 
+      verificationMethod: method,
+      // Clear the file if switching to email method
+      ...(method === 'email' && { verificationFile: undefined })
+    });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      setProofFile(file);
       onUpdate({ 
         ...data, 
-        proofOfEnrollment: file,
+        verificationFile: file,
         hasUploadedProof: true 
       });
     }
@@ -45,11 +55,8 @@ const ProofOfEnrollmentStep: React.FC<ProofOfEnrollmentStepProps> = ({
     onUpdate({ ...data, additionalInfo: value });
   };
 
-  const handleNext = () => {
-    if (proofFile) {
-      onNext();
-    }
-  };
+  const canProceed = data.verificationMethod === 'email' || 
+                     (data.verificationMethod === 'id' && data.verificationFile);
 
   return (
     <div className="space-y-6">
@@ -72,50 +79,77 @@ const ProofOfEnrollmentStep: React.FC<ProofOfEnrollmentStepProps> = ({
       </Alert>
 
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="proof-upload" className="text-base font-medium">
-            Upload Proof of Enrollment *
-          </Label>
-          <p className="text-sm text-gray-600 mb-3">
-            Please upload one of the following documents:
-          </p>
-          <ul className="text-sm text-gray-600 mb-4 space-y-1">
-            <li>• Student ID card (both sides)</li>
-            <li>• Official enrollment letter from your university</li>
-            <li>• Current semester transcript</li>
-            <li>• University-issued document with your name and enrollment status</li>
-          </ul>
-          
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-swap-blue transition-colors">
-            <label className="cursor-pointer">
-              <Input
-                id="proof-upload"
-                type="file"
-                accept="image/*,.pdf"
-                onChange={handleFileChange}
-                className="hidden"
-                required
-              />
-              <div className="flex flex-col items-center gap-3">
-                <Upload className="h-12 w-12 text-gray-400" />
-                <div>
-                  <p className="text-lg font-medium text-gray-700">
-                    {proofFile ? proofFile.name : "Click to upload your document"}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Supported formats: JPG, PNG, PDF (Max 10MB)
-                  </p>
-                </div>
-                {proofFile && (
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-5 w-5" />
-                    <span className="text-sm font-medium">Document uploaded successfully</span>
+        <Label className="text-base font-medium">Choose your verification method *</Label>
+        
+        <RadioGroup 
+          value={data.verificationMethod} 
+          onValueChange={handleVerificationMethodChange}
+          className="space-y-4"
+        >
+          <Card className="p-4">
+            <div className="flex items-center space-x-3">
+              <RadioGroupItem value="email" id="email" />
+              <Label htmlFor="email" className="flex-1 cursor-pointer">
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <p className="font-medium">University Email Verification</p>
+                    <p className="text-sm text-gray-600">We'll verify your .edu or university domain email</p>
                   </div>
-                )}
+                </div>
+              </Label>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center space-x-3">
+              <RadioGroupItem value="id" id="id" />
+              <Label htmlFor="id" className="flex-1 cursor-pointer">
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="font-medium">Student ID Upload</p>
+                    <p className="text-sm text-gray-600">Upload a photo of your student ID card or enrollment document</p>
+                  </div>
+                </div>
+              </Label>
+            </div>
+            
+            {data.verificationMethod === 'id' && (
+              <div className="mt-4 pl-8">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-swap-blue transition-colors">
+                  <label className="cursor-pointer">
+                    <Input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      required
+                    />
+                    <div className="flex flex-col items-center gap-3">
+                      <Upload className="h-10 w-10 text-gray-400" />
+                      <div>
+                        <p className="font-medium text-gray-700">
+                          {data.verificationFile ? data.verificationFile.name : "Click to upload your document"}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Student ID, enrollment letter, or transcript (JPG, PNG, PDF - Max 10MB)
+                        </p>
+                      </div>
+                      {data.verificationFile && (
+                        <div className="flex items-center gap-2 text-green-600">
+                          <CheckCircle className="h-5 w-5" />
+                          <span className="text-sm font-medium">Document uploaded successfully</span>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                </div>
               </div>
-            </label>
-          </div>
-        </div>
+            )}
+          </Card>
+        </RadioGroup>
 
         <div className="space-y-2">
           <Label htmlFor="additional-info" className="text-base font-medium">
@@ -138,6 +172,13 @@ const ProofOfEnrollmentStep: React.FC<ProofOfEnrollmentStepProps> = ({
             You'll receive an email notification once your student status is verified.
           </AlertDescription>
         </Alert>
+
+        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <Shield className="h-4 w-4 inline mr-1" />
+            Your information is secure and will only be used for verification purposes
+          </p>
+        </div>
       </div>
 
       <div className="flex gap-4 pt-4">
@@ -147,11 +188,11 @@ const ProofOfEnrollmentStep: React.FC<ProofOfEnrollmentStepProps> = ({
           </Button>
         )}
         <Button 
-          onClick={handleNext} 
-          disabled={!proofFile || !canGoNext}
+          onClick={onNext} 
+          disabled={!canProceed || !canGoNext}
           className="flex-1"
         >
-          Continue to Preferences
+          Continue
         </Button>
       </div>
     </div>

@@ -5,8 +5,7 @@ import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
 import PhotosStep from "./PhotosStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
-import VerificationStep from "./VerificationStep";
-import MatchesStep from "./MatchesStep";
+import ProfileCompleteStep from "./ProfileCompleteStep";
 import CompletionStep from "./CompletionStep";
 
 export interface OnboardingData {
@@ -57,7 +56,7 @@ const OnboardingFlow = () => {
   const [canGoPrevious, setCanGoPrevious] = useState(true);
 
   const handleNext = () => {
-    if (currentStep < 7) {
+    if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -135,27 +134,17 @@ const OnboardingFlow = () => {
         );
       case 5:
         return (
-          <VerificationStep
+          <ProfileCompleteStep
             data={data}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onPrevious={handlePrevious}
             canGoNext={canGoNext}
             canGoPrevious={canGoPrevious}
+            onComplete={handleComplete}
           />
         );
       case 6:
-        return (
-          <MatchesStep
-            data={data}
-            onUpdate={handleStepUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-            canGoNext={canGoNext}
-            canGoPrevious={canGoPrevious}
-          />
-        );
-      case 7:
         return (
           <CompletionStep
             data={data}
