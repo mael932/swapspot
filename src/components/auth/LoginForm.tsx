@@ -76,20 +76,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             description: "You've been logged in successfully"
           });
           
-          // Check if user has completed onboarding
-          const hasCompletedOnboarding = localStorage.getItem(`onboarding_completed_${data.user.id}`);
+          // Check if user has completed onboarding by looking for profile data
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('university, program')
+            .eq('user_id', data.user.id)
+            .single();
           
-          if (!hasCompletedOnboarding) {
-            // Redirect to onboarding if not completed
+          if (!profile || !profile.university || !profile.program) {
+            // Redirect to onboarding if profile is incomplete
             navigate("/onboarding");
           } else {
-            // Redirect to home if onboarding is completed
+            // Redirect to home if profile is complete
+            localStorage.setItem(`onboarding_completed_${data.user.id}`, 'true');
             navigate("/");
           }
         }
       } else {
         // Sign up flow
-        const redirectUrl = `${window.location.origin}/`;
+        const redirectUrl = `${window.location.origin}/verify`;
         
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -122,6 +127,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             navigate("/onboarding");
           } else {
             // Email confirmation required
+            toast.success("Please check your email!", {
+              description: "We've sent you a verification link to complete your registration"
+            });
             onMagicLinkSent(email);
           }
         }

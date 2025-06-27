@@ -36,6 +36,81 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          additional_info: string | null
+          apartment_description: string | null
+          budget: string | null
+          created_at: string
+          current_address: string | null
+          current_location: string | null
+          email: string
+          end_date: string | null
+          exchange_university: string | null
+          full_name: string | null
+          gdpr_consent: boolean | null
+          has_uploaded_proof: boolean | null
+          id: string
+          preferred_destinations: string[] | null
+          program: string | null
+          start_date: string | null
+          university: string | null
+          university_email: string | null
+          updated_at: string
+          user_id: string | null
+          verification_method: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          additional_info?: string | null
+          apartment_description?: string | null
+          budget?: string | null
+          created_at?: string
+          current_address?: string | null
+          current_location?: string | null
+          email: string
+          end_date?: string | null
+          exchange_university?: string | null
+          full_name?: string | null
+          gdpr_consent?: boolean | null
+          has_uploaded_proof?: boolean | null
+          id?: string
+          preferred_destinations?: string[] | null
+          program?: string | null
+          start_date?: string | null
+          university?: string | null
+          university_email?: string | null
+          updated_at?: string
+          user_id?: string | null
+          verification_method?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          additional_info?: string | null
+          apartment_description?: string | null
+          budget?: string | null
+          created_at?: string
+          current_address?: string | null
+          current_location?: string | null
+          email?: string
+          end_date?: string | null
+          exchange_university?: string | null
+          full_name?: string | null
+          gdpr_consent?: boolean | null
+          has_uploaded_proof?: boolean | null
+          id?: string
+          preferred_destinations?: string[] | null
+          program?: string | null
+          start_date?: string | null
+          university?: string | null
+          university_email?: string | null
+          updated_at?: string
+          user_id?: string | null
+          verification_method?: string | null
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string

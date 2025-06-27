@@ -56,7 +56,7 @@ export const sendVerificationEmail = async (email: string): Promise<boolean> => 
 };
 
 /**
- * Save user profile data to the database
+ * Save user profile data to the profiles table
  */
 export const saveUserProfile = async (userData: any): Promise<boolean> => {
   try {
@@ -70,8 +70,8 @@ export const saveUserProfile = async (userData: any): Promise<boolean> => {
     const { error: profileError } = await supabase
       .from('profiles')
       .upsert({
-        id: user.id,
-        email: userData.email,
+        user_id: user.id,
+        email: userData.email || user.email,
         full_name: userData.fullName,
         university: userData.university,
         exchange_university: userData.exchangeUniversity,
@@ -81,20 +81,23 @@ export const saveUserProfile = async (userData: any): Promise<boolean> => {
         current_location: userData.currentLocation,
         current_address: userData.currentAddress,
         budget: userData.budget,
-        preferred_destinations: userData.preferredDestinations,
+        preferred_destinations: userData.preferredDestinations || [],
         apartment_description: userData.apartmentDescription,
         verification_method: userData.verificationMethod,
         university_email: userData.universityEmail,
         additional_info: userData.additionalInfo,
-        has_uploaded_proof: userData.hasUploadedProof,
-        gdpr_consent: userData.gdprConsent,
+        has_uploaded_proof: userData.hasUploadedProof || false,
+        gdpr_consent: userData.gdprConsent || false,
         updated_at: new Date().toISOString()
       }, {
-        onConflict: 'id'
+        onConflict: 'user_id'
       });
 
     if (profileError) {
       console.error("Error saving profile:", profileError);
+      toast.error("Failed to save profile", {
+        description: profileError.message
+      });
       return false;
     }
 
@@ -102,6 +105,38 @@ export const saveUserProfile = async (userData: any): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error("Error in saveUserProfile:", error);
+    toast.error("Failed to save profile", {
+      description: "Please try again"
+    });
     return false;
+  }
+};
+
+/**
+ * Load user profile data from the profiles table
+ */
+export const loadUserProfile = async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return null;
+    }
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (error) {
+      console.error("Error loading profile:", error);
+      return null;
+    }
+
+    return profile;
+  } catch (error) {
+    console.error("Error in loadUserProfile:", error);
+    return null;
   }
 };

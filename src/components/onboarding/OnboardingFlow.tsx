@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRightLeft } from "lucide-react";
 import UniversityStep from "./UniversityStep";
@@ -7,6 +7,8 @@ import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
 import ProfileCompleteStep from "./ProfileCompleteStep";
+import { loadUserProfile } from "@/services/emailService";
+import { supabase } from "@/lib/supabase";
 
 export interface OnboardingData {
   fullName?: string;
@@ -47,6 +49,45 @@ const OnboardingFlow = () => {
   const [data, setData] = useState<OnboardingData>({});
   const [canGoNext, setCanGoNext] = useState(true);
   const [canGoPrevious, setCanGoPrevious] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load existing profile data on component mount
+  useEffect(() => {
+    const loadExistingProfile = async () => {
+      try {
+        const profile = await loadUserProfile();
+        if (profile) {
+          // Map profile data to onboarding data format
+          const profileData: OnboardingData = {
+            fullName: profile.full_name || '',
+            email: profile.email || '',
+            university: profile.university || '',
+            exchangeUniversity: profile.exchange_university || '',
+            program: profile.program || '',
+            startDate: profile.start_date || '',
+            endDate: profile.end_date || '',
+            currentLocation: profile.current_location || '',
+            currentAddress: profile.current_address || '',
+            budget: profile.budget || '',
+            preferredDestinations: profile.preferred_destinations || [],
+            apartmentDescription: profile.apartment_description || '',
+            verificationMethod: profile.verification_method || 'email',
+            universityEmail: profile.university_email || '',
+            additionalInfo: profile.additional_info || '',
+            hasUploadedProof: profile.has_uploaded_proof || false,
+            gdprConsent: profile.gdpr_consent || false
+          };
+          setData(profileData);
+        }
+      } catch (error) {
+        console.error("Error loading existing profile:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadExistingProfile();
+  }, []);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -70,6 +111,17 @@ const OnboardingFlow = () => {
   const handleComplete = () => {
     alert("Onboarding complete!");
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-swap-blue mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderCurrentStep = () => {
     switch (currentStep) {

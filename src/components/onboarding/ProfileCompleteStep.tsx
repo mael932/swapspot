@@ -33,13 +33,19 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
     setIsLoading(true);
     
     try {
-      // Save user profile data
+      // Save user profile data to the profiles table
       const saveSuccess = await saveUserProfile(data);
       
       if (saveSuccess) {
         toast.success("Profile saved successfully!", {
           description: "Welcome to SwapSpot community"
         });
+        
+        // Mark onboarding as completed in localStorage
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          localStorage.setItem(`onboarding_completed_${user.id}`, 'true');
+        }
         
         // Navigate to community page
         navigate("/community");
