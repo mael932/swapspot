@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import UniversityStep from "./UniversityStep";
 import DatesStep from "./DatesStep";
@@ -8,7 +9,7 @@ import VerificationStep from "./VerificationStep";
 import MatchesStep from "./MatchesStep";
 import CompletionStep from "./CompletionStep";
 
-interface OnboardingData {
+export interface OnboardingData {
   fullName?: string;
   email?: string;
   university?: string;
@@ -27,6 +28,10 @@ interface OnboardingData {
   proofOfEnrollment?: string;
   verificationStatus?: "pending" | "verified" | "rejected";
   matches?: string[];
+  preferredDates?: {
+    startDate?: string;
+    endDate?: string;
+  };
 }
 
 const OnboardingFlow = () => {

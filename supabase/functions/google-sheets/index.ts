@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -124,6 +123,74 @@ async function getAccessToken() {
   return tokenData.access_token;
 }
 
+// Function to check if headers exist and add them if needed
+async function ensureHeaders(accessToken: string, spreadsheetId: string) {
+  console.log('Checking if headers exist...');
+  
+  // First, check if there's any data in row 1
+  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:O1`;
+  
+  const checkResponse = await fetch(checkUrl, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!checkResponse.ok) {
+    console.error('Error checking headers:', checkResponse.status);
+    throw new Error(`Failed to check headers: ${checkResponse.status}`);
+  }
+
+  const checkData = await checkResponse.json();
+  
+  // If no data in row 1, add headers
+  if (!checkData.values || checkData.values.length === 0) {
+    console.log('No headers found, adding headers...');
+    
+    const headers = [
+      'Timestamp',
+      'Email', 
+      'Name',
+      'University',
+      'Major',
+      'Exchange Start Date',
+      'Exchange End Date',
+      'Min Rent',
+      'Max Rent',
+      'Destination City',
+      'Wants Flatmate',
+      'Smoker',
+      'Pets',
+      'Preferences Notes',
+      'Max Rent Final'
+    ];
+
+    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:O1?valueInputOption=RAW`;
+    
+    const headerResponse = await fetch(headerUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        values: [headers],
+      }),
+    });
+
+    if (!headerResponse.ok) {
+      const errorText = await headerResponse.text();
+      console.error('Error adding headers:', headerResponse.status, errorText);
+      throw new Error(`Failed to add headers: ${headerResponse.status}`);
+    }
+
+    console.log('Headers added successfully');
+  } else {
+    console.log('Headers already exist');
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -149,41 +216,31 @@ serve(async (req) => {
     console.log('Getting access token...');
     const accessToken = await getAccessToken();
 
-    // Prepare row data for your centralized Google Sheet with clear column headers
+    // Ensure headers exist
+    await ensureHeaders(accessToken, spreadsheetId);
+
+    // Prepare row data that matches the headers
     const rowData = [
-      userData.createdAt,
-      userData.email,
-      userData.fullName,
-      userData.university,
-      userData.program,
-      userData.startDate,
-      userData.endDate,
-      userData.minPrice.toString(),
-      userData.maxPrice.toString(),
-      userData.location,
-      userData.accommodationType,
-      userData.amenities.join(', '),
-      userData.hasUploadedProof ? 'Yes' : 'No',
-      userData.verificationMethod,
-      userData.gdprConsent ? 'Yes' : 'No',
-      // Their apartment details
-      userData.apartmentTitle,
-      userData.apartmentLocation,
-      userData.apartmentPrice.toString(),
-      userData.apartmentBedrooms,
-      userData.apartmentSurface,
-      userData.apartmentDescription,
-      userData.apartmentAmenities.join(', '),
-      // Their destination preferences
-      userData.preferredCountries.join(', '),
-      userData.preferredAmenities.join(', '),
-      userData.minBedrooms,
-      userData.minSurface,
+      userData.createdAt,                                    // Timestamp
+      userData.email,                                        // Email
+      userData.fullName,                                     // Name
+      userData.university,                                   // University
+      userData.program,                                      // Major
+      userData.startDate,                                    // Exchange Start Date
+      userData.endDate,                                      // Exchange End Date
+      userData.minPrice.toString(),                          // Min Rent
+      userData.maxPrice.toString(),                          // Max Rent
+      userData.location,                                     // Destination City
+      userData.accommodationType.includes('shared') ? 'Yes' : 'No', // Wants Flatmate
+      userData.amenities.includes('smoking') ? 'Yes' : 'No', // Smoker
+      userData.amenities.includes('pets') ? 'Yes' : 'No',    // Pets
+      userData.amenities.join(', '),                         // Preferences Notes
+      userData.maxPrice.toString(),                          // Max Rent Final
     ];
 
     console.log('Prepared row data for Google Sheets');
 
-    // Add data to your centralized Google Sheet
+    // Append data as a new row (this will automatically find the next empty row)
     const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1:append?valueInputOption=RAW`;
     
     console.log('Making request to Google Sheets API...');
@@ -205,7 +262,7 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log('Successfully added user to centralized Google Sheet:', result);
+    console.log('Successfully added user to Google Sheet:', result);
 
     return new Response(
       JSON.stringify({ success: true, result }),
