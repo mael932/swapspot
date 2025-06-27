@@ -1,14 +1,11 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Mail, Clock, Shield } from "lucide-react";
+import { CheckCircle, Users, MessageCircle, Calendar } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
 import { useNavigate } from "react-router-dom";
-import { saveOnboardingData } from "@/utils/excelExport";
-import { useToast } from "@/hooks/use-toast";
-import { formatUserDataForSheet } from "@/services/googleSheetsService";
-import { supabase } from "@/lib/supabase";
+import { saveUserProfile } from "@/services/emailService";
+import { toast } from "@/components/ui/sonner";
 
 interface ProfileCompleteStepProps {
   data: OnboardingData;
@@ -22,167 +19,107 @@ interface ProfileCompleteStepProps {
 
 const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
   data,
+  onUpdate,
+  onNext,
   onPrevious,
+  canGoNext,
   canGoPrevious,
   onComplete
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleFinishOnboarding = async () => {
+  const handleComplete = async () => {
+    setIsLoading(true);
+    
     try {
-      // Save onboarding data to localStorage for backup
-      const submissionId = saveOnboardingData(data);
+      // Save user profile data
+      const saveSuccess = await saveUserProfile(data);
       
-      // Get signup data from localStorage
-      const signupDataStr = localStorage.getItem('signupData');
-      const signupData = signupDataStr ? JSON.parse(signupDataStr) : {};
-      
-      // Send all data to your centralized Google Sheet
-      try {
-        const userData = formatUserDataForSheet(signupData, data);
-        
-        const { error } = await supabase.functions.invoke('google-sheets', {
-          body: userData
+      if (saveSuccess) {
+        toast.success("Profile saved successfully!", {
+          description: "Welcome to SwapSpot community"
         });
         
-        if (error) {
-          console.error('Error sending to Google Sheets:', error);
-          toast({
-            title: "Warning",
-            description: "Profile saved locally but couldn't sync to central database. We'll retry automatically.",
-            variant: "destructive",
-          });
-        } else {
-          console.log('Successfully sent data to centralized Google Sheet');
-          toast({
-            title: "Profile Submitted Successfully!",
-            description: "Your information has been sent to our team for review. We'll contact you with perfect exchange opportunities!",
-          });
-        }
-      } catch (sheetsError) {
-        console.error('Error with Google Sheets integration:', sheetsError);
-        toast({
-          title: "Profile Saved",
-          description: "Your preferences are saved locally. We'll sync to our database shortly.",
+        // Navigate to community page
+        navigate("/community");
+      } else {
+        toast.error("Failed to save profile", {
+          description: "Please try again"
         });
       }
-      
-      // Set completion status
-      localStorage.setItem('onboardingComplete', 'true');
-      localStorage.setItem('userProfile', JSON.stringify(data));
-      
-      // Redirect to community page instead of browse
-      navigate('/community');
     } catch (error) {
-      console.error('Error saving onboarding data:', error);
-      toast({
-        title: "Error",
-        description: "There was an issue saving your preferences. Please try again.",
-        variant: "destructive",
+      console.error("Error completing profile:", error);
+      toast.error("An error occurred", {
+        description: "Please try again"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* 60% - Primary Content */}
       <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <div className="bg-green-100 p-4 rounded-full">
-            <CheckCircle className="h-12 w-12 text-green-600" />
-          </div>
-        </div>
-        <h3 className="text-2xl font-bold text-green-800 mb-2">
-          Profile Complete!
+        <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-6" />
+        <h3 className="text-4xl font-bold text-gray-900 mb-4">
+          Welcome to SwapSpot!
         </h3>
-        <p className="text-lg text-gray-600">
-          Thank you for joining SwapSpot. We'll review your profile and email you when we find perfect matches.
+        <p className="text-xl text-gray-600 mb-8">
+          Your profile is complete and ready to connect with other students
         </p>
       </div>
 
-      <Card className="border-blue-200 bg-blue-50">
-        <CardContent className="p-6">
-          <h4 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            What happens next?
-          </h4>
-          
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">
-                1
-              </div>
-              <div>
-                <p className="font-medium text-blue-800">Profile Review</p>
-                <p className="text-sm text-blue-700">
-                  Our team will review your profile and verify your student status within 24-48 hours
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">
-                2
-              </div>
-              <div>
-                <p className="font-medium text-blue-800">Match Search</p>
-                <p className="text-sm text-blue-700">
-                  We'll actively search for suitable exchange partners based on your preferences and location
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">
-                3
-              </div>
-              <div>
-                <p className="font-medium text-blue-800">Email Notification</p>
-                <p className="text-sm text-blue-700">
-                  <strong>We'll email you when we find a match!</strong> You'll receive potential exchange opportunities at {data.email}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <Shield className="h-8 w-8 text-green-600 mx-auto mb-3" />
-        <h4 className="font-semibold text-green-800 mb-2">
-          Your Safety is Our Priority
-        </h4>
-        <p className="text-sm text-green-700">
-          All students are manually verified by our team to ensure a safe and authentic community. 
-          We only connect verified students with legitimate exchange opportunities.
-        </p>
-      </div>
-
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Clock className="h-4 w-4 text-yellow-600" />
-          <span className="font-medium text-yellow-800">Expected Timeline</span>
+      {/* 30% - Secondary Content */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="text-center p-6 bg-blue-50 rounded-lg">
+          <Users className="h-12 w-12 text-swap-blue mx-auto mb-3" />
+          <h4 className="font-semibold text-gray-900 mb-2">Connect</h4>
+          <p className="text-sm text-gray-600">
+            Join our community of verified students
+          </p>
         </div>
-        <ul className="text-sm text-yellow-700 space-y-1">
-          <li>• Profile review: 24-48 hours</li>
-          <li>• <strong>Email notification when we find matches: Within 1-2 weeks</strong></li>
-          <li>• Ongoing notifications: As new opportunities arise</li>
-        </ul>
+        
+        <div className="text-center p-6 bg-green-50 rounded-lg">
+          <MessageCircle className="h-12 w-12 text-green-600 mx-auto mb-3" />
+          <h4 className="font-semibold text-gray-900 mb-2">Chat</h4>
+          <p className="text-sm text-gray-600">
+            Start conversations with potential swap partners
+          </p>
+        </div>
+        
+        <div className="text-center p-6 bg-purple-50 rounded-lg">
+          <Calendar className="h-12 w-12 text-purple-600 mx-auto mb-3" />
+          <h4 className="font-semibold text-gray-900 mb-2">Plan</h4>
+          <p className="text-sm text-gray-600">
+            Organize your exchange experience
+          </p>
+        </div>
       </div>
 
-      <div className="flex justify-between pt-4">
+      {/* 10% - Accent Content */}
+      <div className="bg-gradient-to-r from-swap-blue to-purple-600 p-4 rounded-lg text-white text-center">
+        <p className="font-medium">
+          🎉 You're now part of Europe's largest student exchange community!
+        </p>
+      </div>
+
+      <div className="flex gap-4 pt-6">
         <Button 
           variant="outline" 
           onClick={onPrevious} 
-          disabled={!canGoPrevious}
+          disabled={!canGoPrevious || isLoading}
+          className="flex-1 h-12"
         >
           Previous
         </Button>
         <Button 
-          onClick={handleFinishOnboarding}
-          className="px-8 bg-green-600 hover:bg-green-700"
+          onClick={handleComplete}
+          disabled={isLoading}
+          className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
-          Complete Profile & Join Community
+          {isLoading ? "Saving..." : "Join Community"}
         </Button>
       </div>
     </div>

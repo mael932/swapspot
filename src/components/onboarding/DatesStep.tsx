@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,10 +24,11 @@ const DatesStep: React.FC<DatesStepProps> = ({
   canGoPrevious
 }) => {
   const handleDateChange = (field: 'startDate' | 'endDate', value: string) => {
-    // Only update the specific field, keeping other data intact
-    onUpdate({
+    // Create a partial update that only changes the specific field
+    const update: Partial<OnboardingData> = {
       [field]: value
-    });
+    };
+    onUpdate(update);
   };
 
   const canProceed = data.startDate && data.endDate;

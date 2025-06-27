@@ -49,7 +49,7 @@ const OnboardingFlow = () => {
   const [canGoPrevious, setCanGoPrevious] = useState(true);
 
   const handleNext = () => {
-    if (currentStep < 4) { // Updated max step count
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -60,9 +60,12 @@ const OnboardingFlow = () => {
     }
   };
 
-  const handleStepUpdate = (newData: OnboardingData) => {
-    setData(newData);
-  };
+  const handleStepUpdate = useCallback((newData: Partial<OnboardingData>) => {
+    setData(prevData => ({
+      ...prevData,
+      ...newData
+    }));
+  }, []);
 
   const handleComplete = () => {
     alert("Onboarding complete!");
