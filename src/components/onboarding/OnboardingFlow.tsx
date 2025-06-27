@@ -14,10 +14,8 @@ export interface OnboardingData {
   university?: string;
   exchangeUniversity?: string;
   program?: string;
-  dates?: {
-    startDate?: string;
-    endDate?: string;
-  };
+  startDate?: string;
+  endDate?: string;
   preferences?: {
     cleanliness?: number;
     noiseLevel?: number;
@@ -27,21 +25,16 @@ export interface OnboardingData {
   proofOfEnrollment?: File;
   verificationStatus?: "pending" | "verified" | "rejected";
   matches?: string[];
-  preferredDates?: {
-    startDate?: string;
-    endDate?: string;
-  };
   // Additional properties for verification
   verificationMethod?: 'email' | 'id';
   verificationFile?: File;
+  universityEmail?: string;
   additionalInfo?: string;
   hasUploadedProof?: boolean;
   // Properties for preferences step
   currentLocation?: string;
   currentAddress?: string;
   duration?: string;
-  startDate?: string;
-  endDate?: string;
   budget?: string;
   preferredDestinations?: string[];
   apartmentDescription?: string;

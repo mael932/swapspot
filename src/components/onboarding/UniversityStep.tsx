@@ -65,6 +65,8 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
     onNext();
   };
 
+  const canProceed = fullName.trim() !== "" && email.trim() !== "";
+
   return (
     <div className="space-y-8">
       {/* 60% - Primary Content */}
@@ -74,7 +76,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
           Tell us about you
         </h3>
         <p className="text-gray-600 text-lg">
-          Basic info to get started (skip anything optional)
+          Basic information to get started
         </p>
       </div>
 
@@ -82,7 +84,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="full-name" className="text-base font-medium">Name</Label>
+            <Label htmlFor="full-name" className="text-base font-medium">Name *</Label>
             <div className="relative">
               <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
@@ -94,12 +96,13 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
                   updateData({ fullName: e.target.value });
                 }}
                 className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
+                required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-base font-medium">Email</Label>
+            <Label htmlFor="email" className="text-base font-medium">Email *</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
@@ -112,6 +115,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
                   updateData({ email: e.target.value });
                 }}
                 className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
+                required
               />
             </div>
           </div>
@@ -123,7 +127,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setUniversity(value);
             updateData({ university: value });
           }}
-          placeholder="Current university (optional)"
+          placeholder="Current university"
           label="Current University"
           universities={europeanUniversities}
         />
@@ -134,7 +138,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setExchangeUniversity(value);
             updateData({ exchangeUniversity: value });
           }}
-          placeholder="Exchange destination (optional)"
+          placeholder="Exchange destination"
           label="Exchange University"
           universities={europeanUniversities}
         />
@@ -145,7 +149,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setProgram(value);
             updateData({ program: value });
           }}
-          placeholder="Study program (optional)"
+          placeholder="Study program"
           label="Program"
         />
       </div>
@@ -153,7 +157,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
       {/* 10% - Accent Content */}
       <div className="bg-blue-50 p-3 rounded-lg">
         <p className="text-sm text-blue-700">
-          💡 Skip any field and continue
+          💡 Complete required fields to continue
         </p>
       </div>
 
@@ -170,6 +174,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
         )}
         <Button 
           onClick={handleNext}
+          disabled={!canProceed}
           className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
           Continue

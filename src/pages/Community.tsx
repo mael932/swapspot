@@ -1,3 +1,4 @@
+
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -95,27 +96,19 @@ const Community = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="bg-swap-blue py-16">
+        {/* 60% - Primary Content: Hero Section */}
+        <section className="bg-swap-blue py-20">
           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-8">
               Community & Support
             </h1>
-            <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
+            <p className="text-2xl text-white/90 max-w-4xl mx-auto mb-12">
               Learn from experienced swappers and share your own knowledge
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary">
-                Browse Wiki Guides
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-swap-blue">
-                Join Discussion
-              </Button>
-            </div>
           </div>
         </section>
 
-        {/* Main Content */}
+        {/* 30% - Secondary Content: Main Navigation */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <Tabs defaultValue="wiki" className="space-y-8">
@@ -350,14 +343,14 @@ const Community = () => {
           </div>
         </section>
 
-        {/* Support CTA */}
-        <section className="bg-gray-50 py-16">
+        {/* 10% - Accent Content: Support CTA */}
+        <section className="bg-gray-50 py-12">
           <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Need More Help?</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-xl font-bold mb-3">Need More Help?</h2>
+            <p className="text-gray-600 mb-4">
               Can't find what you're looking for? Our support team and AI assistant are here to help.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild>
                 <Link to="/support">Contact Support</Link>
               </Button>

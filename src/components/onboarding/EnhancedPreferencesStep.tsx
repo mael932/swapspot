@@ -1,17 +1,29 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Upload, MapPin, Calendar, Home, Euro, Info } from "lucide-react";
-import AmenitiesSelector from "./AmenitiesSelector";
+import { 
+  Home, 
+  MapPin, 
+  Calendar, 
+  Euro, 
+  Upload, 
+  CheckCircle, 
+  Info,
+  DollarSign
+} from "lucide-react";
+import { OnboardingData } from "./OnboardingFlow";
 
 interface EnhancedPreferencesStepProps {
-  data: any;
-  onUpdate: (data: any) => void;
+  data: OnboardingData;
+  onUpdate: (data: Partial<OnboardingData>) => void;
   onNext: () => void;
   onPrevious: () => void;
   canGoNext: boolean;
@@ -27,266 +39,283 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
   canGoPrevious,
 }) => {
   const [currentLocation, setCurrentLocation] = useState(data.currentLocation || "");
-  const [currentAddress, setCurrentAddress] = useState(data.currentAddress || "");
   const [duration, setDuration] = useState(data.duration || "");
-  const [startDate, setStartDate] = useState(data.startDate || "");
-  const [endDate, setEndDate] = useState(data.endDate || "");
   const [budget, setBudget] = useState(data.budget || "");
-  const [apartmentPhotos, setApartmentPhotos] = useState<File[]>(data.apartmentPhotos || []);
   const [apartmentDescription, setApartmentDescription] = useState(data.apartmentDescription || "");
-  const [currentAmenities, setCurrentAmenities] = useState<string[]>(data.currentAmenities || []);
-  const [preferredAmenities, setPreferredAmenities] = useState<string[]>(data.preferredAmenities || []);
+  const [apartmentPhotos, setApartmentPhotos] = useState<File[]>(data.apartmentPhotos || []);
+  const [preferences, setPreferences] = useState(data.preferences || {
+    cleanliness: 3,
+    noiseLevel: 3,
+    socialBattery: 3,
+  });
+  const [gdprConsent, setGdprConsent] = useState(data.gdprConsent || false);
 
-  const durationOptions = [
-    { value: "1-3-months", label: "1-3 months" },
-    { value: "3-6-months", label: "3-6 months" },
-    { value: "6-12-months", label: "6-12 months" },
-    { value: "1-year-plus", label: "1+ years" },
-    { value: "flexible", label: "Flexible" }
-  ];
-
-  const budgetRanges = [
-    { value: "0-500", label: "€0 - €500/month" },
-    { value: "500-800", label: "€500 - €800/month" },
-    { value: "800-1200", label: "€800 - €1,200/month" },
-    { value: "1200-1500", label: "€1,200 - €1,500/month" },
-    { value: "1500-plus", label: "€1,500+/month" }
-  ];
-
-  const handlePhotosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setApartmentPhotos(files);
-      updateData({ apartmentPhotos: files, photos: files }); // Update both fields for compatibility
-    }
-  };
-
-  const updateData = (updates: any) => {
-    const newData = {
-      ...data,
-      currentLocation,
-      currentAddress,
-      duration,
-      startDate,
-      endDate,
-      budget,
-      apartmentPhotos,
-      apartmentDescription,
-      currentAmenities,
-      preferredAmenities,
-      ...updates
-    };
-    onUpdate(newData);
+  const handleUpdate = (updates: Partial<OnboardingData>) => {
+    onUpdate({ ...data, ...updates });
   };
 
   const handleNext = () => {
-    updateData({});
     onNext();
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setApartmentPhotos([...apartmentPhotos, ...files]);
+      handleUpdate({ apartmentPhotos: [...apartmentPhotos, ...files] });
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    const newPhotos = [...apartmentPhotos];
+    newPhotos.splice(index, 1);
+    setApartmentPhotos(newPhotos);
+    handleUpdate({ apartmentPhotos: newPhotos });
+  };
+
+  const updatePreference = (key: string, value: number) => {
+    const newPreferences = { ...preferences, [key]: value };
+    setPreferences(newPreferences);
+    handleUpdate({ preferences: newPreferences });
+  };
+
+  const canProceed = currentLocation.trim() !== "" && budget;
+
   return (
     <div className="space-y-8">
+      {/* 60% - Primary Content */}
       <div className="text-center mb-8">
         <Home className="h-16 w-16 text-swap-blue mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">
-          About Your Accommodation
+        <h3 className="text-3xl font-bold text-gray-900 mb-2">
+          Tell us about your accommodation
         </h3>
         <p className="text-gray-600 text-lg">
-          Tell us about your current place and what you're looking for
+          Help us find your perfect match
         </p>
       </div>
 
-      {/* Current Location Section */}
-      <div className="bg-gray-50 rounded-xl p-8 border">
-        <h4 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-3">
-          <MapPin className="h-6 w-6 text-swap-blue" />
-          Your Current Location
-        </h4>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      {/* 30% - Secondary Content */}
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="current-location" className="text-base font-medium">City & Country *</Label>
-            <Input
-              id="current-location"
-              placeholder="e.g., Amsterdam, Netherlands"
-              value={currentLocation}
-              onChange={(e) => {
-                setCurrentLocation(e.target.value);
-                updateData({ currentLocation: e.target.value });
-              }}
-              className="h-12 border-gray-300 focus:border-swap-blue"
-              required
-            />
+            <Label className="text-base font-medium">Current Location *</Label>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                placeholder="City, Country"
+                value={currentLocation}
+                onChange={(e) => {
+                  setCurrentLocation(e.target.value);
+                  handleUpdate({ currentLocation: e.target.value });
+                }}
+                className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
+                required
+              />
+            </div>
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="current-address" className="text-base font-medium">Full Address *</Label>
-            <Input
-              id="current-address"
-              placeholder="Street address, postal code"
-              value={currentAddress}
-              onChange={(e) => {
-                setCurrentAddress(e.target.value);
-                updateData({ currentAddress: e.target.value });
-              }}
-              className="h-12 border-gray-300 focus:border-swap-blue"
-              required
-            />
+            <Label className="text-base font-medium">Duration</Label>
+            <Select value={duration} onValueChange={(value) => {
+              setDuration(value);
+              handleUpdate({ duration: value });
+            }}>
+              <SelectTrigger className="h-12 border-gray-300 focus:border-swap-blue">
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-month">1 Month</SelectItem>
+                <SelectItem value="1-semester">1 Semester</SelectItem>
+                <SelectItem value="2-semesters">2 Semesters</SelectItem>
+                <SelectItem value="summer">Summer</SelectItem>
+                <SelectItem value="custom">Custom</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <div className="space-y-2 mb-6">
-          <Label htmlFor="apartment-description" className="text-base font-medium">Describe Your Place</Label>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-base font-medium flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Monthly Rent Budget *
+            </Label>
+            <Select value={budget} onValueChange={(value) => {
+              setBudget(value);
+              handleUpdate({ budget: value });
+            }}>
+              <SelectTrigger className="h-12 border-gray-300 focus:border-swap-blue">
+                <SelectValue placeholder="Select your budget range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0-300">€0 - €300</SelectItem>
+                <SelectItem value="300-500">€300 - €500</SelectItem>
+                <SelectItem value="500-700">€500 - €700</SelectItem>
+                <SelectItem value="700-1000">€700 - €1000</SelectItem>
+                <SelectItem value="1000+">€1000+</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Alert className="border-blue-200 bg-blue-50">
+              <Info className="h-4 w-4" />
+              <AlertDescription className="text-blue-800">
+                <strong>Budget matching:</strong> We use your rent budget to find fair matches. 
+                Tell us what you pay for rent so we can match you with someone in a similar price range. 
+                This ensures both parties get equal value from the exchange.
+              </AlertDescription>
+            </Alert>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-base font-medium">Accommodation Description</Label>
           <Textarea
-            id="apartment-description"
-            placeholder="Describe your current accommodation (size, amenities, neighborhood, etc.)"
+            placeholder="Describe your place (size, amenities, neighborhood, etc.)"
             value={apartmentDescription}
             onChange={(e) => {
               setApartmentDescription(e.target.value);
-              updateData({ apartmentDescription: e.target.value });
+              handleUpdate({ apartmentDescription: e.target.value });
             }}
             rows={4}
-            className="border-gray-300 focus:border-swap-blue"
+            className="resize-none border-gray-300 focus:border-swap-blue"
           />
         </div>
 
-        <AmenitiesSelector
-          selectedAmenities={currentAmenities}
-          onAmenitiesChange={(amenities) => {
-            setCurrentAmenities(amenities);
-            updateData({ currentAmenities: amenities });
-          }}
-          title="Current Accommodation Amenities"
-        />
-
-        <div className="space-y-2 mt-6">
-          <Label htmlFor="apartment-photos" className="text-base font-medium">Photos of Your Place *</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-white">
+        <div className="space-y-4">
+          <Label className="text-base font-medium">Accommodation Photos</Label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-swap-blue transition-colors">
             <label className="cursor-pointer">
-              <Input
-                id="apartment-photos"
+              <input
                 type="file"
-                accept="image/*"
                 multiple
-                onChange={handlePhotosChange}
+                accept="image/*"
+                onChange={handlePhotoUpload}
                 className="hidden"
-                required
               />
               <div className="flex flex-col items-center gap-3">
-                <Upload className="h-12 w-12 text-gray-400" />
+                <Upload className="h-10 w-10 text-gray-400" />
                 <div>
-                  <span className="text-lg font-medium text-gray-700">
-                    {apartmentPhotos.length > 0 
-                      ? `${apartmentPhotos.length} photos selected`
-                      : "Upload photos of your apartment"
-                    }
-                  </span>
+                  <p className="font-medium text-gray-700">
+                    Click to upload photos of your accommodation
+                  </p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Multiple photos help attract better matches
+                    Upload multiple photos (JPG, PNG - Max 10MB each)
                   </p>
                 </div>
+                {apartmentPhotos.length > 0 && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="h-5 w-5" />
+                    <span className="text-sm font-medium">{apartmentPhotos.length} photo(s) uploaded</span>
+                  </div>
+                )}
               </div>
             </label>
           </div>
+          
+          {apartmentPhotos.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              {apartmentPhotos.map((photo, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt={`Accommodation ${index + 1}`}
+                    className="w-full h-24 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={() => removePhoto(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold">Lifestyle Preferences</h4>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-base font-medium">Cleanliness Level</Label>
+              <div className="px-3">
+                <Slider
+                  value={[preferences.cleanliness]}
+                  onValueChange={(value) => updatePreference('cleanliness', value[0])}
+                  max={5}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Relaxed</span>
+                  <span>Very Tidy</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-base font-medium">Noise Tolerance</Label>
+              <div className="px-3">
+                <Slider
+                  value={[preferences.noiseLevel]}
+                  onValueChange={(value) => updatePreference('noiseLevel', value[0])}
+                  max={5}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Quiet</span>
+                  <span>Social/Lively</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-base font-medium">Social Energy</Label>
+              <div className="px-3">
+                <Slider
+                  value={[preferences.socialBattery]}
+                  onValueChange={(value) => updatePreference('socialBattery', value[0])}
+                  max={5}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Introverted</span>
+                  <span>Extroverted</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="gdpr-consent"
+            checked={gdprConsent}
+            onCheckedChange={(checked) => {
+              setGdprConsent(!!checked);
+              handleUpdate({ gdprConsent: !!checked });
+            }}
+          />
+          <Label 
+            htmlFor="gdpr-consent" 
+            className="text-sm text-gray-600 leading-relaxed"
+          >
+            I agree to the processing of my personal data for matching purposes and understand that my information will be shared with potential exchange partners.
+          </Label>
         </div>
       </div>
 
-      {/* Exchange Preferences Section */}
-      <div className="bg-gray-50 rounded-xl p-8 border">
-        <h4 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-3">
-          <Calendar className="h-6 w-6 text-swap-blue" />
-          Exchange Preferences
-        </h4>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="space-y-2">
-            <Label htmlFor="duration" className="text-base font-medium">Duration *</Label>
-            <Select value={duration} onValueChange={(value) => {
-              setDuration(value);
-              updateData({ duration: value });
-            }}>
-              <SelectTrigger className="h-12 border-gray-300 focus:border-swap-blue">
-                <SelectValue placeholder="How long do you want to stay?" />
-              </SelectTrigger>
-              <SelectContent>
-                {durationOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="budget" className="text-base font-medium">Budget Range *</Label>
-            <Select value={budget} onValueChange={(value) => {
-              setBudget(value);
-              updateData({ budget: value });
-            }}>
-              <SelectTrigger className="h-12 border-gray-300 focus:border-swap-blue">
-                <SelectValue placeholder="Your budget range" />
-              </SelectTrigger>
-              <SelectContent>
-                {budgetRanges.map((range) => (
-                  <SelectItem key={range.value} value={range.value}>
-                    {range.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Budget Disclaimer */}
-        <Alert className="mb-6 border-blue-200 bg-blue-50">
-          <Info className="h-4 w-4" />
-          <AlertDescription className="text-blue-800">
-            <strong>Why we ask for budget range:</strong> We use this information to make the most fair matches possible. 
-            This helps us connect you with partners who have similar expectations about accommodation costs and living standards.
-            <br /><br />
-            <strong>Our service fee:</strong> SwapSpot charges a small verification and matching fee. We'll provide full pricing details 
-            before you confirm any exchange to ensure complete transparency.
-          </AlertDescription>
-        </Alert>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="space-y-2">
-            <Label htmlFor="start-date" className="text-base font-medium">Preferred Start Date *</Label>
-            <Input
-              id="start-date"
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
-                updateData({ startDate: e.target.value });
-              }}
-              className="h-12 border-gray-300 focus:border-swap-blue"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="end-date" className="text-base font-medium">Preferred End Date *</Label>
-            <Input
-              id="end-date"
-              type="date"
-              value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
-                updateData({ endDate: e.target.value });
-              }}
-              className="h-12 border-gray-300 focus:border-swap-blue"
-              required
-            />
-          </div>
-        </div>
-
-        <AmenitiesSelector
-          selectedAmenities={preferredAmenities}
-          onAmenitiesChange={(amenities) => {
-            setPreferredAmenities(amenities);
-            updateData({ preferredAmenities: amenities });
-          }}
-          title="Preferred Amenities for Exchange Accommodation"
-        />
+      {/* 10% - Accent Content */}
+      <div className="bg-green-50 p-3 rounded-lg">
+        <p className="text-sm text-green-700">
+          💡 Complete profiles get better matches
+        </p>
       </div>
 
       <div className="flex gap-4 pt-6">
@@ -295,15 +324,15 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
             type="button" 
             variant="outline" 
             onClick={onPrevious} 
-            className="flex-1 h-12 border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="flex-1 h-12"
           >
             Previous
           </Button>
         )}
         <Button 
-          onClick={handleNext} 
-          disabled={!currentLocation || !currentAddress || !duration || !budget || !startDate || !endDate || apartmentPhotos.length === 0}
-          className="flex-1 h-12 bg-[#EA6B4A] hover:bg-[#EA6B4A]/90 text-white font-medium"
+          onClick={handleNext}
+          disabled={!canProceed || !canGoNext}
+          className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
           Continue
         </Button>
