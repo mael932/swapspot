@@ -1,5 +1,7 @@
 
 import React, { useState, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRightLeft } from "lucide-react";
 import UniversityStep from "./UniversityStep";
 import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
@@ -162,9 +164,26 @@ const OnboardingFlow = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 flex items-center justify-center">
-      <div className="max-w-2xl w-full mx-auto p-8 bg-white shadow-lg rounded-lg">
-        {renderCurrentStep()}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with Logo */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="container py-4">
+          <Link to="/" className="flex items-center gap-2 font-bold text-2xl text-swap-blue">
+            <div className="relative">
+              <ArrowRightLeft 
+                className="h-8 w-8 text-swap-blue animate-pulse hover:animate-spin transition-all duration-300" 
+              />
+            </div>
+            SwapSpot
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Onboarding Content */}
+      <div className="py-6 flex items-center justify-center">
+        <div className="max-w-2xl w-full mx-auto p-8 bg-white shadow-lg rounded-lg">
+          {renderCurrentStep()}
+        </div>
       </div>
     </div>
   );
