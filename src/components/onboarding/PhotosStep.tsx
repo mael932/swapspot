@@ -26,16 +26,18 @@ const PhotosStep: React.FC<PhotosStepProps> = ({
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    const newPhotos = [...data.photos, ...files].slice(0, 6); // Max 6 photos
+    const currentPhotos = data.photos || [];
+    const newPhotos = [...currentPhotos, ...files].slice(0, 6); // Max 6 photos
     onUpdate({ photos: newPhotos });
   };
 
   const removePhoto = (index: number) => {
-    const newPhotos = data.photos.filter((_, i) => i !== index);
+    const currentPhotos = data.photos || [];
+    const newPhotos = currentPhotos.filter((_, i) => i !== index);
     onUpdate({ photos: newPhotos });
   };
 
-  const canProceed = data.photos.length >= 1; // At least 1 photo required
+  const canProceed = (data.photos?.length || 0) >= 1; // At least 1 photo required
 
   return (
     <div className="space-y-6">
@@ -65,7 +67,7 @@ const PhotosStep: React.FC<PhotosStepProps> = ({
         </Card>
 
         {/* Photo Preview Grid */}
-        {data.photos.length > 0 && (
+        {data.photos && data.photos.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data.photos.map((photo, index) => (
               <div key={index} className="relative group">
@@ -87,7 +89,7 @@ const PhotosStep: React.FC<PhotosStepProps> = ({
           </div>
         )}
 
-        {data.photos.length > 0 && (
+        {data.photos && data.photos.length > 0 && (
           <p className="text-sm text-green-600 text-center">
             {data.photos.length} photo{data.photos.length !== 1 ? 's' : ''} uploaded
           </p>

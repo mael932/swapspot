@@ -24,14 +24,30 @@ export interface OnboardingData {
     noiseLevel?: number;
     socialBattery?: number;
   };
-  photos?: string[];
-  proofOfEnrollment?: string;
+  photos?: File[];
+  proofOfEnrollment?: File;
   verificationStatus?: "pending" | "verified" | "rejected";
   matches?: string[];
   preferredDates?: {
     startDate?: string;
     endDate?: string;
   };
+  // Additional properties for verification
+  verificationMethod?: 'email' | 'id';
+  verificationFile?: File;
+  additionalInfo?: string;
+  hasUploadedProof?: boolean;
+  // Properties for preferences step
+  currentLocation?: string;
+  currentAddress?: string;
+  duration?: string;
+  startDate?: string;
+  endDate?: string;
+  budget?: string;
+  preferredDestinations?: string[];
+  apartmentDescription?: string;
+  gdprConsent?: boolean;
+  apartmentPhotos?: File[];
 }
 
 const OnboardingFlow = () => {
