@@ -32,7 +32,7 @@ const DatesStep: React.FC<DatesStepProps> = ({
     });
   };
 
-  const canProceed = data.preferredDates.startDate && data.preferredDates.endDate;
+  const canProceed = data.preferredDates?.startDate && data.preferredDates?.endDate;
 
   return (
     <div className="space-y-6">
@@ -48,7 +48,7 @@ const DatesStep: React.FC<DatesStepProps> = ({
           <Input
             id="startDate"
             type="date"
-            value={data.preferredDates.startDate}
+            value={data.preferredDates?.startDate || ''}
             onChange={(e) => handleDateChange('startDate', e.target.value)}
             min={new Date().toISOString().split('T')[0]}
           />
@@ -59,9 +59,9 @@ const DatesStep: React.FC<DatesStepProps> = ({
           <Input
             id="endDate"
             type="date"
-            value={data.preferredDates.endDate}
+            value={data.preferredDates?.endDate || ''}
             onChange={(e) => handleDateChange('endDate', e.target.value)}
-            min={data.preferredDates.startDate || new Date().toISOString().split('T')[0]}
+            min={data.preferredDates?.startDate || new Date().toISOString().split('T')[0]}
           />
         </div>
 
