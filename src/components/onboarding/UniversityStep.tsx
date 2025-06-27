@@ -67,61 +67,63 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
 
   return (
     <div className="space-y-8">
+      {/* 60% - Primary Content */}
       <div className="text-center mb-8">
         <GraduationCap className="h-16 w-16 text-swap-blue mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">
-          Let's get to know you
+        <h3 className="text-3xl font-bold text-gray-900 mb-2">
+          Tell us about you
         </h3>
         <p className="text-gray-600 text-lg">
-          Tell us about yourself and your studies (you can skip fields and come back later)
+          Basic info to get started (skip anything optional)
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="full-name" className="text-base font-medium">Full Name</Label>
-          <div className="relative">
-            <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              id="full-name"
-              placeholder="Enter your full name"
-              value={fullName}
-              onChange={(e) => {
-                setFullName(e.target.value);
-                updateData({ fullName: e.target.value });
-              }}
-              className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-base font-medium">Email Address</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                updateData({ email: e.target.value });
-              }}
-              className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
-            />
-          </div>
-        </div>
-      </div>
-
+      {/* 30% - Secondary Content */}
       <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="full-name" className="text-base font-medium">Name</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                id="full-name"
+                placeholder="Your name"
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  updateData({ fullName: e.target.value });
+                }}
+                className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-base font-medium">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  updateData({ email: e.target.value });
+                }}
+                className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
+              />
+            </div>
+          </div>
+        </div>
+
         <UniversitySelect
           value={university}
           onChange={(value) => {
             setUniversity(value);
             updateData({ university: value });
           }}
-          placeholder="Select your current university (optional)"
+          placeholder="Current university (optional)"
           label="Current University"
           universities={europeanUniversities}
         />
@@ -132,7 +134,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setExchangeUniversity(value);
             updateData({ exchangeUniversity: value });
           }}
-          placeholder="Select your exchange destination university (optional)"
+          placeholder="Exchange destination (optional)"
           label="Exchange University"
           universities={europeanUniversities}
         />
@@ -143,14 +145,15 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             setProgram(value);
             updateData({ program: value });
           }}
-          placeholder="Select your program of study (optional)"
-          label="Program of Study"
+          placeholder="Study program (optional)"
+          label="Program"
         />
       </div>
 
-      <div className="bg-blue-50 p-4 rounded-lg">
+      {/* 10% - Accent Content */}
+      <div className="bg-blue-50 p-3 rounded-lg">
         <p className="text-sm text-blue-700">
-          💡 <strong>Tip:</strong> You can skip any fields and continue. We'll still process your application with whatever information you provide.
+          💡 Skip any field and continue
         </p>
       </div>
 
@@ -160,9 +163,9 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             type="button" 
             variant="outline" 
             onClick={onPrevious} 
-            className="flex-1 h-12 border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="flex-1 h-12"
           >
-            Previous
+            Back
           </Button>
         )}
         <Button 

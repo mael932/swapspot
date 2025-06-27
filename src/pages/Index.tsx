@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AccommodationModes from "@/components/AccommodationModes";
@@ -36,7 +35,6 @@ const Index = () => {
           console.log("Supabase connection successful:", data.session ? "User is logged in" : "No active session");
           setUser(data.session?.user || null);
           
-          // Check payment status if user is logged in
           if (data.session?.user) {
             const { data: paymentData } = await supabase
               .from('user_payments')
@@ -57,7 +55,6 @@ const Index = () => {
     
     checkUserAndPayment();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null);
       
@@ -105,55 +102,60 @@ const Index = () => {
     );
   }
 
-  // Show paywall for users without payment
+  // Paywall - 60-30-10 split
   if (user && !hasPaid) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
         <main className="flex-grow flex items-center justify-center p-4">
           <div className="max-w-2xl mx-auto text-center">
-            <Card className="border-blue-200 bg-white shadow-lg">
+            <Card className="bg-white shadow-lg">
               <CardContent className="p-8">
-                <Lock className="h-16 w-16 text-swap-blue mx-auto mb-6" />
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to SwapSpot!</h1>
-                <p className="text-xl text-gray-700 mb-6">
-                  You're signed in, but need access to connect with verified students.
-                </p>
+                {/* 60% - Primary Content */}
+                <div className="mb-6">
+                  <Lock className="h-16 w-16 text-swap-blue mx-auto mb-4" />
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">Welcome!</h1>
+                  <p className="text-xl text-gray-700">
+                    Connect with verified students worldwide.
+                  </p>
+                </div>
                 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                  <h3 className="font-semibold text-blue-800 mb-3">What you'll get with SwapSpot Access:</h3>
-                  <ul className="text-left text-blue-700 space-y-2">
-                    <li>✓ Connect with unlimited verified students</li>
-                    <li>✓ Email notifications when you match</li>
-                    <li>✓ Access to all contact information</li>
-                    <li>✓ Priority support</li>
-                  </ul>
+                {/* 30% - Secondary Content */}
+                <div className="mb-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <ul className="text-sm text-blue-700 space-y-1">
+                      <li>✓ Unlimited verified connections</li>
+                      <li>✓ Instant match notifications</li>
+                      <li>✓ Priority support</li>
+                    </ul>
+                  </div>
+
+                  <div className="mb-4">
+                    <span className="text-3xl font-bold text-blue-800">€25</span>
+                    <span className="text-sm text-blue-600 ml-2">one-time</span>
+                  </div>
+
+                  <Button 
+                    onClick={() => navigate('/required-signup')}
+                    className="bg-swap-blue hover:bg-swap-blue/90 text-white px-8 py-3"
+                  >
+                    Get Access
+                  </Button>
                 </div>
 
-                <div className="flex items-baseline justify-center gap-1 mb-6">
-                  <span className="text-4xl font-bold text-blue-800">€25</span>
-                  <span className="text-lg text-blue-600">one-time payment</span>
-                </div>
-
-                <Button 
-                  onClick={() => navigate('/required-signup')}
-                  className="bg-swap-blue hover:bg-swap-blue/90 text-white px-8 py-3 text-lg"
-                >
-                  Get SwapSpot Access
-                </Button>
-
-                <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200">
+                {/* 10% - Accent Content */}
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
                   <div className="text-center">
-                    <Shield className="h-6 w-6 text-green-600 mx-auto mb-1" />
-                    <p className="text-xs text-gray-600">Verified Students</p>
+                    <Shield className="h-4 w-4 text-green-600 mx-auto mb-1" />
+                    <p className="text-xs text-gray-600">Verified</p>
                   </div>
                   <div className="text-center">
-                    <Users className="h-6 w-6 text-swap-blue mx-auto mb-1" />
-                    <p className="text-xs text-gray-600">10,000+ Members</p>
+                    <Users className="h-4 w-4 text-swap-blue mx-auto mb-1" />
+                    <p className="text-xs text-gray-600">10k+ Members</p>
                   </div>
                   <div className="text-center">
-                    <span className="text-yellow-500 text-lg">★★★★★</span>
-                    <p className="text-xs text-gray-600">4.8/5 Rating</p>
+                    <span className="text-yellow-500 text-sm">★★★★★</span>
+                    <p className="text-xs text-gray-600">4.8/5</p>
                   </div>
                 </div>
               </CardContent>
@@ -170,7 +172,6 @@ const Index = () => {
       <Navbar />
       <main className="flex-grow">
         {user && hasPaid ? (
-          // Show personalized content for paid users
           <div className="container mx-auto px-4 py-8">
             <SmartRecommendations 
               userPreferences={{
@@ -185,7 +186,6 @@ const Index = () => {
             />
           </div>
         ) : (
-          // Show standard homepage for visitors (not logged in)
           <>
             <HeroSection />
             <AccommodationModes />
