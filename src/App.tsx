@@ -11,6 +11,7 @@ import Onboarding from "./pages/Onboarding";
 import Community from "./pages/Community";
 import VerifyEmail from "./pages/VerifyEmail";
 import VerifyStudent from "./pages/VerifyStudent";
+import SignUp from "./pages/SignUp";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/account" element={<Account />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/community" element={<Community />} />

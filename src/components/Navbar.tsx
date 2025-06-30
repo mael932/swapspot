@@ -55,6 +55,11 @@ const Navbar = () => {
     navigate('/login?fromNav=true');
   };
 
+  const handleSignupClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate('/onboarding');
+  };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -109,9 +114,14 @@ const Navbar = () => {
                   </DropdownMenuItem>
                 </>
               ) : (
-                <DropdownMenuItem asChild>
-                  <Link to="#" onClick={handleLoginClick}>Login / Sign Up</Link>
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link to="#" onClick={handleLoginClick}>Login</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="#" onClick={handleSignupClick}>Sign Up</Link>
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -177,9 +187,14 @@ const Navbar = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button asChild>
-                  <Link to="#" onClick={handleLoginClick}>Login / Sign Up</Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" asChild>
+                    <Link to="#" onClick={handleLoginClick}>Login</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link to="#" onClick={handleSignupClick}>Sign Up</Link>
+                  </Button>
+                </div>
               )
             )}
           </div>
