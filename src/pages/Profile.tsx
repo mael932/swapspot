@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -44,13 +43,24 @@ const Profile = () => {
 
   const checkAuthAndLoadProfile = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Check current session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!session) {
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        toast.error('Authentication error. Please log in again.');
         navigate('/login');
         return;
       }
 
+      if (!session) {
+        console.log('No active session, redirecting to login');
+        toast.error('Please log in to access your profile');
+        navigate('/login');
+        return;
+      }
+
+      console.log('User authenticated:', session.user.id);
       setUser(session.user);
 
       // Load profile data
@@ -64,11 +74,38 @@ const Profile = () => {
         console.error('Error loading profile:', error);
         toast.error('Failed to load profile data');
       } else if (profileData) {
+        console.log('Profile loaded:', profileData);
         setProfile(profileData);
         setEditData(profileData);
+      } else {
+        console.log('No profile found, user may need to complete onboarding');
+        // If no profile exists, create a basic one
+        const newProfile = {
+          user_id: session.user.id,
+          email: session.user.email || '',
+          full_name: session.user.user_metadata?.full_name || '',
+          gdpr_consent: true
+        };
+
+        const { data: createdProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert([newProfile])
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          toast.error('Failed to create profile. Please try again.');
+          navigate('/onboarding');
+        } else {
+          console.log('Profile created:', createdProfile);
+          setProfile(createdProfile);
+          setEditData(createdProfile);
+        }
       }
     } catch (error) {
       console.error('Auth error:', error);
+      toast.error('Authentication error. Please log in again.');
       navigate('/login');
     } finally {
       setIsLoading(false);

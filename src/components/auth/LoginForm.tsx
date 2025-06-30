@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
     navigate("/onboarding");
   };
 
+  const cleanupAuthState = () => {
+    // Clear all auth-related keys from localStorage
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -56,6 +66,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
 
     try {
       if (isLogin) {
+        // Clean up any existing auth state before login
+        cleanupAuthState();
+        
+        // Attempt global sign out first
+        try {
+          await supabase.auth.signOut({ scope: 'global' });
+        } catch (err) {
+          console.log("Global signout failed, continuing with login:", err);
+        }
+
         // Login flow
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -66,43 +86,42 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
           console.error("Login error:", error);
           if (error.message.includes("Invalid login credentials")) {
             setError("Invalid email or password. Please check your credentials and try again.");
+          } else if (error.message.includes("Email not confirmed")) {
+            setError("Please check your email and confirm your account before signing in.");
           } else {
             setError(error.message);
           }
           return;
         }
 
-        if (data.user) {
+        if (data.user && data.session) {
           console.log("Login successful:", data.user.id);
           
-          // Check if user has completed profile
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', data.user.id)
-            .maybeSingle();
-
-          if (profileError) {
-            console.error("Error checking profile:", profileError);
-          }
+          // Ensure session is properly set
+          await supabase.auth.setSession({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token
+          });
 
           toast.success("Welcome back!", {
             description: "You've been logged in successfully"
           });
           
-          // Redirect to profile if they have one, otherwise to onboarding
-          if (profile && profile.university) {
-            navigate("/profile");
-          } else {
-            navigate("/onboarding");
-          }
+          // Force page reload to ensure clean state
+          window.location.href = "/profile";
         }
       } else {
+        // Clean up any existing auth state before signup
+        cleanupAuthState();
+        
         // Sign up flow
+        const redirectUrl = `${window.location.origin}/profile`;
+        
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
+            emailRedirectTo: redirectUrl,
             data: {
               full_name: fullName,
               gdpr_consent: true
@@ -131,12 +150,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             return;
           }
           
-          toast.success("Account created successfully!", {
-            description: "Welcome to SwapSpot! Let's set up your profile."
-          });
-          
-          // Redirect to onboarding for new users
-          navigate("/onboarding");
+          // If we have a session, the user is automatically logged in
+          if (data.session) {
+            // Ensure session is properly set
+            await supabase.auth.setSession({
+              access_token: data.session.access_token,
+              refresh_token: data.session.refresh_token
+            });
+
+            toast.success("Account created successfully!", {
+              description: "Welcome to SwapSpot! Let's set up your profile."
+            });
+            
+            // Force page reload to ensure clean state
+            window.location.href = "/onboarding";
+          }
         }
       }
     } catch (error) {
