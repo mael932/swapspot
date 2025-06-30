@@ -7,6 +7,7 @@ import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
 import AccountCreationStep from "./AccountCreationStep";
+import CompletionStep from "./CompletionStep";
 import { loadUserProfile } from "@/services/emailService";
 import { supabase } from "@/lib/supabase";
 
@@ -102,7 +103,7 @@ const OnboardingFlow = () => {
   }, []);
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -121,8 +122,14 @@ const OnboardingFlow = () => {
   }, []);
 
   const handleAccountCreated = () => {
-    // Redirect to account page after successful registration
-    navigate("/account");
+    // Move to completion step instead of redirecting
+    setCurrentStep(5);
+  };
+
+  const handleComplete = () => {
+    // Set completion status and redirect to browse page
+    localStorage.setItem('onboardingComplete', 'true');
+    navigate("/browse");
   };
 
   if (isLoading) {
@@ -193,6 +200,18 @@ const OnboardingFlow = () => {
             canGoPrevious={canGoPrevious}
             onAccountCreated={handleAccountCreated}
             isAuthenticated={isAuthenticated}
+          />
+        );
+      case 5:
+        return (
+          <CompletionStep
+            data={data}
+            onUpdate={handleStepUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            canGoNext={canGoNext}
+            canGoPrevious={canGoPrevious}
+            onComplete={handleComplete}
           />
         );
       default:
