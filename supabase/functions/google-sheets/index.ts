@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -19,6 +20,9 @@ interface UserData {
   accommodationDescription: string;
   accommodationPhotos: string;
   amenities: string[];
+  universityEmail: string;
+  studentUpload: string;
+  additionalVerificationInfo: string;
   createdAt: string;
   gdprConsent: boolean;
 }
@@ -115,7 +119,7 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
   console.log('Checking if headers exist...');
   
   // First, check if there's any data in row 1
-  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:N1`;
+  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:Q1`;
   
   const checkResponse = await fetch(checkUrl, {
     method: 'GET',
@@ -149,10 +153,13 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
       'Monthly Rent',
       'Accommodation Description',
       'Accommodation Photos',
-      'Amenities'
+      'Amenities',
+      'University Email',
+      'Student Upload',
+      'Additional Verification Information'
     ];
 
-    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:N1?valueInputOption=RAW`;
+    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:Q1?valueInputOption=RAW`;
     
     const headerResponse = await fetch(headerUrl, {
       method: 'PUT',
@@ -221,6 +228,9 @@ serve(async (req) => {
       userData.accommodationDescription,                     // Accommodation Description
       userData.accommodationPhotos,                          // Accommodation Photos
       userData.amenities.join(', '),                        // Amenities
+      userData.universityEmail,                              // University Email
+      userData.studentUpload,                               // Student Upload
+      userData.additionalVerificationInfo,                  // Additional Verification Information
     ];
 
     console.log('Prepared row data for Google Sheets:', rowData);

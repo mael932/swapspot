@@ -15,6 +15,9 @@ interface UserData {
   accommodationDescription: string;
   accommodationPhotos: string;
   amenities: string[];
+  universityEmail: string;
+  studentUpload: string;
+  additionalVerificationInfo: string;
   createdAt: string;
   gdprConsent: boolean;
 }
@@ -51,6 +54,12 @@ export const formatUserDataForSheet = (onboardingData: any): UserData => {
     photoInfo = `${onboardingData.apartmentPhotos.length} photos uploaded (local)`;
   }
 
+  // Handle verification information with N/A fallbacks
+  const universityEmail = onboardingData.universityEmail || 'N/A';
+  const studentUpload = onboardingData.verificationFile ? 
+    `File uploaded: ${onboardingData.verificationFile.name}` : 'N/A';
+  const additionalVerificationInfo = onboardingData.additionalInfo || 'N/A';
+
   return {
     email: onboardingData.email || '',
     fullName: onboardingData.fullName || '',
@@ -65,6 +74,9 @@ export const formatUserDataForSheet = (onboardingData: any): UserData => {
     accommodationDescription: onboardingData.apartmentDescription || '',
     accommodationPhotos: photoInfo,
     amenities: onboardingData.amenities || [],
+    universityEmail: universityEmail,
+    studentUpload: studentUpload,
+    additionalVerificationInfo: additionalVerificationInfo,
     createdAt: new Date().toISOString(),
     gdprConsent: onboardingData.gdprConsent || false,
   };
