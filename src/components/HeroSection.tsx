@@ -1,9 +1,41 @@
 
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Users, MapPin, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 export default function HeroSection() {
+  const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+
+    getSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleStartHousingSwap = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      // If user is logged in, redirect to already registered page
+      navigate('/already-registered');
+    } else {
+      // If not logged in, go to onboarding
+      navigate('/onboarding');
+    }
+  };
+
   return (
     <section className="bg-gradient-to-br from-swap-lightBlue to-white py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -16,11 +48,9 @@ export default function HeroSection() {
             Connect with verified university students across Europe for safe, affordable accommodation exchanges during your study abroad semester.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link to="/onboarding">
-                Start Your Housing Swap
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Link>
+            <Button onClick={handleStartHousingSwap} size="lg" className="text-lg px-8 py-6">
+              Start Your Housing Swap
+              <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
             <Button variant="outline" asChild size="lg" className="text-lg px-8 py-6">
               <Link to="/how-it-works">

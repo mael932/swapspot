@@ -6,7 +6,6 @@ import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
-import SmartRecommendations from "@/components/SmartRecommendations";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
@@ -79,29 +78,11 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
-        {user ? (
-          <div className="container mx-auto px-4 py-8">
-            <SmartRecommendations 
-              userPreferences={{
-                location: "Europe",
-                dates: {
-                  startDate: "2025-09-01",
-                  endDate: "2025-12-15"
-                },
-                university: "Student Exchange Program"
-              }}
-              className="mb-12"
-            />
-          </div>
-        ) : (
-          <>
-            <HeroSection />
-            <AccommodationModes />
-            <HowItWorks />
-            <Testimonials />
-            <CtaSection />
-          </>
-        )}
+        <HeroSection />
+        <AccommodationModes />
+        <HowItWorks />
+        <Testimonials />
+        <CtaSection />
       </main>
       <Footer />
     </div>

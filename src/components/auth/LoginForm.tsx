@@ -90,6 +90,10 @@ const LoginForm = ({ onBack }: LoginFormProps) => {
     }
   };
 
+  const handleCreateAccount = () => {
+    navigate('/onboarding');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-swap-lightBlue to-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -193,7 +197,7 @@ const LoginForm = ({ onBack }: LoginFormProps) => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsSignup(!isSignup)}
+                onClick={isSignup ? () => setIsSignup(false) : handleCreateAccount}
                 className="w-full h-11 border-gray-300 text-swap-blue hover:bg-swap-lightBlue hover:border-swap-blue"
               >
                 {isSignup ? "Sign in instead" : "Create an account"}

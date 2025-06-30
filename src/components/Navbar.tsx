@@ -63,13 +63,8 @@ const Navbar = () => {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (user) {
-      // If logged in, go to home page
-      navigate('/');
-    } else {
-      // If not logged in, also go to home page
-      navigate('/');
-    }
+    // Always go to home page (/) regardless of auth status
+    navigate('/');
   };
 
   const handleLogout = async () => {
