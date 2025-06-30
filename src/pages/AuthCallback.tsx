@@ -60,12 +60,12 @@ const AuthCallback = () => {
           setStatus("success");
           
           toast.success("Email verified successfully!", {
-            description: "Welcome to SwapSpot! Redirecting to your profile..."
+            description: "Welcome to SwapSpot! Redirecting to community..."
           });
           
           // Give user a moment to see the success message before redirecting
           setTimeout(() => {
-            navigate("/profile", { replace: true });
+            navigate("/community", { replace: true });
           }, 2000);
         } else {
           console.error("No session or user data received");
@@ -104,10 +104,10 @@ const AuthCallback = () => {
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
               <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
               <p className="text-gray-600">
-                Your email has been successfully verified. You're now logged in and will be redirected to your profile.
+                Your email has been successfully verified. You're now logged in and will be redirected to the community.
               </p>
               <p className="text-sm text-gray-500">
-                Redirecting to your profile in a moment...
+                Redirecting to community in a moment...
               </p>
             </div>
           )}

@@ -15,6 +15,9 @@ import VerifyStudent from "./pages/VerifyStudent";
 import SignUp from "./pages/SignUp";
 import AuthCallback from "./pages/AuthCallback";
 import RequiredSignup from "./pages/RequiredSignup";
+import HowItWorksPage from "./pages/HowItWorks";
+import HelpTips from "./pages/HelpTips";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +39,9 @@ const App = () => (
             <Route path="/verify-student" element={<VerifyStudent />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/required-signup" element={<RequiredSignup />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/help-tips" element={<HelpTips />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

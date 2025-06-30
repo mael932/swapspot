@@ -3,322 +3,213 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Mail, Lock, User } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "@/components/ui/sonner";
+import { useNavigate, Link } from "react-router-dom";
 
 interface LoginFormProps {
-  onMagicLinkSent: (email: string) => void;
+  onBack?: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const LoginForm = ({ onBack }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [gdprConsent, setGdprConsent] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
   const navigate = useNavigate();
-
-  const handleSignupRedirect = () => {
-    navigate("/onboarding");
-  };
-
-  const cleanupAuthState = () => {
-    // Clear all auth-related keys from localStorage
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !email.includes('@') || !email.includes('.')) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    if (!isLogin && password !== confirmPassword) {
-      setError("Passwords don't match");
-      return;
-    }
-
-    if (!isLogin && password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
-    if (!isLogin && !gdprConsent) {
-      setError("You must agree to the Privacy Policy to create an account");
-      return;
-    }
-
-    setError("");
     setIsLoading(true);
 
     try {
-      if (isLogin) {
-        // Clean up any existing auth state before login
-        cleanupAuthState();
+      if (isSignup) {
+        // Sign up flow
+        const redirectUrl = `${window.location.origin}/auth/callback`;
         
-        // Attempt global sign out first
-        try {
-          await supabase.auth.signOut({ scope: 'global' });
-        } catch (err) {
-          console.log("Global signout failed, continuing with login:", err);
-        }
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl
+          }
+        });
 
-        // Login flow
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            toast.error("Account already exists", {
+              description: "Please sign in instead or use a different email address."
+            });
+          } else {
+            toast.error("Sign up failed", {
+              description: error.message
+            });
+          }
+        } else {
+          toast.success("Check your email!", {
+            description: "We've sent you a verification link to complete your registration."
+          });
+        }
+      } else {
+        // Sign in flow
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) {
-          console.error("Login error:", error);
-          if (error.message.includes("Invalid login credentials")) {
-            setError("Invalid email or password. Please check your credentials and try again.");
-          } else if (error.message.includes("Email not confirmed")) {
-            setError("Please check your email and confirm your account before signing in.");
-          } else {
-            setError(error.message);
-          }
-          return;
-        }
-
-        if (data.user && data.session) {
-          console.log("Login successful:", data.user.id);
-          
-          toast.success("Welcome back!", {
-            description: "You've been logged in successfully"
-          });
-          
-          // Use replace: true to prevent back button issues
-          navigate("/profile", { replace: true });
-        }
-      } else {
-        // Clean up any existing auth state before signup
-        cleanupAuthState();
-        
-        // Sign up flow - use the new auth callback route
-        const redirectUrl = `${window.location.origin}/auth/callback`;
-        
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectUrl,
-            data: {
-              full_name: fullName,
-              gdpr_consent: true
-            }
-          }
-        });
-
-        if (error) {
-          console.error("Signup error:", error);
-          if (error.message.includes("User already registered")) {
-            setError("An account with this email already exists. Please try logging in instead.");
-          } else {
-            setError(error.message);
-          }
-          return;
-        }
-
-        if (data.user) {
-          console.log("Signup successful:", data.user.id);
-          
-          // Check if user needs email confirmation
-          if (!data.session) {
-            toast.success("Please check your email", {
-              description: "We've sent you a confirmation link to complete your registration."
+          if (error.message.includes("Email not confirmed")) {
+            toast.error("Please verify your email", {
+              description: "Check your inbox and click the verification link before signing in."
             });
-            return;
-          }
-          
-          // If we have a session, the user is automatically logged in
-          if (data.session) {
-            toast.success("Account created successfully!", {
-              description: "Welcome to SwapSpot! Let's set up your profile."
+          } else if (error.message.includes("Invalid login credentials")) {
+            toast.error("Invalid credentials", {
+              description: "Please check your email and password and try again."
             });
-            
-            // Use replace: true to prevent back button issues
-            navigate("/onboarding", { replace: true });
+          } else {
+            toast.error("Sign in failed", {
+              description: error.message
+            });
           }
+        } else if (data.user) {
+          toast.success("Welcome back!");
+          navigate("/community");
         }
       }
     } catch (error) {
       console.error("Auth error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      toast.error("Something went wrong", {
+        description: "Please try again or contact support if the issue persists."
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-swap-blue">
-          {isLogin ? "Welcome Back" : "Join SwapSpot"}
-        </h1>
-        <p className="mt-2 text-gray-600">
-          {isLogin 
-            ? "Sign in to your account to continue" 
-            : "Create your account and start your journey"
-          }
-        </p>
-      </div>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {!isLogin && (
-          <div className="space-y-2">
-            <Label htmlFor="fullName" className="flex items-center gap-2">
-              <User className="h-4 w-4 text-swap-blue" />
-              Full Name
-            </Label>
-            <Input
-              id="fullName"
-              type="text"
-              placeholder="Your full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full"
-              required={!isLogin}
-              disabled={isLoading}
-            />
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-swap-lightBlue to-white flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {onBack && (
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="mb-4 p-0 h-auto text-swap-blue hover:bg-transparent"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
         )}
         
-        <div className="space-y-2">
-          <Label htmlFor="email" className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-swap-blue" />
-            Email Address
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="yourname@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full"
-            required
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="password" className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-swap-blue" />
-            Password
-          </Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full"
-            required
-            disabled={isLoading}
-          />
-        </div>
-
-        {!isLogin && (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="flex items-center gap-2">
-                <Lock className="h-4 w-4 text-swap-blue" />
-                Confirm Password
-              </Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                <Checkbox
-                  id="gdpr-consent-login"
-                  checked={gdprConsent}
-                  onCheckedChange={(checked) => setGdprConsent(checked === true)}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <Label htmlFor="gdpr-consent-login" className="text-sm leading-relaxed">
-                    I agree to the collection and processing of my data in accordance with the{" "}
-                    <Link 
-                      to="/privacy-policy" 
-                      target="_blank"
-                      className="text-swap-blue font-semibold hover:underline"
-                    >
-                      Privacy Policy
-                    </Link>
-                    . I understand that my data will be used to match me with accommodation exchange opportunities.
-                  </Label>
+        <Card className="shadow-lg border-0">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              {isSignup ? "Create your account" : "Welcome back"}
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              {isSignup 
+                ? "Join SwapSpot to find your perfect housing exchange" 
+                : "Sign in to your SwapSpot account"
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  Email address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 h-11 border-gray-300 focus:border-swap-blue focus:ring-swap-blue"
+                    required
+                  />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 h-11 border-gray-300 focus:border-swap-blue focus:ring-swap-blue"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-swap-blue hover:bg-swap-darkBlue text-white font-medium"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    {isSignup ? "Creating account..." : "Signing in..."}
+                  </span>
+                ) : (
+                  isSignup ? "Create account" : "Sign in"
+                )}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">or</span>
+              </div>
             </div>
-          </>
-        )}
-        
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        <Button type="submit" className="w-full" disabled={isLoading || (!isLogin && !gdprConsent)}>
-          {isLoading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {isLogin ? "Signing in..." : "Creating Account..."}
-            </>
-          ) : (
-            isLogin ? "Sign In" : "Create Account"
-          )}
-        </Button>
-      </form>
-      
-      <div className="mt-6 text-center">
-        {isLogin ? (
-          <button
-            type="button"
-            onClick={handleSignupRedirect}
-            className="text-swap-blue font-semibold hover:underline"
-          >
-            Don't have an account? Sign up
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {
-              setIsLogin(true);
-              setError("");
-              setPassword("");
-              setConfirmPassword("");
-              setFullName("");
-              setGdprConsent(false);
-            }}
-            className="text-swap-blue font-semibold hover:underline"
-          >
-            Already have an account? Sign in
-          </button>
-        )}
+
+            <div className="text-center space-y-2">
+              <p className="text-sm text-gray-600">
+                {isSignup ? "Already have an account?" : "Don't have an account?"}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsSignup(!isSignup)}
+                className="w-full h-11 border-gray-300 text-swap-blue hover:bg-swap-lightBlue hover:border-swap-blue"
+              >
+                {isSignup ? "Sign in instead" : "Create an account"}
+              </Button>
+            </div>
+
+            <div className="text-center">
+              <Link 
+                to="/" 
+                className="text-sm text-swap-blue hover:underline"
+              >
+                ← Back to homepage
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
