@@ -25,6 +25,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
   const [gdprConsent, setGdprConsent] = useState(false);
   const navigate = useNavigate();
 
+  // Clean up auth state before operations
+  const cleanupAuthState = () => {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -52,8 +66,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
     setIsLoading(true);
 
     try {
+      // Clean up existing state first
+      cleanupAuthState();
+      
+      // Attempt global sign out to clear any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+        console.log("Cleanup signout completed");
+      }
+
       if (isLogin) {
-        // Login flow - no email confirmation required
+        // Login flow
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -69,15 +94,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         }
 
         if (data.user) {
+          console.log("Login successful:", data.user.id);
+          
+          // Check if user has completed profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', data.user.id)
+            .maybeSingle();
+
           toast.success("Welcome back!", {
             description: "You've been logged in successfully"
           });
           
-          // Always redirect to home after login
-          navigate("/");
+          // Force page reload for clean state
+          if (profile && profile.university) {
+            window.location.href = "/";
+          } else {
+            window.location.href = "/onboarding";
+          }
         }
       } else {
-        // Sign up flow - no email confirmation required, immediate access
+        // Sign up flow
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -99,12 +137,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         }
 
         if (data.user) {
+          console.log("Signup successful:", data.user.id);
+          
           toast.success("Account created successfully!", {
             description: "Welcome to SwapSpot! Let's set up your profile."
           });
           
-          // Redirect to onboarding immediately after signup
-          navigate("/onboarding");
+          // Force page reload and redirect to onboarding
+          window.location.href = "/onboarding";
         }
       }
     } catch (error) {

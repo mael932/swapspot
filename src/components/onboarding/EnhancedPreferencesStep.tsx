@@ -183,6 +183,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
             </div>
 
             <AmenitiesSelector
+              title="Available Amenities"
               selectedAmenities={selectedAmenities}
               onAmenitiesChange={handleAmenitiesChange}
             />
@@ -223,7 +224,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           </CardContent>
         </Card>
 
-        {/* Consent */}
+        {/* Single Consent Box */}
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-4">
@@ -235,26 +236,10 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
                 />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="gdprConsent" className="text-sm font-medium">
-                    I agree to the processing of my personal data *
+                    I agree to the processing of my personal data and want to receive notifications about potential matches *
                   </Label>
                   <p className="text-xs text-gray-600">
-                    We'll use your information to help you find suitable accommodation swaps
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="matchingConsent"
-                  checked={data.matchingConsent || false}
-                  onCheckedChange={(checked) => handleInputChange('matchingConsent', checked)}
-                />
-                <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="matchingConsent" className="text-sm font-medium">
-                    I want to receive notifications about potential matches
-                  </Label>
-                  <p className="text-xs text-gray-600">
-                    Get emails when we find students who might be a good fit for a swap
+                    We'll use your information to help you find suitable accommodation swaps and send you match notifications
                   </p>
                 </div>
               </div>
