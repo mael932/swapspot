@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRightLeft } from "lucide-react";
@@ -127,9 +126,9 @@ const OnboardingFlow = () => {
   };
 
   const handleComplete = () => {
-    // Set completion status and redirect to browse page
+    // Set completion status and redirect to profile page
     localStorage.setItem('onboardingComplete', 'true');
-    navigate("/browse");
+    navigate("/profile");
   };
 
   if (isLoading) {

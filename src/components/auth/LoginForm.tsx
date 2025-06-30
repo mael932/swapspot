@@ -107,11 +107,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             description: "You've been logged in successfully"
           });
           
-          // Force page reload for clean state
+          // Redirect to profile if they have one, otherwise to onboarding
           if (profile && profile.university) {
-            window.location.href = "/";
+            navigate("/profile");
           } else {
-            window.location.href = "/onboarding";
+            navigate("/onboarding");
           }
         }
       } else {
@@ -123,7 +123,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             data: {
               full_name: fullName,
               gdpr_consent: true
-            }
+            },
+            emailRedirectTo: `${window.location.origin}/profile`
           }
         });
 
@@ -143,8 +144,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             description: "Welcome to SwapSpot! Let's set up your profile."
           });
           
-          // Force page reload and redirect to onboarding
-          window.location.href = "/onboarding";
+          // Redirect to onboarding for new users
+          navigate("/onboarding");
         }
       }
     } catch (error) {

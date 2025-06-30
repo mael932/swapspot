@@ -7,6 +7,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Account from "./pages/Account";
+import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Community from "./pages/Community";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/community" element={<Community />} />
             <Route path="/verify" element={<VerifyEmail />} />
