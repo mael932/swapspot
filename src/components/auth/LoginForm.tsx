@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Mail, Lock, User, Upload } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/lib/supabase";
@@ -22,7 +22,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   const [gdprConsent, setGdprConsent] = useState(false);
   const navigate = useNavigate();
 
@@ -54,16 +53,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
 
     try {
       if (isLogin) {
-        // Login flow
+        // Login flow - no email confirmation required
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) {
-          if (error.message.includes("Email not confirmed")) {
-            setError("Please check your email and click the confirmation link before logging in.");
-          } else if (error.message.includes("Invalid login credentials")) {
+          if (error.message.includes("Invalid login credentials")) {
             setError("Invalid email or password. Please check your credentials and try again.");
           } else {
             setError(error.message);
@@ -72,43 +69,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         }
 
         if (data.user) {
-          // Check if email is confirmed
-          if (!data.user.email_confirmed_at) {
-            setError("Please verify your email address before logging in. Check your inbox for the confirmation link.");
-            return;
-          }
-
           toast.success("Welcome back!", {
             description: "You've been logged in successfully"
           });
           
-          // Check if user has completed onboarding
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('university, program')
-            .eq('user_id', data.user.id)
-            .single();
-          
-          if (!profile || !profile.university || !profile.program) {
-            // Redirect to onboarding if profile is incomplete
-            navigate("/onboarding");
-          } else {
-            // Redirect to home if profile is complete
-            navigate("/");
-          }
+          // Always redirect to home after login
+          navigate("/");
         }
       } else {
-        // Sign up flow - always require email confirmation
-        const redirectUrl = `${window.location.origin}/verify`;
-        
+        // Sign up flow - no email confirmation required, immediate access
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: redirectUrl,
             data: {
               full_name: fullName,
-              has_uploaded_proof: !!file,
               gdpr_consent: true
             }
           }
@@ -124,11 +99,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         }
 
         if (data.user) {
-          // Always show email confirmation message for new signups
           toast.success("Account created successfully!", {
-            description: "Please check your email and click the verification link to complete your registration"
+            description: "Welcome to SwapSpot! Let's set up your profile."
           });
-          onMagicLinkSent(email);
+          
+          // Redirect to onboarding immediately after signup
+          navigate("/onboarding");
         }
       }
     } catch (error) {
@@ -136,12 +112,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
     }
   };
 
@@ -154,7 +124,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         <p className="mt-2 text-gray-600">
           {isLogin 
             ? "Sign in to your account to continue" 
-            : "Create your account and start swapping"
+            : "Create your account and start your journey"
           }
         </p>
       </div>
@@ -233,30 +203,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="proof" className="flex items-center gap-2">
-                <Upload className="h-4 w-4 text-swap-blue" />
-                Proof of enrollment (Optional)
-              </Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                <label className="cursor-pointer">
-                  <Input
-                    id="proof"
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <div className="flex flex-col items-center gap-2">
-                    <Upload className="h-8 w-8 text-gray-400" />
-                    <span className="text-sm text-gray-600">
-                      {file ? file.name : "Upload student card or university letter"}
-                    </span>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-2">
               <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-md">
                 <Checkbox
                   id="gdpr-consent-login"
@@ -295,7 +241,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
               {isLogin ? "Signing in..." : "Creating Account..."}
             </>
           ) : (
-            isLogin ? "Sign In" : "Create Account & Verify Email"
+            isLogin ? "Sign In" : "Create Account"
           )}
         </Button>
       </form>
@@ -309,7 +255,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             setPassword("");
             setConfirmPassword("");
             setFullName("");
-            setFile(null);
             setGdprConsent(false);
           }}
           className="text-swap-blue font-semibold hover:underline"

@@ -5,11 +5,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, LogOut, Plus, Settings, Crown, Shield } from "lucide-react";
+import { User, Mail, LogOut, Plus, Settings, Crown, Shield, AlertTriangle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
 import PremiumFeatures from "@/components/PremiumFeatures";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
@@ -65,6 +66,11 @@ const Account = () => {
     }
   };
 
+  const handleVerifyForForums = () => {
+    // Navigate to a verification page or trigger verification process
+    navigate("/verify-student");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -80,6 +86,8 @@ const Account = () => {
     );
   }
 
+  const isEmailVerified = user?.email_confirmed_at;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -88,6 +96,21 @@ const Account = () => {
           <h1 className="text-3xl font-bold mb-8">Your Account</h1>
           
           <div className="space-y-6">
+            {/* Verification Status Alert */}
+            {!isEmailVerified && (
+              <Alert className="border-yellow-200 bg-yellow-50">
+                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="text-yellow-800">
+                  <div className="flex items-center justify-between">
+                    <span>Verify your student status to access forums and premium features</span>
+                    <Button size="sm" onClick={handleVerifyForForums} className="ml-4">
+                      Verify Now
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <PremiumFeatures />
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -97,7 +120,7 @@ const Account = () => {
                     <CardTitle className="flex items-center gap-2">
                       Profile
                       {isPremium && <Crown className="h-4 w-4 text-yellow-600" />}
-                      {user?.email_confirmed_at && <Shield className="h-4 w-4 text-green-600" />}
+                      {isEmailVerified && <Shield className="h-4 w-4 text-green-600" />}
                     </CardTitle>
                     <CardDescription>Your account information</CardDescription>
                   </CardHeader>
@@ -112,13 +135,16 @@ const Account = () => {
                             {profile?.full_name || user?.email?.split('@')[0] || "User"}
                           </p>
                           <p className="text-sm text-gray-500 flex items-center gap-1">
-                            {user?.email_confirmed_at ? (
+                            {isEmailVerified ? (
                               <>
                                 <Shield className="h-3 w-3 text-green-600" />
                                 Verified Student
                               </>
                             ) : (
-                              "Email not verified"
+                              <>
+                                <AlertTriangle className="h-3 w-3 text-yellow-600" />
+                                Unverified
+                              </>
                             )}
                           </p>
                         </div>
@@ -154,6 +180,17 @@ const Account = () => {
                             Update Profile
                           </a>
                         </Button>
+                        {!isEmailVerified && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="justify-start text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                            onClick={handleVerifyForForums}
+                          >
+                            <Shield className="h-4 w-4 mr-2" />
+                            Verify for Forums
+                          </Button>
+                        )}
                         <Button 
                           variant="ghost" 
                           size="sm" 

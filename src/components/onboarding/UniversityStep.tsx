@@ -3,35 +3,19 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GraduationCap, Mail, User } from "lucide-react";
-import UniversitySelect from "./UniversitySelect";
-import ProgramSelect from "./ProgramSelect";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { GraduationCap, Building2, Info } from "lucide-react";
+import { OnboardingData } from "./OnboardingFlow";
 
 interface UniversityStepProps {
-  data: any;
-  onUpdate: (data: any) => void;
+  data: OnboardingData;
+  onUpdate: (data: Partial<OnboardingData>) => void;
   onNext: () => void;
   onPrevious: () => void;
   canGoNext: boolean;
   canGoPrevious: boolean;
 }
-
-const europeanUniversities = [
-  "University of Oxford", "University of Cambridge", "Imperial College London",
-  "University College London", "King's College London", "London School of Economics",
-  "ETH Zurich", "University of Zurich", "University of Geneva", "EPFL",
-  "Sorbonne University", "École Normale Supérieure", "Sciences Po", "HEC Paris",
-  "Technical University of Munich", "Ludwig Maximilian University of Munich",
-  "Heidelberg University", "Humboldt University of Berlin", "Free University of Berlin",
-  "University of Amsterdam", "Delft University of Technology", "Leiden University",
-  "Erasmus University Rotterdam", "University of Groningen",
-  "KU Leuven", "Ghent University", "Université libre de Bruxelles",
-  "University of Barcelona", "Autonomous University of Madrid", "Complutense University of Madrid",
-  "University of Bologna", "Sapienza University of Rome", "Bocconi University",
-  "Stockholm University", "KTH Royal Institute of Technology", "University of Copenhagen",
-  "University of Oslo", "University of Helsinki", "University of Vienna",
-  "Charles University", "University of Warsaw", "Jagiellonian University"
-];
 
 const UniversityStep: React.FC<UniversityStepProps> = ({
   data,
@@ -41,125 +25,123 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
   canGoNext,
   canGoPrevious,
 }) => {
-  const [fullName, setFullName] = useState(data.fullName || "");
-  const [email, setEmail] = useState(data.email || "");
   const [university, setUniversity] = useState(data.university || "");
   const [exchangeUniversity, setExchangeUniversity] = useState(data.exchangeUniversity || "");
   const [program, setProgram] = useState(data.program || "");
+  const [matchingConsent, setMatchingConsent] = useState(data.matchingConsent || false);
 
-  const updateData = (updates: any) => {
-    const newData = {
-      ...data,
-      fullName,
-      email,
-      university,
-      exchangeUniversity,
-      program,
-      ...updates
-    };
-    onUpdate(newData);
+  const handleUniversityChange = (value: string) => {
+    setUniversity(value);
+    onUpdate({ ...data, university: value });
   };
 
-  const handleNext = () => {
-    updateData({});
-    onNext();
+  const handleExchangeUniversityChange = (value: string) => {
+    setExchangeUniversity(value);
+    onUpdate({ ...data, exchangeUniversity: value });
   };
 
-  const canProceed = fullName.trim() !== "" && email.trim() !== "";
+  const handleProgramChange = (value: string) => {
+    setProgram(value);
+    onUpdate({ ...data, program: value });
+  };
+
+  const handleMatchingConsentChange = (checked: boolean) => {
+    setMatchingConsent(checked);
+    onUpdate({ ...data, matchingConsent: checked });
+  };
+
+  const canProceed = university && exchangeUniversity && program && matchingConsent;
 
   return (
     <div className="space-y-8">
-      {/* 60% - Primary Content */}
       <div className="text-center mb-8">
         <GraduationCap className="h-16 w-16 text-swap-blue mx-auto mb-4" />
         <h3 className="text-3xl font-bold text-gray-900 mb-2">
-          Tell us about you
+          Let's Find Your Perfect Match!
         </h3>
         <p className="text-gray-600 text-lg">
-          Basic information to get started
+          Tell us about your university exchange program
         </p>
       </div>
 
-      {/* 30% - Secondary Content */}
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="full-name" className="text-base font-medium">Name *</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input
-                id="full-name"
-                placeholder="Your name"
-                value={fullName}
-                onChange={(e) => {
-                  setFullName(e.target.value);
-                  updateData({ fullName: e.target.value });
-                }}
-                className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-base font-medium">Email *</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  updateData({ email: e.target.value });
-                }}
-                className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
-                required
-              />
-            </div>
+      {/* Data Usage Consent */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="matching-consent"
+            checked={matchingConsent}
+            onCheckedChange={handleMatchingConsentChange}
+            className="mt-1"
+          />
+          <div className="flex-1">
+            <Label htmlFor="matching-consent" className="text-sm font-medium text-blue-800 leading-relaxed cursor-pointer">
+              <div className="flex items-center gap-2 mb-2">
+                <Info className="h-4 w-4" />
+                Data Usage for Matching
+              </div>
+              I consent to SwapSpot using my profile information, preferences, and accommodation details to find and suggest potential matches with other students. This helps us provide you with the best possible accommodation exchange opportunities.
+            </Label>
           </div>
         </div>
-
-        <UniversitySelect
-          value={university}
-          onChange={(value) => {
-            setUniversity(value);
-            updateData({ university: value });
-          }}
-          placeholder="Current university"
-          label="Current University"
-          universities={europeanUniversities}
-        />
-
-        <UniversitySelect
-          value={exchangeUniversity}
-          onChange={(value) => {
-            setExchangeUniversity(value);
-            updateData({ exchangeUniversity: value });
-          }}
-          placeholder="Exchange destination"
-          label="Exchange University"
-          universities={europeanUniversities}
-        />
-
-        <ProgramSelect
-          value={program}
-          onChange={(value) => {
-            setProgram(value);
-            updateData({ program: value });
-          }}
-          placeholder="Study program"
-          label="Program"
-        />
       </div>
 
-      {/* 10% - Accent Content */}
-      <div className="bg-blue-50 p-3 rounded-lg">
-        <p className="text-sm text-blue-700">
-          💡 Complete required fields to continue
-        </p>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="university" className="text-base font-medium flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-swap-blue" />
+            Your Current University *
+          </Label>
+          <Input
+            id="university"
+            type="text"
+            placeholder="e.g., University of California, Berkeley"
+            value={university}
+            onChange={(e) => handleUniversityChange(e.target.value)}
+            className="border-gray-300 focus:border-swap-blue"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="exchange-university" className="text-base font-medium flex items-center gap-2">
+            <GraduationCap className="h-4 w-4 text-swap-blue" />
+            Exchange Destination University *
+          </Label>
+          <Input
+            id="exchange-university"
+            type="text"
+            placeholder="e.g., Sorbonne University, Paris"
+            value={exchangeUniversity}
+            onChange={(e) => handleExchangeUniversityChange(e.target.value)}
+            className="border-gray-300 focus:border-swap-blue"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="program" className="text-base font-medium">
+            Program/Field of Study *
+          </Label>
+          <Input
+            id="program"
+            type="text"
+            placeholder="e.g., Business Administration, Computer Science"
+            value={program}
+            onChange={(e) => handleProgramChange(e.target.value)}
+            className="border-gray-300 focus:border-swap-blue"
+            required
+          />
+        </div>
       </div>
+
+      {!matchingConsent && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Please consent to data usage for matching to continue with your profile setup.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex gap-4 pt-6">
         {canGoPrevious && (
@@ -169,12 +151,12 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             onClick={onPrevious} 
             className="flex-1 h-12"
           >
-            Back
+            Previous
           </Button>
         )}
         <Button 
-          onClick={handleNext}
-          disabled={!canProceed}
+          onClick={onNext} 
+          disabled={!canProceed || !canGoNext}
           className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
           Continue

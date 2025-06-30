@@ -43,6 +43,8 @@ export interface OnboardingData {
   gdprConsent?: boolean;
   apartmentPhotos?: File[];
   amenities?: string[];
+  // New consent field
+  matchingConsent?: boolean;
 }
 
 const OnboardingFlow = () => {
