@@ -30,7 +30,6 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
 }) => {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(data.amenities || []);
   const [apartmentPhotos, setApartmentPhotos] = useState<File[]>(data.apartmentPhotos || []);
-  const [preferredDestinations, setPreferredDestinations] = useState<string[]>(data.preferredDestinations || []);
 
   const handleInputChange = (field: keyof OnboardingData, value: any) => {
     onUpdate({ [field]: value });
@@ -54,20 +53,6 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
     const updatedPhotos = apartmentPhotos.filter((_, i) => i !== index);
     setApartmentPhotos(updatedPhotos);
     onUpdate({ apartmentPhotos: updatedPhotos });
-  };
-
-  const addDestination = (destination: string) => {
-    if (destination && !preferredDestinations.includes(destination)) {
-      const updated = [...preferredDestinations, destination];
-      setPreferredDestinations(updated);
-      onUpdate({ preferredDestinations: updated });
-    }
-  };
-
-  const removeDestination = (destination: string) => {
-    const updated = preferredDestinations.filter(d => d !== destination);
-    setPreferredDestinations(updated);
-    onUpdate({ preferredDestinations: updated });
   };
 
   const canProceed = data.currentLocation && data.currentAddress && data.budget && data.gdprConsent;
@@ -116,7 +101,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           </CardContent>
         </Card>
 
-        {/* Budget and Preferences */}
+        {/* Budget */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -135,29 +120,6 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
                 onChange={(e) => handleInputChange('budget', e.target.value)}
                 className="h-12"
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Preferred Destinations</Label>
-              <CitySelect
-                value=""
-                onChange={(value) => addDestination(value)}
-                placeholder="Add a destination"
-                label=""
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {preferredDestinations.map((destination, index) => (
-                  <div key={index} className="bg-swap-lightBlue text-swap-blue px-3 py-1 rounded-full text-sm flex items-center gap-2">
-                    {destination}
-                    <button
-                      onClick={() => removeDestination(destination)}
-                      className="text-swap-blue hover:text-red-500"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </CardContent>
         </Card>
