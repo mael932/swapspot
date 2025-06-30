@@ -6,6 +6,7 @@ import { OnboardingData } from "./OnboardingFlow";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
+import { uploadAccommodationPhotos } from "@/services/storageService";
 
 interface ProfileCompleteStepProps {
   data: OnboardingData;
@@ -33,8 +34,25 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
     setIsLoading(true);
     
     try {
+      let photoUrls: string[] = [];
+      
+      // Upload photos to Supabase Storage if they exist
+      if (data.apartmentPhotos && data.apartmentPhotos.length > 0) {
+        console.log('Uploading photos to storage...');
+        const userId = `user_${Date.now()}`; // Generate a temporary user ID
+        const uploadResults = await uploadAccommodationPhotos(data.apartmentPhotos, userId);
+        photoUrls = uploadResults.map(result => result.url);
+        console.log('Photos uploaded:', photoUrls);
+      }
+
+      // Add photo URLs to the data
+      const dataWithPhotos = {
+        ...data,
+        photoUrls
+      };
+
       // Format and send data to Google Sheets
-      const formattedData = formatUserDataForSheet(data);
+      const formattedData = formatUserDataForSheet(dataWithPhotos);
       console.log('Sending data to Google Sheets:', formattedData);
       
       const result = await addUserToGoogleSheet(formattedData);
@@ -130,7 +148,7 @@ const ProfileCompleteStep: React.FC<ProfileCompleteStepProps> = ({
           disabled={isLoading}
           className="flex-1 h-12 bg-swap-blue hover:bg-swap-blue/90 text-white font-medium"
         >
-          {isLoading ? "Completing..." : "Join Community"}
+          {isLoading ? "Uploading photos and completing..." : "Join Community"}
         </Button>
       </div>
     </div>

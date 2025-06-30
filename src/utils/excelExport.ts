@@ -17,7 +17,6 @@ export interface UserAccountData {
   apartmentDescription: string;
   preferredDestinations: string[];
   budget: string;
-  duration: string;
   createdAt: string;
 }
 
@@ -67,7 +66,6 @@ export const exportToExcel = (data: ExportableOnboardingData[]): void => {
       'Program': item.program || '',
       'Current Location': item.currentLocation || '',
       'Current Address': item.currentAddress || '',
-      'Duration': item.duration || '',
       'Start Date': item.startDate || '',
       'End Date': item.endDate || '',
       'Budget': item.budget || '',
@@ -119,7 +117,6 @@ export const exportUserDataToExcel = (data: UserAccountData[]): void => {
       'Apartment Description': item.apartmentDescription,
       'Preferred Destinations': item.preferredDestinations?.join(', ') || '',
       'Budget': item.budget,
-      'Duration': item.duration,
       'Created At': new Date(item.createdAt).toLocaleDateString()
     }));
 

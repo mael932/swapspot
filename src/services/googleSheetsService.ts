@@ -43,9 +43,13 @@ export const addUserToGoogleSheet = async (userData: UserData) => {
 };
 
 export const formatUserDataForSheet = (onboardingData: any): UserData => {
-  // Convert photos to a simple count or list since we can't embed actual files
-  const photoCount = onboardingData.apartmentPhotos?.length || 0;
-  const photoInfo = photoCount > 0 ? `${photoCount} photos uploaded` : 'No photos';
+  // Format photo URLs if they exist
+  let photoInfo = 'No photos';
+  if (onboardingData.photoUrls && onboardingData.photoUrls.length > 0) {
+    photoInfo = onboardingData.photoUrls.join(', ');
+  } else if (onboardingData.apartmentPhotos?.length > 0) {
+    photoInfo = `${onboardingData.apartmentPhotos.length} photos uploaded (local)`;
+  }
 
   return {
     email: onboardingData.email || '',
