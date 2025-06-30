@@ -20,7 +20,8 @@ import {
   Lock,
   Globe,
   MapPin,
-  Calendar
+  Calendar,
+  Mail
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,14 +30,58 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import PubertChat from "@/components/PubertChat";
 import CommunityChat from "@/components/CommunityChat";
 import ConnectForums from "@/components/ConnectForums";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { supabase } from "@/lib/supabase";
 
 const Community = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { subscriptionData, isPremium, isBasic, isElite, loading } = useSubscription();
   
   const hasAccess = isPremium || isBasic || isElite;
+
+  // Check email verification status
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setIsEmailVerified(user.email_confirmed_at !== null);
+        }
+      } catch (error) {
+        console.error("Error checking email verification:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkEmailVerification();
+  }, []);
+
+  const handleResendVerification = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email: user.email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/verify`
+          }
+        });
+        
+        if (error) {
+          console.error("Error resending verification:", error);
+        } else {
+          alert("Verification email sent! Please check your inbox.");
+        }
+      }
+    } catch (error) {
+      console.error("Error resending verification:", error);
+    }
+  };
   
   const wikiGuides = [
     {
@@ -92,6 +137,21 @@ const Community = () => {
     }
   ];
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-swap-blue mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -120,12 +180,12 @@ const Community = () => {
                 <TabsTrigger value="connect" className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Connect
-                  {hasAccess && <Crown className="h-3 w-3 text-yellow-500" />}
+                  {hasAccess && isEmailVerified && <Crown className="h-3 w-3 text-yellow-500" />}
                 </TabsTrigger>
                 <TabsTrigger value="community" className="flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
                   Chat
-                  {hasAccess && <Crown className="h-3 w-3 text-yellow-500" />}
+                  {hasAccess && isEmailVerified && <Crown className="h-3 w-3 text-yellow-500" />}
                 </TabsTrigger>
               </TabsList>
 
@@ -266,6 +326,43 @@ const Community = () => {
                       </CardContent>
                     </Card>
                   </div>
+                ) : !isEmailVerified ? (
+                  <div className="text-center py-12">
+                    <Card className="max-w-2xl mx-auto">
+                      <CardHeader>
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="bg-orange-100 p-4 rounded-full">
+                            <Mail className="h-8 w-8 text-orange-600" />
+                          </div>
+                        </div>
+                        <CardTitle className="text-2xl mb-2">Email Verification Required</CardTitle>
+                        <CardDescription className="text-lg">
+                          Please verify your email address to access the Connect forums
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Alert className="mb-6">
+                          <Mail className="h-4 w-4" />
+                          <AlertDescription>
+                            To ensure community safety and authenticity, you must verify your email address before accessing premium community features.
+                          </AlertDescription>
+                        </Alert>
+                        <div className="space-y-4">
+                          <p className="text-gray-600">
+                            Check your email inbox for a verification link. If you haven't received it, you can request a new one.
+                          </p>
+                        </div>
+                        <div className="mt-8 space-y-4">
+                          <Button onClick={handleResendVerification} size="lg" className="w-full">
+                            Resend Verification Email
+                          </Button>
+                          <Button variant="outline" asChild className="w-full">
+                            <Link to="/help-tips">Browse Free Resources</Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 ) : (
                   <ConnectForums />
                 )}
@@ -307,6 +404,43 @@ const Community = () => {
                         <div className="mt-8 space-y-4">
                           <Button asChild size="lg" className="w-full">
                             <Link to="/signup">Upgrade to Premium</Link>
+                          </Button>
+                          <Button variant="outline" asChild className="w-full">
+                            <Link to="/help-tips">Browse Free Resources</Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ) : !isEmailVerified ? (
+                  <div className="text-center py-12">
+                    <Card className="max-w-2xl mx-auto">
+                      <CardHeader>
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="bg-orange-100 p-4 rounded-full">
+                            <Mail className="h-8 w-8 text-orange-600" />
+                          </div>
+                        </div>
+                        <CardTitle className="text-2xl mb-2">Email Verification Required</CardTitle>
+                        <CardDescription className="text-lg">
+                          Please verify your email address to access the Community Chat
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Alert className="mb-6">
+                          <Mail className="h-4 w-4" />
+                          <AlertDescription>
+                            To ensure community safety and authenticity, you must verify your email address before accessing premium community features.
+                          </AlertDescription>
+                        </Alert>
+                        <div className="space-y-4">
+                          <p className="text-gray-600">
+                            Check your email inbox for a verification link. If you haven't received it, you can request a new one.
+                          </p>
+                        </div>
+                        <div className="mt-8 space-y-4">
+                          <Button onClick={handleResendVerification} size="lg" className="w-full">
+                            Resend Verification Email
                           </Button>
                           <Button variant="outline" asChild className="w-full">
                             <Link to="/help-tips">Browse Free Resources</Link>
