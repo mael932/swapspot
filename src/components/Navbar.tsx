@@ -53,7 +53,7 @@ const Navbar = () => {
 
   const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate('/login?fromNav=true');
+    navigate('/login');
   };
 
   const handleSignupClick = (e: React.MouseEvent) => {
@@ -94,12 +94,6 @@ const Navbar = () => {
             <DropdownMenuContent align="end" className="w-[180px]">
               <DropdownMenuItem asChild>
                 <Link to="/">Home</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/post-place">Post a Place</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/help-tips">Help & Tips</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/community">Community</Link>

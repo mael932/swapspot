@@ -14,6 +14,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import VerifyStudent from "./pages/VerifyStudent";
 import SignUp from "./pages/SignUp";
 import AuthCallback from "./pages/AuthCallback";
+import RequiredSignup from "./pages/RequiredSignup";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/verify" element={<VerifyEmail />} />
             <Route path="/verify-student" element={<VerifyStudent />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/required-signup" element={<RequiredSignup />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
