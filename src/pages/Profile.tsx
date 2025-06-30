@@ -15,13 +15,27 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
 import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
 
+interface ProfileData {
+  full_name?: string;
+  email?: string;
+  university?: string;
+  exchange_university?: string;
+  program?: string;
+  current_location?: string;
+  current_address?: string;
+  start_date?: string;
+  end_date?: string;
+  budget?: string;
+  apartment_description?: string;
+}
+
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState<ProfileData>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,7 +75,7 @@ const Profile = () => {
     }
   };
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: keyof ProfileData, value: string) => {
     setEditData(prev => ({
       ...prev,
       [field]: value
@@ -107,7 +121,7 @@ const Profile = () => {
   };
 
   const handleCancel = () => {
-    setEditData(profile);
+    setEditData(profile || {});
     setIsEditing(false);
   };
 
