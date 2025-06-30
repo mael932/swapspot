@@ -1,12 +1,12 @@
 
 import React, { useState, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRightLeft } from "lucide-react";
 import UniversityStep from "./UniversityStep";
 import DatesStep from "./DatesStep";
 import EnhancedPreferencesStep from "./EnhancedPreferencesStep";
 import ProofOfEnrollmentStep from "./ProofOfEnrollmentStep";
-import ProfileCompleteStep from "./ProfileCompleteStep";
+import AccountCreationStep from "./AccountCreationStep";
 import { loadUserProfile } from "@/services/emailService";
 import { supabase } from "@/lib/supabase";
 
@@ -45,6 +45,9 @@ export interface OnboardingData {
   amenities?: string[];
   // New consent field
   matchingConsent?: boolean;
+  // Account creation fields
+  password?: string;
+  confirmPassword?: string;
 }
 
 const OnboardingFlow = () => {
@@ -52,44 +55,50 @@ const OnboardingFlow = () => {
   const [data, setData] = useState<OnboardingData>({});
   const [canGoNext, setCanGoNext] = useState(true);
   const [canGoPrevious, setCanGoPrevious] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-  // Load existing profile data on component mount
+  // Check if user is already authenticated
   useEffect(() => {
-    const loadExistingProfile = async () => {
-      try {
-        const profile = await loadUserProfile();
-        if (profile) {
-          // Map profile data to onboarding data format
-          const profileData: OnboardingData = {
-            fullName: profile.full_name || '',
-            email: profile.email || '',
-            university: profile.university || '',
-            exchangeUniversity: profile.exchange_university || '',
-            program: profile.program || '',
-            startDate: profile.start_date || '',
-            endDate: profile.end_date || '',
-            currentLocation: profile.current_location || '',
-            currentAddress: profile.current_address || '',
-            budget: profile.budget || '',
-            preferredDestinations: profile.preferred_destinations || [],
-            apartmentDescription: profile.apartment_description || '',
-            verificationMethod: profile.verification_method || 'email',
-            universityEmail: profile.university_email || '',
-            additionalInfo: profile.additional_info || '',
-            hasUploadedProof: profile.has_uploaded_proof || false,
-            gdprConsent: profile.gdpr_consent || false
-          };
-          setData(profileData);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsAuthenticated(true);
+        // Load existing profile if authenticated
+        try {
+          const profile = await loadUserProfile();
+          if (profile) {
+            const profileData: OnboardingData = {
+              fullName: profile.full_name || '',
+              email: profile.email || '',
+              university: profile.university || '',
+              exchangeUniversity: profile.exchange_university || '',
+              program: profile.program || '',
+              startDate: profile.start_date || '',
+              endDate: profile.end_date || '',
+              currentLocation: profile.current_location || '',
+              currentAddress: profile.current_address || '',
+              budget: profile.budget || '',
+              preferredDestinations: profile.preferred_destinations || [],
+              apartmentDescription: profile.apartment_description || '',
+              verificationMethod: profile.verification_method || 'email',
+              universityEmail: profile.university_email || '',
+              additionalInfo: profile.additional_info || '',
+              hasUploadedProof: profile.has_uploaded_proof || false,
+              gdprConsent: profile.gdpr_consent || false
+            };
+            setData(profileData);
+          }
+        } catch (error) {
+          console.error("Error loading existing profile:", error);
         }
-      } catch (error) {
-        console.error("Error loading existing profile:", error);
-      } finally {
-        setIsLoading(false);
       }
+      setIsLoading(false);
     };
 
-    loadExistingProfile();
+    setIsLoading(true);
+    checkAuth();
   }, []);
 
   const handleNext = () => {
@@ -111,8 +120,9 @@ const OnboardingFlow = () => {
     }));
   }, []);
 
-  const handleComplete = () => {
-    alert("Onboarding complete!");
+  const handleAccountCreated = () => {
+    // Redirect to account page after successful registration
+    navigate("/account");
   };
 
   if (isLoading) {
@@ -120,7 +130,7 @@ const OnboardingFlow = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-swap-blue mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your profile...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -174,14 +184,15 @@ const OnboardingFlow = () => {
         );
       case 4:
         return (
-          <ProfileCompleteStep
+          <AccountCreationStep
             data={data}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onPrevious={handlePrevious}
             canGoNext={canGoNext}
             canGoPrevious={canGoPrevious}
-            onComplete={handleComplete}
+            onAccountCreated={handleAccountCreated}
+            isAuthenticated={isAuthenticated}
           />
         );
       default:

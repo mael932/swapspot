@@ -57,7 +57,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
       <div className="text-center mb-8">
         <GraduationCap className="h-16 w-16 text-swap-blue mx-auto mb-4" />
         <h3 className="text-3xl font-bold text-gray-900 mb-2">
-          Let's Find Your Perfect Match!
+          Find Your Perfect Match!
         </h3>
         <p className="text-gray-600 text-lg">
           Tell us about your university exchange program
@@ -132,6 +132,12 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
             required
           />
         </div>
+      </div>
+
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+        <p className="text-sm text-green-700">
+          💡 <strong>No account needed yet!</strong> Complete your preferences first, then we'll help you create an account to save everything.
+        </p>
       </div>
 
       {!matchingConsent && (
