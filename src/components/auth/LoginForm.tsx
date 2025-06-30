@@ -97,18 +97,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         if (data.user && data.session) {
           console.log("Login successful:", data.user.id);
           
-          // Ensure session is properly set
-          await supabase.auth.setSession({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token
-          });
-
           toast.success("Welcome back!", {
             description: "You've been logged in successfully"
           });
           
-          // Force page reload to ensure clean state
-          window.location.href = "/profile";
+          // Use replace: true to prevent back button issues
+          navigate("/profile", { replace: true });
         }
       } else {
         // Clean up any existing auth state before signup
@@ -152,18 +146,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
           
           // If we have a session, the user is automatically logged in
           if (data.session) {
-            // Ensure session is properly set
-            await supabase.auth.setSession({
-              access_token: data.session.access_token,
-              refresh_token: data.session.refresh_token
-            });
-
             toast.success("Account created successfully!", {
               description: "Welcome to SwapSpot! Let's set up your profile."
             });
             
-            // Force page reload to ensure clean state
-            window.location.href = "/onboarding";
+            // Use replace: true to prevent back button issues
+            navigate("/onboarding", { replace: true });
           }
         }
       }

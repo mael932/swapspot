@@ -18,6 +18,18 @@ const AuthCallback = () => {
       console.log("URL params:", Object.fromEntries(searchParams.entries()));
       
       const code = searchParams.get("code");
+      const error = searchParams.get("error");
+      const errorDescription = searchParams.get("error_description");
+      
+      // Handle error cases first
+      if (error) {
+        console.error("Auth callback error:", error, errorDescription);
+        setStatus("error");
+        toast.error("Verification failed", {
+          description: errorDescription || "Please try again"
+        });
+        return;
+      }
       
       if (!code) {
         console.error("No code parameter found in URL");
@@ -53,7 +65,7 @@ const AuthCallback = () => {
           
           // Give user a moment to see the success message before redirecting
           setTimeout(() => {
-            navigate("/profile");
+            navigate("/profile", { replace: true });
           }, 2000);
         } else {
           console.error("No session or user data received");
