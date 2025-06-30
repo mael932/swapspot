@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Home, Euro, Camera, Check } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
@@ -59,7 +60,6 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* 60% - Primary Content */}
       <div className="text-center mb-8">
         <Home className="h-16 w-16 text-swap-blue mx-auto mb-4" />
         <h3 className="text-3xl font-bold text-gray-900 mb-2">
@@ -70,7 +70,6 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
         </p>
       </div>
 
-      {/* 30% - Secondary Content */}
       <div className="space-y-8">
         {/* Location Information */}
         <Card>
@@ -106,20 +105,25 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Euro className="h-5 w-5 text-swap-blue" />
-              Budget & Preferences
+              Budget Preferences
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="budget">Monthly Budget (€)</Label>
-              <Input
-                id="budget"
-                type="number"
-                placeholder="e.g., 800"
-                value={data.budget || ''}
-                onChange={(e) => handleInputChange('budget', e.target.value)}
-                className="h-12"
-              />
+              <Label htmlFor="budget">Monthly Budget</Label>
+              <Select value={data.budget || ''} onValueChange={(value) => handleInputChange('budget', value)}>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select your monthly budget range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="300-500">€300 - €500</SelectItem>
+                  <SelectItem value="500-700">€500 - €700</SelectItem>
+                  <SelectItem value="700-900">€700 - €900</SelectItem>
+                  <SelectItem value="900-1200">€900 - €1,200</SelectItem>
+                  <SelectItem value="1200-1500">€1,200 - €1,500</SelectItem>
+                  <SelectItem value="1500+">€1,500+</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -210,7 +214,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
         </Card>
       </div>
 
-      {/* 10% - Accent Content */}
+      {/* Progress indicator */}
       {canProceed && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-2">
