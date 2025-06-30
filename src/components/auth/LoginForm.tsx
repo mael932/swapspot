@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [gdprConsent, setGdprConsent] = useState(false);
   const navigate = useNavigate();
+
+  const handleSignupRedirect = () => {
+    navigate("/onboarding");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -276,23 +279,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
       </form>
       
       <div className="mt-6 text-center">
-        <button
-          type="button"
-          onClick={() => {
-            setIsLogin(!isLogin);
-            setError("");
-            setPassword("");
-            setConfirmPassword("");
-            setFullName("");
-            setGdprConsent(false);
-          }}
-          className="text-swap-blue font-semibold hover:underline"
-        >
-          {isLogin 
-            ? "Don't have an account? Sign up" 
-            : "Already have an account? Sign in"
-          }
-        </button>
+        {isLogin ? (
+          <button
+            type="button"
+            onClick={handleSignupRedirect}
+            className="text-swap-blue font-semibold hover:underline"
+          >
+            Don't have an account? Sign up
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setIsLogin(true);
+              setError("");
+              setPassword("");
+              setConfirmPassword("");
+              setFullName("");
+              setGdprConsent(false);
+            }}
+            className="text-swap-blue font-semibold hover:underline"
+          >
+            Already have an account? Sign in
+          </button>
+        )}
       </div>
     </div>
   );
