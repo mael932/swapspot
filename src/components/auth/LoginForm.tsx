@@ -64,7 +64,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
           if (error.message.includes("Email not confirmed")) {
             setError("Please check your email and click the confirmation link before logging in.");
           } else if (error.message.includes("Invalid login credentials")) {
-            setError("Invalid email or password. Please try again.");
+            setError("Invalid email or password. Please check your credentials and try again.");
           } else {
             setError(error.message);
           }
@@ -72,11 +72,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         }
 
         if (data.user) {
+          // Check if email is confirmed
+          if (!data.user.email_confirmed_at) {
+            setError("Please verify your email address before logging in. Check your inbox for the confirmation link.");
+            return;
+          }
+
           toast.success("Welcome back!", {
             description: "You've been logged in successfully"
           });
           
-          // Check if user has completed onboarding by looking for profile data
+          // Check if user has completed onboarding
           const { data: profile } = await supabase
             .from('profiles')
             .select('university, program')
@@ -88,12 +94,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             navigate("/onboarding");
           } else {
             // Redirect to home if profile is complete
-            localStorage.setItem(`onboarding_completed_${data.user.id}`, 'true');
             navigate("/");
           }
         }
       } else {
-        // Sign up flow
+        // Sign up flow - always require email confirmation
         const redirectUrl = `${window.location.origin}/verify`;
         
         const { data, error } = await supabase.auth.signUp({
@@ -119,19 +124,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         }
 
         if (data.user) {
-          if (data.user.email_confirmed_at) {
-            // Email is already confirmed, redirect to onboarding
-            toast.success("Account created successfully!", {
-              description: "Let's complete your profile setup"
-            });
-            navigate("/onboarding");
-          } else {
-            // Email confirmation required
-            toast.success("Please check your email!", {
-              description: "We've sent you a verification link to complete your registration"
-            });
-            onMagicLinkSent(email);
-          }
+          // Always show email confirmation message for new signups
+          toast.success("Account created successfully!", {
+            description: "Please check your email and click the verification link to complete your registration"
+          });
+          onMagicLinkSent(email);
         }
       }
     } catch (error) {
@@ -259,7 +256,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
               </div>
             </div>
 
-            {/* GDPR Consent Checkbox */}
             <div className="space-y-2">
               <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-md">
                 <Checkbox
@@ -299,7 +295,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
               {isLogin ? "Signing in..." : "Creating Account..."}
             </>
           ) : (
-            isLogin ? "Sign In" : "Create Account & Start Setup"
+            isLogin ? "Sign In" : "Create Account & Verify Email"
           )}
         </Button>
       </form>

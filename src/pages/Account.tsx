@@ -1,10 +1,11 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, LogOut, Plus, Settings, Crown } from "lucide-react";
+import { User, Mail, LogOut, Plus, Settings, Crown, Shield } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
 import PremiumFeatures from "@/components/PremiumFeatures";
@@ -12,6 +13,7 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
@@ -23,12 +25,24 @@ const Account = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          // Redirect to login if not authenticated
           navigate("/login");
           return;
         }
         
         setUser(session.user);
+
+        // Get user profile data
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error fetching profile:", error);
+        } else {
+          setProfile(profileData);
+        }
       } catch (error) {
         console.error("Error fetching user profile:", error);
         toast.error("Failed to load your profile");
@@ -74,7 +88,6 @@ const Account = () => {
           <h1 className="text-3xl font-bold mb-8">Your Account</h1>
           
           <div className="space-y-6">
-            {/* Premium Features Section */}
             <PremiumFeatures />
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -84,6 +97,7 @@ const Account = () => {
                     <CardTitle className="flex items-center gap-2">
                       Profile
                       {isPremium && <Crown className="h-4 w-4 text-yellow-600" />}
+                      {user?.email_confirmed_at && <Shield className="h-4 w-4 text-green-600" />}
                     </CardTitle>
                     <CardDescription>Your account information</CardDescription>
                   </CardHeader>
@@ -94,8 +108,19 @@ const Account = () => {
                           <User className="h-6 w-6 text-swap-blue" />
                         </div>
                         <div>
-                          <p className="font-medium">{user?.email?.split('@')[0] || "User"}</p>
-                          <p className="text-sm text-gray-500">Verified Student</p>
+                          <p className="font-medium">
+                            {profile?.full_name || user?.email?.split('@')[0] || "User"}
+                          </p>
+                          <p className="text-sm text-gray-500 flex items-center gap-1">
+                            {user?.email_confirmed_at ? (
+                              <>
+                                <Shield className="h-3 w-3 text-green-600" />
+                                Verified Student
+                              </>
+                            ) : (
+                              "Email not verified"
+                            )}
+                          </p>
                         </div>
                       </div>
                       
@@ -106,12 +131,27 @@ const Account = () => {
                           <span>{user?.email}</span>
                         </div>
                       </div>
+
+                      {profile && (
+                        <div className="pt-4 space-y-2">
+                          <p className="text-sm text-gray-500 mb-1">Profile Details</p>
+                          {profile.university && (
+                            <p className="text-sm"><strong>University:</strong> {profile.university}</p>
+                          )}
+                          {profile.program && (
+                            <p className="text-sm"><strong>Program:</strong> {profile.program}</p>
+                          )}
+                          {profile.current_location && (
+                            <p className="text-sm"><strong>Location:</strong> {profile.current_location}</p>
+                          )}
+                        </div>
+                      )}
                       
                       <div className="pt-4 flex flex-col gap-2">
                         <Button variant="outline" size="sm" className="justify-start" asChild>
-                          <a href="/settings">
+                          <a href="/onboarding">
                             <Settings className="h-4 w-4 mr-2" />
-                            Edit Profile
+                            Update Profile
                           </a>
                         </Button>
                         <Button 
