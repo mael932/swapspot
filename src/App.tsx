@@ -18,6 +18,7 @@ import RequiredSignup from "./pages/RequiredSignup";
 import HowItWorksPage from "./pages/HowItWorks";
 import HelpTips from "./pages/HelpTips";
 import About from "./pages/About";
+import AlreadyRegistered from "./pages/AlreadyRegistered";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/help-tips" element={<HelpTips />} />
             <Route path="/about" element={<About />} />
+            <Route path="/already-registered" element={<AlreadyRegistered />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

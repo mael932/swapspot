@@ -61,6 +61,17 @@ const Navbar = () => {
     navigate('/onboarding');
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      // If logged in, go to home page
+      navigate('/');
+    } else {
+      // If not logged in, also go to home page
+      navigate('/');
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -75,7 +86,7 @@ const Navbar = () => {
   return (
     <div className="bg-white border-b shadow-sm sticky top-0 z-50">
       <div className="container flex items-center justify-between py-4">
-        <Link to="/" className="flex items-center gap-2 font-bold text-2xl text-swap-blue">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 font-bold text-2xl text-swap-blue">
           <div className="relative">
             <ArrowRightLeft 
               className="h-8 w-8 text-swap-blue animate-pulse hover:animate-spin transition-all duration-300" 

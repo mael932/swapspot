@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +25,11 @@ import Footer from "@/components/Footer";
 
 const HelpTips = () => {
   const [selectedCountry, setSelectedCountry] = useState("netherlands");
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const subletLaws = {
     netherlands: {
@@ -181,6 +185,19 @@ const HelpTips = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
+      
+      {/* Blue Banner */}
+      <div className="bg-gradient-to-r from-swap-blue to-swap-darkBlue py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Help & Tips
+          </h1>
+          <p className="text-xl text-white/90 max-w-3xl mx-auto">
+            Get the most out of SwapSpot's matching system and prepare for your exchange
+          </p>
+        </div>
+      </div>
+
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           {/* Header */}
@@ -437,7 +454,7 @@ const HelpTips = () => {
               <p className="mb-6">Complete your profile and let our intelligent matching system find compatible students for you</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button variant="secondary" asChild>
-                  <a href="/signup">Create Your Profile</a>
+                  <a href="/onboarding">Create Your Profile</a>
                 </Button>
                 <Button variant="outline" className="text-white border-white hover:bg-white hover:text-swap-blue" asChild>
                   <a href="/community">Join Community Chat</a>

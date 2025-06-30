@@ -59,15 +59,20 @@ const OnboardingFlow = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  // Check if user is already authenticated
+  // Check if user is already authenticated and has completed onboarding
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setIsAuthenticated(true);
-        // Load existing profile if authenticated
+        // Check if user has already completed onboarding
         try {
           const profile = await loadUserProfile();
+          if (profile && profile.full_name && profile.university) {
+            // User has already completed onboarding, redirect to already registered page
+            navigate("/already-registered");
+            return;
+          }
           if (profile) {
             const profileData: OnboardingData = {
               fullName: profile.full_name || '',
@@ -99,7 +104,7 @@ const OnboardingFlow = () => {
 
     setIsLoading(true);
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   const handleNext = () => {
     if (currentStep < 5) {
