@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -9,32 +8,19 @@ const corsHeaders = {
 interface UserData {
   email: string;
   fullName: string;
-  university: string;
+  currentUniversity: string;
+  exchangeUniversity: string;
   program: string;
-  startDate: string;
-  endDate: string;
-  minPrice: number;
-  maxPrice: number;
-  location: string;
-  accommodationType: string;
+  exchangeStart: string;
+  exchangeEnd: string;
+  currentAccommodationCity: string;
+  address: string;
+  monthlyRent: string;
+  accommodationDescription: string;
+  accommodationPhotos: string;
   amenities: string[];
-  hasUploadedProof: boolean;
-  verificationMethod: string;
   createdAt: string;
   gdprConsent: boolean;
-  // Apartment details
-  apartmentTitle: string;
-  apartmentLocation: string;
-  apartmentPrice: number;
-  apartmentBedrooms: string;
-  apartmentSurface: string;
-  apartmentDescription: string;
-  apartmentAmenities: string[];
-  // Preferences
-  preferredCountries: string[];
-  preferredAmenities: string[];
-  minBedrooms: string;
-  minSurface: string;
 }
 
 // Function to get Google access token using service account
@@ -153,17 +139,17 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
       'Timestamp',
       'Email', 
       'Name',
-      'University',
-      'Major',
-      'Exchange Start Date',
-      'Exchange End Date',
-      'Min Rent',
-      'Max Rent',
-      'Destination City',
-      'Wants Flatmate',
-      'Smoker',
-      'Pets',
-      'Preferences Notes'
+      'Current University',
+      'Exchange University',
+      'Program',
+      'Exchange Start',
+      'Exchange End',
+      'Current Accommodation City',
+      'Address',
+      'Monthly Rent',
+      'Accommodation Description',
+      'Accommodation Photos',
+      'Amenities'
     ];
 
     const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:N1?valueInputOption=RAW`;
@@ -200,7 +186,7 @@ serve(async (req) => {
   try {
     console.log('Google Sheets function called');
     const userData: UserData = await req.json();
-    console.log('User data received:', { email: userData.email, university: userData.university });
+    console.log('User data received:', { email: userData.email, currentUniversity: userData.currentUniversity });
     
     // Get spreadsheet ID from environment
     const spreadsheetId = Deno.env.get('GOOGLE_SHEETS_SPREADSHEET_ID');
@@ -224,17 +210,17 @@ serve(async (req) => {
       userData.createdAt,                                    // Timestamp
       userData.email,                                        // Email
       userData.fullName,                                     // Name
-      userData.university,                                   // University
-      userData.program,                                      // Major
-      userData.startDate,                                    // Exchange Start Date
-      userData.endDate,                                      // Exchange End Date
-      userData.minPrice.toString(),                          // Min Rent
-      userData.maxPrice.toString(),                          // Max Rent
-      userData.location,                                     // Destination City
-      userData.accommodationType.includes('shared') ? 'Yes' : 'No', // Wants Flatmate
-      userData.amenities.includes('smoking') ? 'Yes' : 'No', // Smoker
-      userData.amenities.includes('pets') ? 'Yes' : 'No',    // Pets
-      userData.amenities.join(', '),                         // Preferences Notes
+      userData.currentUniversity,                            // Current University
+      userData.exchangeUniversity,                           // Exchange University
+      userData.program,                                      // Program
+      userData.exchangeStart,                                // Exchange Start
+      userData.exchangeEnd,                                  // Exchange End
+      userData.currentAccommodationCity,                     // Current Accommodation City
+      userData.address,                                      // Address
+      userData.monthlyRent,                                  // Monthly Rent
+      userData.accommodationDescription,                     // Accommodation Description
+      userData.accommodationPhotos,                          // Accommodation Photos
+      userData.amenities.join(', '),                        // Amenities
     ];
 
     console.log('Prepared row data for Google Sheets:', rowData);

@@ -4,32 +4,19 @@ import { supabase } from "@/lib/supabase";
 interface UserData {
   email: string;
   fullName: string;
-  university: string;
+  currentUniversity: string;
+  exchangeUniversity: string;
   program: string;
-  startDate: string;
-  endDate: string;
-  minPrice: number;
-  maxPrice: number;
-  location: string;
-  accommodationType: string;
+  exchangeStart: string;
+  exchangeEnd: string;
+  currentAccommodationCity: string;
+  address: string;
+  monthlyRent: string;
+  accommodationDescription: string;
+  accommodationPhotos: string;
   amenities: string[];
-  hasUploadedProof: boolean;
-  verificationMethod: string;
   createdAt: string;
   gdprConsent: boolean;
-  // Apartment details
-  apartmentTitle: string;
-  apartmentLocation: string;
-  apartmentPrice: number;
-  apartmentBedrooms: string;
-  apartmentSurface: string;
-  apartmentDescription: string;
-  apartmentAmenities: string[];
-  // Preferences
-  preferredCountries: string[];
-  preferredAmenities: string[];
-  minBedrooms: string;
-  minSurface: string;
 }
 
 // This function sends data to your centralized Google Sheet via Supabase Edge Function
@@ -56,34 +43,25 @@ export const addUserToGoogleSheet = async (userData: UserData) => {
 };
 
 export const formatUserDataForSheet = (onboardingData: any): UserData => {
+  // Convert photos to a simple count or list since we can't embed actual files
+  const photoCount = onboardingData.apartmentPhotos?.length || 0;
+  const photoInfo = photoCount > 0 ? `${photoCount} photos uploaded` : 'No photos';
+
   return {
     email: onboardingData.email || '',
     fullName: onboardingData.fullName || '',
-    university: onboardingData.university || '',
+    currentUniversity: onboardingData.university || '',
+    exchangeUniversity: onboardingData.exchangeUniversity || '',
     program: onboardingData.program || '',
-    startDate: onboardingData.startDate || '',
-    endDate: onboardingData.endDate || '',
-    minPrice: 0,
-    maxPrice: onboardingData.budget ? parseInt(onboardingData.budget.split('-')[1]?.replace('€', '').replace('+', '')) || 0 : 0,
-    location: onboardingData.currentLocation || '',
-    accommodationType: onboardingData.duration || '',
+    exchangeStart: onboardingData.startDate || '',
+    exchangeEnd: onboardingData.endDate || '',
+    currentAccommodationCity: onboardingData.currentLocation || '',
+    address: onboardingData.currentAddress || '',
+    monthlyRent: onboardingData.monthlyRent || '',
+    accommodationDescription: onboardingData.apartmentDescription || '',
+    accommodationPhotos: photoInfo,
     amenities: onboardingData.amenities || [],
-    hasUploadedProof: onboardingData.hasUploadedProof || false,
-    verificationMethod: onboardingData.verificationMethod || 'email',
     createdAt: new Date().toISOString(),
     gdprConsent: onboardingData.gdprConsent || false,
-    // Apartment details
-    apartmentTitle: '',
-    apartmentLocation: onboardingData.currentLocation || '',
-    apartmentPrice: onboardingData.budget ? parseInt(onboardingData.budget.split('-')[1]?.replace('€', '').replace('+', '')) || 0 : 0,
-    apartmentBedrooms: '',
-    apartmentSurface: '',
-    apartmentDescription: onboardingData.apartmentDescription || '',
-    apartmentAmenities: onboardingData.amenities || [],
-    // Preferences
-    preferredCountries: onboardingData.preferredDestinations || [],
-    preferredAmenities: onboardingData.amenities || [],
-    minBedrooms: '',
-    minSurface: '',
   };
 };

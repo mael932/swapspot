@@ -40,7 +40,8 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
   canGoPrevious,
 }) => {
   const [currentLocation, setCurrentLocation] = useState(data.currentLocation || "");
-  const [duration, setDuration] = useState(data.duration || "");
+  const [currentAddress, setCurrentAddress] = useState(data.currentAddress || "");
+  const [monthlyRent, setMonthlyRent] = useState(data.monthlyRent || "");
   const [budget, setBudget] = useState(data.budget || "");
   const [apartmentDescription, setApartmentDescription] = useState(data.apartmentDescription || "");
   const [apartmentPhotos, setApartmentPhotos] = useState<File[]>(data.apartmentPhotos || []);
@@ -75,7 +76,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
     handleUpdate({ amenities: selectedAmenities });
   };
 
-  const canProceed = currentLocation.trim() !== "" && budget;
+  const canProceed = currentLocation.trim() !== "" && currentAddress.trim() !== "" && monthlyRent && budget;
 
   return (
     <div className="space-y-8">
@@ -94,7 +95,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label className="text-base font-medium">Current Location *</Label>
+            <Label className="text-base font-medium">Current City *</Label>
             <div className="relative">
               <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
@@ -111,22 +112,46 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-base font-medium">Duration</Label>
-            <Select value={duration} onValueChange={(value) => {
-              setDuration(value);
-              handleUpdate({ duration: value });
+            <Label className="text-base font-medium">Your Monthly Rent *</Label>
+            <Select value={monthlyRent} onValueChange={(value) => {
+              setMonthlyRent(value);
+              handleUpdate({ monthlyRent: value });
             }}>
               <SelectTrigger className="h-12 border-gray-300 focus:border-swap-blue">
-                <SelectValue placeholder="Select duration" />
+                <SelectValue placeholder="What do you pay monthly?" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1-month">1 Month</SelectItem>
-                <SelectItem value="1-semester">1 Semester</SelectItem>
-                <SelectItem value="2-semesters">2 Semesters</SelectItem>
-                <SelectItem value="summer">Summer</SelectItem>
-                <SelectItem value="custom">Custom</SelectItem>
+                <SelectItem value="0-200">€0 - €200</SelectItem>
+                <SelectItem value="200-300">€200 - €300</SelectItem>
+                <SelectItem value="300-400">€300 - €400</SelectItem>
+                <SelectItem value="400-500">€400 - €500</SelectItem>
+                <SelectItem value="500-600">€500 - €600</SelectItem>
+                <SelectItem value="600-700">€600 - €700</SelectItem>
+                <SelectItem value="700-800">€700 - €800</SelectItem>
+                <SelectItem value="800-900">€800 - €900</SelectItem>
+                <SelectItem value="900-1000">€900 - €1000</SelectItem>
+                <SelectItem value="1000-1200">€1000 - €1200</SelectItem>
+                <SelectItem value="1200-1500">€1200 - €1500</SelectItem>
+                <SelectItem value="1500+">€1500+</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-base font-medium">Exact Address *</Label>
+          <div className="relative">
+            <Home className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Full address including street number, postal code"
+              value={currentAddress}
+              onChange={(e) => {
+                setCurrentAddress(e.target.value);
+                handleUpdate({ currentAddress: e.target.value });
+              }}
+              className="pl-10 h-12 border-gray-300 focus:border-swap-blue"
+              required
+            />
           </div>
         </div>
 
@@ -134,21 +159,29 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
           <div className="space-y-2">
             <Label className="text-base font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Monthly Rent Budget *
+              Budget for Exchange Location *
             </Label>
             <Select value={budget} onValueChange={(value) => {
               setBudget(value);
               handleUpdate({ budget: value });
             }}>
               <SelectTrigger className="h-12 border-gray-300 focus:border-swap-blue">
-                <SelectValue placeholder="Select your budget range" />
+                <SelectValue placeholder="What's your budget for the exchange?" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0-300">€0 - €300</SelectItem>
-                <SelectItem value="300-500">€300 - €500</SelectItem>
-                <SelectItem value="500-700">€500 - €700</SelectItem>
-                <SelectItem value="700-1000">€700 - €1000</SelectItem>
-                <SelectItem value="1000+">€1000+</SelectItem>
+                <SelectItem value="0-200">€0 - €200</SelectItem>
+                <SelectItem value="200-300">€200 - €300</SelectItem>
+                <SelectItem value="300-400">€300 - €400</SelectItem>
+                <SelectItem value="400-500">€400 - €500</SelectItem>
+                <SelectItem value="500-600">€500 - €600</SelectItem>
+                <SelectItem value="600-700">€600 - €700</SelectItem>
+                <SelectItem value="700-800">€700 - €800</SelectItem>
+                <SelectItem value="800-900">€800 - €900</SelectItem>
+                <SelectItem value="900-1000">€900 - €1000</SelectItem>
+                <SelectItem value="1000-1200">€1000 - €1200</SelectItem>
+                <SelectItem value="1200-1500">€1200 - €1500</SelectItem>
+                <SelectItem value="1500-2000">€1500 - €2000</SelectItem>
+                <SelectItem value="2000+">€2000+</SelectItem>
               </SelectContent>
             </Select>
             
@@ -156,8 +189,7 @@ const EnhancedPreferencesStep: React.FC<EnhancedPreferencesStepProps> = ({
               <Info className="h-4 w-4" />
               <AlertDescription className="text-blue-800">
                 <strong>Budget matching:</strong> We use your rent budget to find fair matches. 
-                Tell us what you pay for rent so we can match you with someone in a similar price range. 
-                This ensures both parties get equal value from the exchange.
+                Tell us what you're willing to pay for your exchange destination so we can match you with someone in a similar price range.
               </AlertDescription>
             </Alert>
           </div>

@@ -147,6 +147,84 @@ export type Database = {
         }
         Relationships: []
       }
+      table_name: {
+        Row: {
+          data: Json | null
+          id: number
+          inserted_at: string
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json | null
+          id?: number
+          inserted_at?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json | null
+          id?: number
+          inserted_at?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          city: string | null
+          created_at: string
+          email: string
+          end_date: string | null
+          id: string
+          major: string | null
+          max_rent: number | null
+          min_rent: number | null
+          name: string | null
+          notes: string | null
+          pets: boolean | null
+          smoker: boolean | null
+          start_date: string | null
+          university: string | null
+          wants_flatmate: boolean | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          email: string
+          end_date?: string | null
+          id?: string
+          major?: string | null
+          max_rent?: number | null
+          min_rent?: number | null
+          name?: string | null
+          notes?: string | null
+          pets?: boolean | null
+          smoker?: boolean | null
+          start_date?: string | null
+          university?: string | null
+          wants_flatmate?: boolean | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          email?: string
+          end_date?: string | null
+          id?: string
+          major?: string | null
+          max_rent?: number | null
+          min_rent?: number | null
+          name?: string | null
+          notes?: string | null
+          pets?: boolean | null
+          smoker?: boolean | null
+          start_date?: string | null
+          university?: string | null
+          wants_flatmate?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

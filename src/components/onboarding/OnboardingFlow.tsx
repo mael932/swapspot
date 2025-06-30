@@ -36,7 +36,7 @@ export interface OnboardingData {
   // Properties for preferences step
   currentLocation?: string;
   currentAddress?: string;
-  duration?: string;
+  monthlyRent?: string;
   budget?: string;
   preferredDestinations?: string[];
   apartmentDescription?: string;
