@@ -114,8 +114,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         // Clean up any existing auth state before signup
         cleanupAuthState();
         
-        // Sign up flow
-        const redirectUrl = `${window.location.origin}/profile`;
+        // Sign up flow - use the new auth callback route
+        const redirectUrl = `${window.location.origin}/auth/callback`;
         
         const { data, error } = await supabase.auth.signUp({
           email,

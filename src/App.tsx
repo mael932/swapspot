@@ -13,6 +13,7 @@ import Community from "./pages/Community";
 import VerifyEmail from "./pages/VerifyEmail";
 import VerifyStudent from "./pages/VerifyStudent";
 import SignUp from "./pages/SignUp";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -32,10 +33,11 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/verify" element={<VerifyEmail />} />
             <Route path="/verify-student" element={<VerifyStudent />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </SubscriptionProvider>
+    </SubscriptionProvider>  
   </QueryClientProvider>
 );
 
