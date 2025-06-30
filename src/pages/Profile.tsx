@@ -58,9 +58,9 @@ const Profile = () => {
         .from('profiles')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error loading profile:', error);
         toast.error('Failed to load profile data');
       } else if (profileData) {

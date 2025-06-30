@@ -25,20 +25,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
   const [gdprConsent, setGdprConsent] = useState(false);
   const navigate = useNavigate();
 
-  // Clean up auth state before operations
-  const cleanupAuthState = () => {
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
-    Object.keys(sessionStorage || {}).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -66,17 +52,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
     setIsLoading(true);
 
     try {
-      // Clean up existing state first
-      cleanupAuthState();
-      
-      // Attempt global sign out to clear any existing sessions
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // Continue even if this fails
-        console.log("Cleanup signout completed");
-      }
-
       if (isLogin) {
         // Login flow
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -85,6 +60,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
         });
 
         if (error) {
+          console.error("Login error:", error);
           if (error.message.includes("Invalid login credentials")) {
             setError("Invalid email or password. Please check your credentials and try again.");
           } else {
@@ -97,11 +73,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
           console.log("Login successful:", data.user.id);
           
           // Check if user has completed profile
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('user_id', data.user.id)
             .maybeSingle();
+
+          if (profileError) {
+            console.error("Error checking profile:", profileError);
+          }
 
           toast.success("Welcome back!", {
             description: "You've been logged in successfully"
@@ -123,12 +103,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
             data: {
               full_name: fullName,
               gdpr_consent: true
-            },
-            emailRedirectTo: `${window.location.origin}/profile`
+            }
           }
         });
 
         if (error) {
+          console.error("Signup error:", error);
           if (error.message.includes("User already registered")) {
             setError("An account with this email already exists. Please try logging in instead.");
           } else {
@@ -139,6 +119,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onMagicLinkSent }) => {
 
         if (data.user) {
           console.log("Signup successful:", data.user.id);
+          
+          // Check if user needs email confirmation
+          if (!data.session) {
+            toast.success("Please check your email", {
+              description: "We've sent you a confirmation link to complete your registration."
+            });
+            return;
+          }
           
           toast.success("Account created successfully!", {
             description: "Welcome to SwapSpot! Let's set up your profile."
