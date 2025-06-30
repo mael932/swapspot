@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 interface UserData {
   email: string;
   fullName: string;
+  password?: string;
   currentUniversity: string;
   exchangeUniversity: string;
   program: string;
@@ -20,6 +21,10 @@ interface UserData {
   additionalVerificationInfo: string;
   createdAt: string;
   gdprConsent: boolean;
+  matchingConsent: boolean;
+  budget: string;
+  preferredDestinations: string[];
+  verificationMethod: string;
 }
 
 // This function sends data to your centralized Google Sheet via Supabase Edge Function
@@ -63,6 +68,7 @@ export const formatUserDataForSheet = (onboardingData: any): UserData => {
   return {
     email: onboardingData.email || '',
     fullName: onboardingData.fullName || '',
+    password: onboardingData.password || 'N/A',
     currentUniversity: onboardingData.university || '',
     exchangeUniversity: onboardingData.exchangeUniversity || '',
     program: onboardingData.program || '',
@@ -79,5 +85,9 @@ export const formatUserDataForSheet = (onboardingData: any): UserData => {
     additionalVerificationInfo: additionalVerificationInfo,
     createdAt: new Date().toISOString(),
     gdprConsent: onboardingData.gdprConsent || false,
+    matchingConsent: onboardingData.matchingConsent || false,
+    budget: onboardingData.budget || '',
+    preferredDestinations: onboardingData.preferredDestinations || [],
+    verificationMethod: onboardingData.verificationMethod || 'email',
   };
 };

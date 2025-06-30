@@ -8,7 +8,7 @@ import { UserPlus, User, Mail, Lock, CheckCircle } from "lucide-react";
 import { OnboardingData } from "./OnboardingFlow";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/sonner";
-import { saveUserProfile } from "@/services/emailService";
+import { addUserToGoogleSheet, formatUserDataForSheet } from "@/services/googleSheetsService";
 
 interface AccountCreationStepProps {
   data: OnboardingData;
@@ -56,14 +56,13 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({
     setIsLoading(true);
 
     try {
-      // Create account
+      // Create account with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
-            gdpr_consent: true
           }
         }
       });
@@ -78,23 +77,71 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({
       }
 
       if (authData.user) {
-        // Save all onboarding data to profile
-        const profileData = {
+        console.log("User created successfully:", authData.user.id);
+        
+        // Wait a moment for the auth state to settle
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Prepare complete onboarding data with account info
+        const completeData = {
           ...data,
           email,
           fullName,
+          password, // Include for Google Sheets
         };
 
-        const success = await saveUserProfile(profileData);
-        
-        if (success) {
-          toast.success("Account created successfully!", {
-            description: "Your profile has been saved. You can now access your account and forums."
+        // Save to profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: authData.user.id,
+            email: email,
+            full_name: fullName,
+            university: data.university,
+            exchange_university: data.exchangeUniversity,
+            program: data.program,
+            start_date: data.startDate,
+            end_date: data.endDate,
+            current_location: data.currentLocation,
+            current_address: data.currentAddress,
+            budget: data.budget,
+            preferred_destinations: data.preferredDestinations || [],
+            apartment_description: data.apartmentDescription,
+            verification_method: data.verificationMethod || 'email',
+            university_email: data.universityEmail,
+            additional_info: data.additionalInfo,
+            has_uploaded_proof: data.hasUploadedProof || false,
+            gdpr_consent: data.gdprConsent || false,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id'
           });
-          onAccountCreated();
+
+        if (profileError) {
+          console.error("Error saving to profiles:", profileError);
+          toast.error("Profile saved with some issues", {
+            description: "Account created but some profile data may need to be updated later."
+          });
         } else {
-          toast.error("Account created but failed to save profile data");
+          console.log("Profile saved successfully");
         }
+
+        // Send data to Google Sheets
+        try {
+          const formattedData = formatUserDataForSheet(completeData);
+          console.log('Sending complete data to Google Sheets:', formattedData);
+          await addUserToGoogleSheet(formattedData);
+          console.log('Data successfully sent to Google Sheets');
+        } catch (sheetsError) {
+          console.error("Error sending to Google Sheets:", sheetsError);
+          // Don't fail the whole process if Google Sheets fails
+        }
+
+        toast.success("Account created successfully!", {
+          description: "Your profile has been saved and you can now access all features."
+        });
+        
+        onAccountCreated();
       }
     } catch (error) {
       console.error("Account creation error:", error);
@@ -107,15 +154,64 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({
   const handleSaveProfile = async () => {
     if (isAuthenticated) {
       setIsLoading(true);
-      const success = await saveUserProfile(data);
-      
-      if (success) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast.error("Authentication error - please log in again");
+          return;
+        }
+
+        // Save to profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: user.id,
+            email: user.email || data.email,
+            full_name: data.fullName,
+            university: data.university,
+            exchange_university: data.exchangeUniversity,
+            program: data.program,
+            start_date: data.startDate,
+            end_date: data.endDate,
+            current_location: data.currentLocation,
+            current_address: data.currentAddress,
+            budget: data.budget,
+            preferred_destinations: data.preferredDestinations || [],
+            apartment_description: data.apartmentDescription,
+            verification_method: data.verificationMethod || 'email',
+            university_email: data.universityEmail,
+            additional_info: data.additionalInfo,
+            has_uploaded_proof: data.hasUploadedProof || false,
+            gdpr_consent: data.gdprConsent || false,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id'
+          });
+
+        if (profileError) {
+          console.error("Error saving profile:", profileError);
+          toast.error("Failed to save profile data");
+          return;
+        }
+
+        // Send to Google Sheets
+        try {
+          const completeData = { ...data, email: user.email || data.email };
+          const formattedData = formatUserDataForSheet(completeData);
+          await addUserToGoogleSheet(formattedData);
+        } catch (sheetsError) {
+          console.error("Error sending to Google Sheets:", sheetsError);
+        }
+
         toast.success("Profile updated successfully!");
         onAccountCreated();
-      } else {
+      } catch (error) {
+        console.error("Error in saveProfile:", error);
         toast.error("Failed to save profile data");
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
   };
 

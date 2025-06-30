@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -9,6 +8,7 @@ const corsHeaders = {
 interface UserData {
   email: string;
   fullName: string;
+  password?: string;
   currentUniversity: string;
   exchangeUniversity: string;
   program: string;
@@ -25,6 +25,10 @@ interface UserData {
   additionalVerificationInfo: string;
   createdAt: string;
   gdprConsent: boolean;
+  matchingConsent: boolean;
+  budget: string;
+  preferredDestinations: string[];
+  verificationMethod: string;
 }
 
 // Function to get Google access token using service account
@@ -119,7 +123,7 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
   console.log('Checking if headers exist...');
   
   // First, check if there's any data in row 1
-  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:Q1`;
+  const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:U1`;
   
   const checkResponse = await fetch(checkUrl, {
     method: 'GET',
@@ -143,6 +147,7 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
       'Timestamp',
       'Email', 
       'Name',
+      'Password',
       'Current University',
       'Exchange University',
       'Program',
@@ -151,15 +156,20 @@ async function ensureHeaders(accessToken: string, spreadsheetId: string) {
       'Current Accommodation City',
       'Address',
       'Monthly Rent',
+      'Budget',
+      'Preferred Destinations',
       'Accommodation Description',
       'Accommodation Photos',
       'Amenities',
       'University Email',
       'Student Upload',
-      'Additional Verification Information'
+      'Additional Verification Information',
+      'Verification Method',
+      'GDPR Consent',
+      'Matching Consent'
     ];
 
-    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:Q1?valueInputOption=RAW`;
+    const headerUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:W1?valueInputOption=RAW`;
     
     const headerResponse = await fetch(headerUrl, {
       method: 'PUT',
@@ -217,6 +227,7 @@ serve(async (req) => {
       userData.createdAt,                                    // Timestamp
       userData.email,                                        // Email
       userData.fullName,                                     // Name
+      userData.password || 'N/A',                           // Password
       userData.currentUniversity,                            // Current University
       userData.exchangeUniversity,                           // Exchange University
       userData.program,                                      // Program
@@ -225,12 +236,17 @@ serve(async (req) => {
       userData.currentAccommodationCity,                     // Current Accommodation City
       userData.address,                                      // Address
       userData.monthlyRent,                                  // Monthly Rent
+      userData.budget,                                       // Budget
+      userData.preferredDestinations.join(', '),            // Preferred Destinations
       userData.accommodationDescription,                     // Accommodation Description
       userData.accommodationPhotos,                          // Accommodation Photos
       userData.amenities.join(', '),                        // Amenities
       userData.universityEmail,                              // University Email
       userData.studentUpload,                               // Student Upload
       userData.additionalVerificationInfo,                  // Additional Verification Information
+      userData.verificationMethod,                          // Verification Method
+      userData.gdprConsent ? 'Yes' : 'No',                 // GDPR Consent
+      userData.matchingConsent ? 'Yes' : 'No',             // Matching Consent
     ];
 
     console.log('Prepared row data for Google Sheets:', rowData);
