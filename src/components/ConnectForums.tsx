@@ -101,38 +101,39 @@ const ConnectForums: React.FC = () => {
     );
   }
 
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
-          <MessageCircle className="h-8 w-8 text-swap-blue" />
+        <h2 className="text-4xl font-bold mb-6 flex items-center justify-center gap-3">
+          <MessageCircle className="h-10 w-10 text-swap-blue" />
           Connect with Fellow Students
         </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
           Join city-based group chats to connect with other exchange students in real-time. 
           Chat freely with verified students heading to your destination!
         </p>
         {!currentUser && (
-          <p className="text-orange-600 mt-2 font-medium">Please log in to join the chats</p>
+          <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg max-w-md mx-auto">
+            <p className="text-orange-700 font-medium">Please log in to join the chats</p>
+          </div>
         )}
       </div>
 
-      <Tabs defaultValue="chats" className="space-y-6">
-        <TabsList className="grid w-full max-w-md mx-auto grid-cols-1">
-          <TabsTrigger value="chats">City Chats</TabsTrigger>
+      <Tabs defaultValue="chats" className="space-y-8">
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-1 h-14 bg-white shadow-md">
+          <TabsTrigger value="chats" className="text-lg font-semibold py-4">City Chats</TabsTrigger>
         </TabsList>
 
         {/* Chats Tab */}
-        <TabsContent value="chats" className="space-y-6">
+        <TabsContent value="chats" className="space-y-8">
           {/* Search */}
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
               <Input 
                 placeholder="Search cities..." 
-                className="pl-10"
+                className="pl-12 h-12 text-lg border-2 focus:border-swap-blue"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -140,95 +141,64 @@ const ConnectForums: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-swap-blue"></div>
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-swap-blue"></div>
             </div>
           ) : (
-            <>
-              {/* Featured Chat Rooms */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-swap-blue" />
-                  Available Chat Rooms
-                </h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredRooms.slice(0, 6).map((room) => (
-                    <Card key={room.id} className="hover:shadow-lg transition-shadow border-l-4 border-l-swap-blue">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                              <MapPin className="h-4 w-4 text-swap-blue" />
-                              {room.city}, {room.country}
-                            </CardTitle>
-                            <p className="text-sm text-gray-600 mt-1">{room.description}</p>
+            <div>
+              <h3 className="text-2xl font-bold mb-8 text-center text-gray-800">Available Chat Rooms</h3>
+              <div className="grid gap-6 max-w-4xl mx-auto">
+                {filteredRooms.map((room) => (
+                  <Card key={room.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-swap-blue group">
+                    <CardContent className="p-8">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-6 flex-grow">
+                          <div className="relative">
+                            <img 
+                              src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=100&h=100&q=80"
+                              alt="Monument"
+                              className="w-16 h-16 rounded-full object-cover border-3 border-swap-blue shadow-lg group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-2 border-white"></div>
                           </div>
-                          <Badge variant="secondary" className="bg-green-50 text-green-700">Active</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between text-sm text-gray-600">
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                              <MessageCircle className="h-3 w-3" />
-                              Live Chat
-                            </span>
+                          <div className="flex-grow">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="text-xl font-bold text-gray-800 group-hover:text-swap-blue transition-colors">
+                                {room.city}, {room.country}
+                              </h4>
+                              <Badge className="bg-green-100 text-green-800 border-green-300 px-3 py-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                                Live
+                              </Badge>
+                            </div>
+                            <p className="text-gray-600 mb-3 text-lg">{room.description}</p>
+                            <div className="flex items-center gap-6 text-sm text-gray-500">
+                              <span className="flex items-center gap-2">
+                                <MessageCircle className="h-4 w-4 text-swap-blue" />
+                                Real-time messaging
+                              </span>
+                              <span>•</span>
+                              <span className="flex items-center gap-2">
+                                <Users className="h-4 w-4 text-swap-blue" />
+                                Exchange students only
+                              </span>
+                            </div>
                           </div>
                         </div>
                         <Button 
-                          className="w-full" 
+                          size="lg"
+                          className="bg-swap-blue hover:bg-swap-darkBlue text-white px-8 py-3 text-lg font-semibold"
                           onClick={() => handleJoinChat(room)}
                           disabled={!currentUser}
                         >
                           {currentUser ? 'Join Chat' : 'Login to Join'}
                         </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-
-              {/* All Chat Rooms */}
-              {filteredRooms.length > 6 && (
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">All Chat Rooms</h3>
-                  <div className="space-y-4">
-                    {filteredRooms.slice(6).map((room) => (
-                      <Card key={room.id} className="hover:shadow-md transition-shadow">
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4 flex-grow">
-                              <div className="bg-swap-lightBlue p-3 rounded-lg">
-                                <MapPin className="h-5 w-5 text-swap-blue" />
-                              </div>
-                              <div className="flex-grow">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-semibold">{room.city}, {room.country}</h4>
-                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700">Live</Badge>
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">{room.description}</p>
-                                <div className="flex items-center gap-4 text-xs text-gray-500">
-                                  <span>Real-time messaging</span>
-                                  <span>•</span>
-                                  <span>Exchange students only</span>
-                                </div>
-                              </div>
-                            </div>
-                            <Button 
-                              variant="outline" 
-                              onClick={() => handleJoinChat(room)}
-                              disabled={!currentUser}
-                            >
-                              {currentUser ? 'Join Chat' : 'Login to Join'}
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
+            </div>
           )}
         </TabsContent>
       </Tabs>

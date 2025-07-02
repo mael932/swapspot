@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft, MapPin, Globe, GraduationCap, X, MessageCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -29,11 +29,22 @@ interface CityChatProps {
   currentUser: any;
 }
 
+interface UserProfile {
+  user_id: string;
+  full_name: string;
+  current_location: string;
+  exchange_university: string;
+  university: string;
+  program: string;
+}
+
 export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [selectedUserProfile, setSelectedUserProfile] = useState<UserProfile | null>(null);
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -90,6 +101,34 @@ export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
     };
   };
 
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, current_location, exchange_university, university, program')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+      return null;
+    }
+  };
+
+  const handleUserNameClick = async (userId: string) => {
+    if (userId === currentUser?.id) return; // Don't show popup for current user
+    
+    const profile = await loadUserProfile(userId);
+    if (profile) {
+      setSelectedUserProfile(profile);
+      setShowProfilePopup(true);
+    } else {
+      toast.error("Could not load user profile");
+    }
+  };
+
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentUser || isSending) return;
 
@@ -122,98 +161,176 @@ export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
   };
 
   return (
-    <Card className="h-[600px] flex flex-col">
-      <CardHeader className="border-b">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onBack}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <CardTitle className="text-lg">{room.city}, {room.country}</CardTitle>
-            <p className="text-sm text-gray-600">{room.description}</p>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex flex-col p-0">
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-swap-blue"></div>
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-center">
+    <>
+      <Card className="h-[700px] flex flex-col shadow-xl border-2">
+        <CardHeader className="border-b bg-gradient-to-r from-swap-blue to-swap-darkBlue text-white">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={onBack} className="text-white hover:bg-white/20">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex items-center gap-3">
+              <img 
+                src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=50&h=50&q=80"
+                alt="Monument"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white/50"
+              />
               <div>
-                <p className="text-gray-500 mb-2">No messages yet</p>
-                <p className="text-sm text-gray-400">Be the first to start the conversation!</p>
+                <CardTitle className="text-xl text-white">{room.city}, {room.country}</CardTitle>
+                <p className="text-white/90 text-sm">{room.description}</p>
               </div>
             </div>
-          ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${
-                  message.user_id === currentUser?.id ? 'flex-row-reverse' : ''
-                }`}
-              >
-                <Avatar className="h-8 w-8 mt-1">
-                  <AvatarFallback className="text-xs">
-                    {message.user_name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div
-                  className={`max-w-[70%] ${
-                    message.user_id === currentUser?.id
-                      ? 'bg-swap-blue text-white'
-                      : 'bg-gray-100'
-                  } rounded-lg p-3`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`font-medium text-sm ${
-                      message.user_id === currentUser?.id ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {message.user_name}
-                    </span>
-                    <span className={`text-xs ${
-                      message.user_id === currentUser?.id ? 'text-blue-100' : 'text-gray-500'
-                    }`}>
-                      {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
-                    </span>
-                  </div>
-                  <p className={`text-sm ${
-                    message.user_id === currentUser?.id ? 'text-white' : 'text-gray-800'
-                  }`}>
-                    {message.message}
-                  </p>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex-1 flex flex-col p-0">
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-swap-blue"></div>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-center">
+                <div className="bg-white p-8 rounded-lg shadow-md">
+                  <MessageCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-2 text-lg">No messages yet</p>
+                  <p className="text-sm text-gray-400">Be the first to start the conversation!</p>
                 </div>
               </div>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            ) : (
+              messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-4 ${
+                    message.user_id === currentUser?.id ? 'flex-row-reverse' : ''
+                  }`}
+                >
+                  <Avatar className="h-10 w-10 mt-1 shadow-md">
+                    <AvatarFallback className="bg-swap-blue text-white font-semibold">
+                      {message.user_name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div
+                    className={`max-w-[70%] ${
+                      message.user_id === currentUser?.id
+                        ? 'bg-swap-blue text-white'
+                        : 'bg-white border border-gray-200'
+                    } rounded-2xl p-4 shadow-md`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <button
+                        onClick={() => handleUserNameClick(message.user_id)}
+                        className={`font-semibold text-sm hover:underline cursor-pointer ${
+                          message.user_id === currentUser?.id 
+                            ? 'text-white hover:text-blue-100' 
+                            : 'text-swap-blue hover:text-swap-darkBlue'
+                        }`}
+                      >
+                        {message.user_name}
+                      </button>
+                      <span className={`text-xs ${
+                        message.user_id === currentUser?.id ? 'text-blue-100' : 'text-gray-500'
+                      }`}>
+                        {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${
+                      message.user_id === currentUser?.id ? 'text-white' : 'text-gray-800'
+                    }`}>
+                      {message.message}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-        {/* Message Input */}
-        <div className="border-t p-4">
-          <div className="flex gap-2">
-            <Input
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              disabled={isSending}
-              className="flex-1"
-            />
-            <Button 
-              onClick={sendMessage} 
-              disabled={!newMessage.trim() || isSending}
-              size="sm"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+          {/* Message Input */}
+          <div className="border-t p-6 bg-white">
+            <div className="flex gap-3">
+              <Input
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                disabled={isSending}
+                className="flex-1 h-12 border-2 focus:border-swap-blue"
+              />
+              <Button 
+                onClick={sendMessage} 
+                disabled={!newMessage.trim() || isSending}
+                size="lg"
+                className="bg-swap-blue hover:bg-swap-darkBlue px-6"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* User Profile Popup */}
+      {showProfilePopup && selectedUserProfile && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-start justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Student Profile</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowProfilePopup(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback className="bg-swap-blue text-white font-semibold text-lg">
+                    {selectedUserProfile.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="font-semibold text-gray-800">{selectedUserProfile.full_name || 'Anonymous User'}</h4>
+                  <p className="text-sm text-gray-600">{selectedUserProfile.program || 'Student'}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {selectedUserProfile.current_location && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="h-4 w-4 text-swap-blue flex-shrink-0" />
+                    <span className="text-gray-700">
+                      <span className="font-medium">Currently in:</span> {selectedUserProfile.current_location}
+                    </span>
+                  </div>
+                )}
+                
+                {selectedUserProfile.university && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <GraduationCap className="h-4 w-4 text-swap-blue flex-shrink-0" />
+                    <span className="text-gray-700">
+                      <span className="font-medium">Home University:</span> {selectedUserProfile.university}
+                    </span>
+                  </div>
+                )}
+                
+                {selectedUserProfile.exchange_university && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Globe className="h-4 w-4 text-swap-blue flex-shrink-0" />
+                    <span className="text-gray-700">
+                      <span className="font-medium">Exchange Destination:</span> {selectedUserProfile.exchange_university}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </>
   );
 }

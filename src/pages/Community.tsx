@@ -1,4 +1,3 @@
-
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -21,7 +20,8 @@ import {
   Globe,
   MapPin,
   Calendar,
-  Mail
+  Mail,
+  Info
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,8 +39,6 @@ const Community = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { subscriptionData, isPremium, isBasic, isElite, loading } = useSubscription();
-  
-  const hasAccess = isPremium || isBasic || isElite;
 
   // Check email verification status
   useEffect(() => {
@@ -156,35 +154,57 @@ const Community = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-        {/* 60% - Primary Content: Hero Section */}
-        <section className="bg-swap-blue py-20">
-          <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-8">
-              Connect & Chat with Students
+        {/* Hero Section with Gradient Background */}
+        <section className="bg-gradient-to-br from-swap-blue via-swap-blue to-swap-darkBlue py-24 relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="max-w-7xl mx-auto px-4 md:px-8 text-center relative z-10">
+            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 leading-tight">
+              Connect & Chat with 
+              <span className="block text-white/90">Exchange Students</span>
             </h1>
-            <p className="text-2xl text-white/90 max-w-4xl mx-auto mb-12">
+            <p className="text-2xl md:text-3xl text-white/95 max-w-4xl mx-auto mb-12 leading-relaxed">
               Join city-based group chats and connect with verified exchange students worldwide
             </p>
+            <div className="flex justify-center">
+              <Badge className="bg-white/20 text-white text-lg px-6 py-3 border-white/30">
+                <MessageSquare className="h-5 w-5 mr-2" />
+                Real-time Chat Available
+              </Badge>
+            </div>
           </div>
         </section>
 
-        {/* 30% - Secondary Content: Main Navigation */}
-        <section className="py-16">
+        {/* Main Content */}
+        <section className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <Tabs defaultValue="connect" className="space-y-8">
-              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 h-16">
-                <TabsTrigger value="connect" className="flex items-center gap-3 text-lg font-semibold py-4">
-                  <MessageSquare className="h-6 w-6" />
+            <Tabs defaultValue="connect" className="space-y-10">
+              <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-2 h-20 bg-white shadow-lg rounded-xl p-2">
+                <TabsTrigger value="connect" className="flex items-center gap-3 text-xl font-bold py-6 rounded-lg data-[state=active]:bg-swap-blue data-[state=active]:text-white">
+                  <MessageSquare className="h-7 w-7" />
                   Connect & Chat
                 </TabsTrigger>
-                <TabsTrigger value="wiki" className="flex items-center gap-3 text-lg font-semibold py-4">
-                  <BookOpen className="h-6 w-6" />
+                <TabsTrigger value="wiki" className="flex items-center gap-3 text-xl font-bold py-6 rounded-lg data-[state=active]:bg-swap-blue data-[state=active]:text-white">
+                  <BookOpen className="h-7 w-7" />
                   Resources
                 </TabsTrigger>
               </TabsList>
 
+              {/* Connect & Chat Tab */}
+              <TabsContent value="connect" className="space-y-8">
+                <div className="text-center mb-8">
+                  <Alert className="max-w-2xl mx-auto bg-blue-50 border-blue-200">
+                    <Info className="h-4 w-4" />
+                    <AlertDescription className="text-blue-800">
+                      <strong>Pro Tip:</strong> Click on any username in the chat to see their profile info, including where they're from and where they're going!
+                    </AlertDescription>
+                  </Alert>
+                </div>
+                <ConnectForums />
+              </TabsContent>
+
               {/* Wiki Tab */}
               <TabsContent value="wiki" className="space-y-8">
+                
                 <div className="flex flex-col md:flex-row gap-4 items-center">
                   <div className="relative flex-grow">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -276,42 +296,39 @@ const Community = () => {
                 </div>
               </TabsContent>
 
-              {/* Connect & Chat Tab - Merged */}
-              <TabsContent value="connect" className="space-y-8">
-                <ConnectForums />
-              </TabsContent>
-
             </Tabs>
           </div>
         </section>
 
-        {/* 10% - Accent Content: Support CTA */}
-        <section className="bg-gray-50 py-12">
+        {/* Support CTA with Enhanced Styling */}
+        <section className="bg-white py-16 border-t">
           <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
-            <h2 className="text-xl font-bold mb-3">Need More Help?</h2>
-            <p className="text-gray-600 mb-4">
-              Can't find what you're looking for? Our support team and AI assistant are here to help.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild>
-                <Link to="/support">Contact Support</Link>
-              </Button>
-              <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Bot className="h-4 w-4" />
-                    Chat with Pubert
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl h-[80vh] p-0">
-                  <DialogHeader className="p-6 pb-0">
-                    <DialogTitle>Chat with Pubert - AI Assistant</DialogTitle>
-                  </DialogHeader>
-                  <div className="flex-grow p-6 pt-0">
-                    <PubertChat className="h-full" />
-                  </div>
-                </DialogContent>
-              </Dialog>
+            <div className="bg-gradient-to-r from-swap-lightBlue to-blue-50 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold mb-4 text-swap-darkBlue">Need More Help?</h2>
+              <p className="text-gray-700 mb-6 text-lg">
+                Can't find what you're looking for? Our support team and AI assistant are here to help.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg" className="bg-swap-blue hover:bg-swap-darkBlue">
+                  <Link to="/support">Contact Support</Link>
+                </Button>
+                <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="lg" className="flex items-center gap-2 border-swap-blue text-swap-blue hover:bg-swap-blue hover:text-white">
+                      <Bot className="h-5 w-5" />
+                      Chat with Pubert
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl h-[80vh] p-0">
+                    <DialogHeader className="p-6 pb-0">
+                      <DialogTitle>Chat with Pubert - AI Assistant</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-grow p-6 pt-0">
+                      <PubertChat className="h-full" />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </div>
         </section>
