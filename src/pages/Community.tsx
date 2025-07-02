@@ -160,10 +160,10 @@ const Community = () => {
         <section className="bg-swap-blue py-20">
           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-8">
-              Connect & Chat
+              Connect & Chat with Students
             </h1>
             <p className="text-2xl text-white/90 max-w-4xl mx-auto mb-12">
-              Connect with verified exchange students and find your swap community
+              Join city-based group chats and connect with verified exchange students worldwide
             </p>
           </div>
         </section>
@@ -172,19 +172,13 @@ const Community = () => {
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <Tabs defaultValue="connect" className="space-y-8">
-              <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3">
-                <TabsTrigger value="connect" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Connect
-                  {hasAccess && isEmailVerified && <Crown className="h-3 w-3 text-yellow-500" />}
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 h-16">
+                <TabsTrigger value="connect" className="flex items-center gap-3 text-lg font-semibold py-4">
+                  <MessageSquare className="h-6 w-6" />
+                  Connect & Chat
                 </TabsTrigger>
-                <TabsTrigger value="community" className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Chat
-                  {hasAccess && isEmailVerified && <Crown className="h-3 w-3 text-yellow-500" />}
-                </TabsTrigger>
-                <TabsTrigger value="wiki" className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
+                <TabsTrigger value="wiki" className="flex items-center gap-3 text-lg font-semibold py-4">
+                  <BookOpen className="h-6 w-6" />
                   Resources
                 </TabsTrigger>
               </TabsList>
@@ -282,197 +276,11 @@ const Community = () => {
                 </div>
               </TabsContent>
 
-              {/* Connect Tab */}
+              {/* Connect & Chat Tab - Merged */}
               <TabsContent value="connect" className="space-y-8">
-                {!hasAccess ? (
-                  <div className="text-center py-12">
-                    <Card className="max-w-2xl mx-auto">
-                      <CardHeader>
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="bg-swap-lightBlue p-4 rounded-full">
-                            <Users className="h-8 w-8 text-swap-blue" />
-                          </div>
-                        </div>
-                        <CardTitle className="text-2xl mb-2">Members Only Forums</CardTitle>
-                        <CardDescription className="text-lg">
-                          Connect with other exchange students before your stay
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Alert className="mb-6">
-                          <Crown className="h-4 w-4" />
-                          <AlertDescription>
-                            Access exclusive forums to connect with verified students, find travel buddies, and get destination-specific advice from locals.
-                          </AlertDescription>
-                        </Alert>
-                        <div className="space-y-4">
-                          <h4 className="font-semibold">Connect Features:</h4>
-                          <ul className="text-left space-y-2 text-sm text-gray-600">
-                            <li>• Destination-specific forums</li>
-                            <li>• Find students going to your city</li>
-                            <li>• Connect before your exchange</li>
-                            <li>• Local recommendations and tips</li>
-                            <li>• Travel buddy matching</li>
-                          </ul>
-                        </div>
-                        <div className="mt-8 space-y-4">
-                          <Button asChild size="lg" className="w-full">
-                            <Link to="/signup">Upgrade to Premium</Link>
-                          </Button>
-                          <Button variant="outline" asChild className="w-full">
-                            <Link to="/help-tips">Browse Free Resources</Link>
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ) : !isEmailVerified ? (
-                  <div className="text-center py-12">
-                    <Card className="max-w-2xl mx-auto">
-                      <CardHeader>
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="bg-orange-100 p-4 rounded-full">
-                            <Mail className="h-8 w-8 text-orange-600" />
-                          </div>
-                        </div>
-                        <CardTitle className="text-2xl mb-2">Email Verification Required</CardTitle>
-                        <CardDescription className="text-lg">
-                          Please verify your email address to access the Connect forums
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Alert className="mb-6">
-                          <Mail className="h-4 w-4" />
-                          <AlertDescription>
-                            To ensure community safety and authenticity, you must verify your email address before accessing premium community features.
-                          </AlertDescription>
-                        </Alert>
-                        <div className="space-y-4">
-                          <p className="text-gray-600">
-                            Check your email inbox for a verification link. If you haven't received it, you can request a new one.
-                          </p>
-                        </div>
-                        <div className="mt-8 space-y-4">
-                          <Button onClick={handleResendVerification} size="lg" className="w-full">
-                            Resend Verification Email
-                          </Button>
-                          <Button variant="outline" asChild className="w-full">
-                            <Link to="/help-tips">Browse Free Resources</Link>
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ) : (
-                  <ConnectForums />
-                )}
+                <ConnectForums />
               </TabsContent>
 
-              {/* Community Chat Tab */}
-              <TabsContent value="community" className="space-y-8">
-                {!hasAccess ? (
-                  <div className="text-center py-12">
-                    <Card className="max-w-2xl mx-auto">
-                      <CardHeader>
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="bg-swap-lightBlue p-4 rounded-full">
-                            <Lock className="h-8 w-8 text-swap-blue" />
-                          </div>
-                        </div>
-                        <CardTitle className="text-2xl mb-2">Premium Feature</CardTitle>
-                        <CardDescription className="text-lg">
-                          Community chat is available for premium subscribers only
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Alert className="mb-6">
-                          <Crown className="h-4 w-4" />
-                          <AlertDescription>
-                            Join our premium community to connect with verified students, share experiences, and get real-time help from fellow swappers.
-                          </AlertDescription>
-                        </Alert>
-                        <div className="space-y-4">
-                          <h4 className="font-semibold">Premium Community Features:</h4>
-                          <ul className="text-left space-y-2 text-sm text-gray-600">
-                            <li>• Real-time chat with verified students</li>
-                            <li>• Ask questions and get instant answers</li>
-                            <li>• Share your swap experiences</li>
-                            <li>• Get tips from experienced swappers</li>
-                            <li>• Priority support from our team</li>
-                          </ul>
-                        </div>
-                        <div className="mt-8 space-y-4">
-                          <Button asChild size="lg" className="w-full">
-                            <Link to="/signup">Upgrade to Premium</Link>
-                          </Button>
-                          <Button variant="outline" asChild className="w-full">
-                            <Link to="/help-tips">Browse Free Resources</Link>
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ) : !isEmailVerified ? (
-                  <div className="text-center py-12">
-                    <Card className="max-w-2xl mx-auto">
-                      <CardHeader>
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="bg-orange-100 p-4 rounded-full">
-                            <Mail className="h-8 w-8 text-orange-600" />
-                          </div>
-                        </div>
-                        <CardTitle className="text-2xl mb-2">Email Verification Required</CardTitle>
-                        <CardDescription className="text-lg">
-                          Please verify your email address to access the Community Chat
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Alert className="mb-6">
-                          <Mail className="h-4 w-4" />
-                          <AlertDescription>
-                            To ensure community safety and authenticity, you must verify your email address before accessing premium community features.
-                          </AlertDescription>
-                        </Alert>
-                        <div className="space-y-4">
-                          <p className="text-gray-600">
-                            Check your email inbox for a verification link. If you haven't received it, you can request a new one.
-                          </p>
-                        </div>
-                        <div className="mt-8 space-y-4">
-                          <Button onClick={handleResendVerification} size="lg" className="w-full">
-                            Resend Verification Email
-                          </Button>
-                          <Button variant="outline" asChild className="w-full">
-                            <Link to="/help-tips">Browse Free Resources</Link>
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ) : (
-                  <>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="flex items-center gap-2">
-                          <Users className="h-6 w-6 text-blue-600 flex-shrink-0" />
-                          <Crown className="h-4 w-4 text-yellow-500" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                            Premium Community Guidelines
-                          </h3>
-                          <p className="text-blue-700 text-sm">
-                            Welcome to our premium community! This is a safe space for verified subscribers to share experiences and help fellow students. 
-                            Please be respectful, helpful, and keep discussions relevant to accommodation swaps.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <CommunityChat />
-                  </>
-                )}
-              </TabsContent>
             </Tabs>
           </div>
         </section>
