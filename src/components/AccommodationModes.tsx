@@ -3,10 +3,18 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowRightLeft } from "lucide-react";
+import accommodationImage from "@/assets/accommodation-collage.jpg";
 
 const AccommodationModes = () => {
   return (
-    <div className="w-full py-16 bg-white">
+    <div 
+      className="w-full py-16 relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9)), url(${accommodationImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       <div className="container mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Direct Housing Swaps Made Simple</h2>

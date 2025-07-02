@@ -18,48 +18,7 @@ interface UniversityStepProps {
   canGoPrevious: boolean;
 }
 
-// List of universities for the dropdown
-const UNIVERSITIES = [
-  "Harvard University",
-  "Stanford University",
-  "MIT",
-  "University of Oxford",
-  "University of Cambridge",
-  "Yale University",
-  "Princeton University",
-  "Columbia University",
-  "University of Pennsylvania",
-  "Cornell University",
-  "University of California, Berkeley",
-  "University of California, Los Angeles",
-  "University of Michigan",
-  "New York University",
-  "London School of Economics",
-  "Imperial College London",
-  "University College London",
-  "King's College London",
-  "University of Edinburgh",
-  "University of Manchester",
-  "University of Toronto",
-  "McGill University",
-  "University of British Columbia",
-  "Australian National University",
-  "University of Melbourne",
-  "University of Sydney",
-  "ETH Zurich",
-  "University of Zurich",
-  "Sorbonne University",
-  "Sciences Po",
-  "Technical University of Munich",
-  "Ludwig Maximilian University of Munich",
-  "Heidelberg University",
-  "University of Amsterdam",
-  "Delft University of Technology",
-  "KTH Royal Institute of Technology",
-  "University of Copenhagen",
-  "University of Oslo",
-  "Other"
-];
+import EUROPEAN_UNIVERSITIES from "@/data/universities";
 
 const UniversityStep: React.FC<UniversityStepProps> = ({
   data,
@@ -122,7 +81,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
               onChange={(value) => handleInputChange('university', value)}
               placeholder="Select your current university"
               label="University"
-              universities={UNIVERSITIES}
+              universities={EUROPEAN_UNIVERSITIES}
             />
             
             <ProgramSelect
@@ -147,7 +106,7 @@ const UniversityStep: React.FC<UniversityStepProps> = ({
               onChange={(value) => handleInputChange('exchangeUniversity', value)}
               placeholder="Select your exchange university"
               label="Exchange University"
-              universities={UNIVERSITIES}
+              universities={EUROPEAN_UNIVERSITIES}
             />
           </CardContent>
         </Card>

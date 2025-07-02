@@ -5,6 +5,7 @@ import { ArrowRight, Users, MapPin, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
+import heroImage from "@/assets/hero-students.jpg";
 
 export default function HeroSection() {
   const [user, setUser] = useState<User | null>(null);
@@ -37,7 +38,12 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="bg-gradient-to-br from-swap-lightBlue to-white py-20 md:py-32">
+    <section 
+      className="relative bg-gradient-to-br from-swap-lightBlue to-white py-20 md:py-32 bg-cover bg-center"
+      style={{
+        backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.15), rgba(255, 255, 255, 0.9)), url(${heroImage})`,
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">

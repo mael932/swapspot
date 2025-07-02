@@ -160,10 +160,10 @@ const Community = () => {
         <section className="bg-swap-blue py-20">
           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-8">
-              Community & Support
+              Connect & Chat
             </h1>
             <p className="text-2xl text-white/90 max-w-4xl mx-auto mb-12">
-              Learn from experienced swappers and share your own knowledge
+              Connect with verified exchange students and find your swap community
             </p>
           </div>
         </section>
@@ -171,12 +171,8 @@ const Community = () => {
         {/* 30% - Secondary Content: Main Navigation */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <Tabs defaultValue="wiki" className="space-y-8">
+            <Tabs defaultValue="connect" className="space-y-8">
               <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3">
-                <TabsTrigger value="wiki" className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  Swap Wiki
-                </TabsTrigger>
                 <TabsTrigger value="connect" className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Connect
@@ -186,6 +182,10 @@ const Community = () => {
                   <MessageSquare className="h-4 w-4" />
                   Chat
                   {hasAccess && isEmailVerified && <Crown className="h-3 w-3 text-yellow-500" />}
+                </TabsTrigger>
+                <TabsTrigger value="wiki" className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  Resources
                 </TabsTrigger>
               </TabsList>
 
