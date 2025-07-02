@@ -51,6 +51,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          member_count: number | null
           updated_at: string
         }
         Insert: {
@@ -59,6 +60,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          member_count?: number | null
           updated_at?: string
         }
         Update: {
@@ -67,6 +69,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          member_count?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -113,6 +116,9 @@ export type Database = {
           gdpr_consent: boolean | null
           has_uploaded_proof: boolean | null
           id: string
+          interests: string | null
+          languages_spoken: string[] | null
+          nationality: string | null
           preferred_destinations: string[] | null
           program: string | null
           start_date: string | null
@@ -137,6 +143,9 @@ export type Database = {
           gdpr_consent?: boolean | null
           has_uploaded_proof?: boolean | null
           id?: string
+          interests?: string | null
+          languages_spoken?: string[] | null
+          nationality?: string | null
           preferred_destinations?: string[] | null
           program?: string | null
           start_date?: string | null
@@ -161,6 +170,9 @@ export type Database = {
           gdpr_consent?: boolean | null
           has_uploaded_proof?: boolean | null
           id?: string
+          interests?: string | null
+          languages_spoken?: string[] | null
+          nationality?: string | null
           preferred_destinations?: string[] | null
           program?: string | null
           start_date?: string | null

@@ -44,6 +44,7 @@ interface ChatRoom {
   description: string;
   created_at: string;
   updated_at: string;
+  member_count?: number;
 }
 
 const ConnectForums: React.FC = () => {
@@ -84,6 +85,21 @@ const ConnectForums: React.FC = () => {
       return;
     }
     setSelectedRoom(room);
+  };
+
+  // Function to get different monument images for different cities
+  const getCityImage = (city: string) => {
+    const images = {
+      'Amsterdam': 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=100&h=100&q=80',
+      'Berlin': 'https://images.unsplash.com/photo-1587330979470-3300b4714c73?auto=format&fit=crop&w=100&h=100&q=80',
+      'Paris': 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?auto=format&fit=crop&w=100&h=100&q=80',
+      'Madrid': 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=100&h=100&q=80',
+      'Rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=100&h=100&q=80',
+      'Barcelona': 'https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=100&h=100&q=80',
+      'London': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=100&h=100&q=80',
+      'Vienna': 'https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=100&h=100&q=80'
+    };
+    return images[city] || 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=100&h=100&q=80';
   };
 
   const filteredRooms = chatRooms.filter(room => 
@@ -146,48 +162,49 @@ const ConnectForums: React.FC = () => {
             </div>
           ) : (
             <div>
-              <h3 className="text-2xl font-bold mb-8 text-center text-gray-800">Available Chat Rooms</h3>
-              <div className="grid gap-6 max-w-4xl mx-auto">
+              <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">Chat Rooms</h3>
+              <div className="grid gap-4 max-w-5xl mx-auto">
                 {filteredRooms.map((room) => (
-                  <Card key={room.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-swap-blue group">
-                    <CardContent className="p-8">
+                  <Card key={room.id} className="hover:shadow-lg transition-all duration-300 border hover:border-swap-blue group">
+                    <CardContent className="p-6">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6 flex-grow">
+                        <div className="flex items-center gap-4 flex-grow">
                           <div className="relative">
+                            {/* Different monument images for different cities */}
                             <img 
-                              src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=100&h=100&q=80"
-                              alt="Monument"
-                              className="w-16 h-16 rounded-full object-cover border-3 border-swap-blue shadow-lg group-hover:scale-110 transition-transform duration-300"
+                              src={getCityImage(room.city)}
+                              alt={`${room.city} monument`}
+                              className="w-14 h-14 rounded-full object-cover border-2 border-swap-blue shadow-md group-hover:scale-105 transition-transform duration-300"
                             />
-                            <div className="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-2 border-white"></div>
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
                           </div>
                           <div className="flex-grow">
                             <div className="flex items-center gap-3 mb-2">
-                              <h4 className="text-xl font-bold text-gray-800 group-hover:text-swap-blue transition-colors">
+                              <h4 className="text-lg font-bold text-gray-800 group-hover:text-swap-blue transition-colors">
                                 {room.city}, {room.country}
                               </h4>
-                              <Badge className="bg-green-100 text-green-800 border-green-300 px-3 py-1">
-                                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                              <Badge className="bg-green-100 text-green-800 border-green-300 px-2 py-1 text-xs">
+                                <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
                                 Live
                               </Badge>
                             </div>
-                            <p className="text-gray-600 mb-3 text-lg">{room.description}</p>
-                            <div className="flex items-center gap-6 text-sm text-gray-500">
-                              <span className="flex items-center gap-2">
-                                <MessageCircle className="h-4 w-4 text-swap-blue" />
-                                Real-time messaging
+                            <p className="text-gray-600 mb-2 text-sm">{room.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <MessageCircle className="h-3 w-3 text-swap-blue" />
+                                Real-time chat
                               </span>
                               <span>•</span>
-                              <span className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-swap-blue" />
-                                Exchange students only
+                              <span className="flex items-center gap-1">
+                                <Users className="h-3 w-3 text-swap-blue" />
+                                {room.member_count || 0} members
                               </span>
                             </div>
                           </div>
                         </div>
                         <Button 
-                          size="lg"
-                          className="bg-swap-blue hover:bg-swap-darkBlue text-white px-8 py-3 text-lg font-semibold"
+                          size="default"
+                          className="bg-swap-blue hover:bg-swap-darkBlue text-white px-6 py-2"
                           onClick={() => handleJoinChat(room)}
                           disabled={!currentUser}
                         >

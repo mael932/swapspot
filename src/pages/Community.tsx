@@ -155,14 +155,12 @@ const Community = () => {
       <Navbar />
       <main className="flex-grow">
         {/* Hero Section with Gradient Background */}
-        <section className="bg-gradient-to-br from-swap-blue via-swap-blue to-swap-darkBlue py-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="max-w-7xl mx-auto px-4 md:px-8 text-center relative z-10">
-            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 leading-tight">
-              Connect & Chat with 
-              <span className="block text-white/90">Exchange Students</span>
+        <section className="bg-gradient-to-r from-swap-blue to-swap-darkBlue py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Connect & Chat with Exchange Students
             </h1>
-            <p className="text-2xl md:text-3xl text-white/95 max-w-4xl mx-auto mb-12 leading-relaxed">
+            <p className="text-xl text-white/90 max-w-3xl mx-auto mb-6">
               Join city-based group chats and connect with verified exchange students worldwide
             </p>
             <div className="flex justify-center">
@@ -175,23 +173,17 @@ const Community = () => {
         </section>
 
         {/* Main Content */}
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <Tabs defaultValue="connect" className="space-y-10">
-              <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-2 h-20 bg-white shadow-lg rounded-xl p-2">
-                <TabsTrigger value="connect" className="flex items-center gap-3 text-xl font-bold py-6 rounded-lg data-[state=active]:bg-swap-blue data-[state=active]:text-white">
-                  <MessageSquare className="h-7 w-7" />
-                  Connect & Chat
-                </TabsTrigger>
-                <TabsTrigger value="wiki" className="flex items-center gap-3 text-xl font-bold py-6 rounded-lg data-[state=active]:bg-swap-blue data-[state=active]:text-white">
-                  <BookOpen className="h-7 w-7" />
-                  Resources
-                </TabsTrigger>
+        <section className="py-8 bg-gray-50">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <Tabs defaultValue="connect" className="space-y-6">
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 h-14 bg-white shadow-md">
+                <TabsTrigger value="connect" className="text-lg font-semibold py-4">Connect & Chat</TabsTrigger>
+                <TabsTrigger value="wiki" className="text-lg font-semibold py-4">Resources</TabsTrigger>
               </TabsList>
 
               {/* Connect & Chat Tab */}
-              <TabsContent value="connect" className="space-y-8">
-                <div className="text-center mb-8">
+              <TabsContent value="connect" className="space-y-6">
+                <div className="text-center mb-6">
                   <Alert className="max-w-2xl mx-auto bg-blue-50 border-blue-200">
                     <Info className="h-4 w-4" />
                     <AlertDescription className="text-blue-800">

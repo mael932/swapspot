@@ -26,6 +26,9 @@ interface ProfileData {
   end_date?: string;
   budget?: string;
   apartment_description?: string;
+  nationality?: string;
+  languages_spoken?: string[];
+  interests?: string;
 }
 
 const Profile = () => {
@@ -92,7 +95,7 @@ const Profile = () => {
     }
   };
 
-  const handleInputChange = (field: keyof ProfileData, value: string) => {
+  const handleInputChange = (field: keyof ProfileData, value: string | string[]) => {
     setEditData(prev => ({
       ...prev,
       [field]: value
@@ -407,6 +410,56 @@ const Profile = () => {
                      </p>
                    )}
                  </div>
+              </CardContent>
+            </Card>
+
+            {/* About You Section */}
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-swap-blue" />
+                  About You
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nationality</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editData.nationality || ''}
+                        onChange={(e) => handleInputChange('nationality', e.target.value)}
+                        placeholder="e.g. Dutch, German, Spanish"
+                      />
+                    ) : (
+                      <p className="text-gray-700">{profile.nationality || 'Not provided'}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Languages Spoken</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editData.languages_spoken?.join(', ') || ''}
+                        onChange={(e) => handleInputChange('languages_spoken', e.target.value.split(', ').filter(lang => lang.trim()))}
+                        placeholder="e.g. English, Dutch, German"
+                      />
+                    ) : (
+                      <p className="text-gray-700">{profile.languages_spoken?.join(', ') || 'Not provided'}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Interests</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editData.interests || ''}
+                        onChange={(e) => handleInputChange('interests', e.target.value)}
+                        placeholder="e.g. Travel, Photography, Sports"
+                      />
+                    ) : (
+                      <p className="text-gray-700">{profile.interests || 'Not provided'}</p>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

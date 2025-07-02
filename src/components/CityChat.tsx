@@ -36,6 +36,9 @@ interface UserProfile {
   exchange_university: string;
   university: string;
   program: string;
+  nationality: string;
+  languages_spoken: string[];
+  interests: string;
 }
 
 export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
@@ -105,7 +108,7 @@ export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, full_name, current_location, exchange_university, university, program')
+        .select('user_id, full_name, current_location, exchange_university, university, program, nationality, languages_spoken, interests')
         .eq('user_id', userId)
         .single();
 
@@ -300,6 +303,24 @@ export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
               </div>
 
               <div className="space-y-3">
+                {selectedUserProfile.nationality && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Globe className="h-4 w-4 text-swap-blue flex-shrink-0" />
+                    <span className="text-gray-700">
+                      <span className="font-medium">Nationality:</span> {selectedUserProfile.nationality}
+                    </span>
+                  </div>
+                )}
+                
+                {selectedUserProfile.languages_spoken && selectedUserProfile.languages_spoken.length > 0 && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <MessageCircle className="h-4 w-4 text-swap-blue flex-shrink-0" />
+                    <span className="text-gray-700">
+                      <span className="font-medium">Languages:</span> {selectedUserProfile.languages_spoken.join(', ')}
+                    </span>
+                  </div>
+                )}
+
                 {selectedUserProfile.current_location && (
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin className="h-4 w-4 text-swap-blue flex-shrink-0" />
@@ -309,20 +330,19 @@ export default function CityChat({ room, onBack, currentUser }: CityChatProps) {
                   </div>
                 )}
                 
-                {selectedUserProfile.university && (
+                {selectedUserProfile.exchange_university && (
                   <div className="flex items-center gap-2 text-sm">
                     <GraduationCap className="h-4 w-4 text-swap-blue flex-shrink-0" />
                     <span className="text-gray-700">
-                      <span className="font-medium">Home University:</span> {selectedUserProfile.university}
+                      <span className="font-medium">Going to:</span> {selectedUserProfile.exchange_university}
                     </span>
                   </div>
                 )}
-                
-                {selectedUserProfile.exchange_university && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Globe className="h-4 w-4 text-swap-blue flex-shrink-0" />
+
+                {selectedUserProfile.interests && (
+                  <div className="flex items-start gap-2 text-sm">
                     <span className="text-gray-700">
-                      <span className="font-medium">Exchange Destination:</span> {selectedUserProfile.exchange_university}
+                      <span className="font-medium">Interests:</span> {selectedUserProfile.interests}
                     </span>
                   </div>
                 )}
