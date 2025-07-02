@@ -76,32 +76,12 @@ const Profile = () => {
       } else if (profileData) {
         console.log('Profile loaded:', profileData);
         setProfile(profileData);
+        // Set edit data to be read-only initially - fields are auto-filled from onboarding
         setEditData(profileData);
       } else {
         console.log('No profile found, user may need to complete onboarding');
-        // If no profile exists, create a basic one
-        const newProfile = {
-          user_id: session.user.id,
-          email: session.user.email || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          gdpr_consent: true
-        };
-
-        const { data: createdProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert([newProfile])
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          toast.error('Failed to create profile. Please try again.');
-          navigate('/onboarding');
-        } else {
-          console.log('Profile created:', createdProfile);
-          setProfile(createdProfile);
-          setEditData(createdProfile);
-        }
+        toast.error('Please complete the onboarding process first.');
+        navigate('/onboarding');
       }
     } catch (error) {
       console.error('Auth error:', error);
@@ -276,39 +256,48 @@ const Profile = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Current University</Label>
-                  {isEditing ? (
-                    <Input
-                      value={editData.university || ''}
-                      onChange={(e) => handleInputChange('university', e.target.value)}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{profile.university || 'Not provided'}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Exchange University</Label>
-                  {isEditing ? (
-                    <Input
-                      value={editData.exchange_university || ''}
-                      onChange={(e) => handleInputChange('exchange_university', e.target.value)}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{profile.exchange_university || 'Not provided'}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Program/Field of Study</Label>
-                  {isEditing ? (
-                    <Input
-                      value={editData.program || ''}
-                      onChange={(e) => handleInputChange('program', e.target.value)}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{profile.program || 'Not provided'}</p>
-                  )}
-                </div>
+                 <div className="space-y-2">
+                   <Label>Current University</Label>
+                   {isEditing ? (
+                     <Input
+                       value={editData.university || ''}
+                       onChange={(e) => handleInputChange('university', e.target.value)}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.university || 'Not provided'} 
+                       {profile.university && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
+                 <div className="space-y-2">
+                   <Label>Exchange University</Label>
+                   {isEditing ? (
+                     <Input
+                       value={editData.exchange_university || ''}
+                       onChange={(e) => handleInputChange('exchange_university', e.target.value)}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.exchange_university || 'Not provided'}
+                       {profile.exchange_university && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
+                 <div className="space-y-2">
+                   <Label>Program/Field of Study</Label>
+                   {isEditing ? (
+                     <Input
+                       value={editData.program || ''}
+                       onChange={(e) => handleInputChange('program', e.target.value)}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.program || 'Not provided'}
+                       {profile.program && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
               </CardContent>
             </Card>
 
@@ -321,29 +310,35 @@ const Profile = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Current Location</Label>
-                  {isEditing ? (
-                    <Input
-                      value={editData.current_location || ''}
-                      onChange={(e) => handleInputChange('current_location', e.target.value)}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{profile.current_location || 'Not provided'}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Current Address</Label>
-                  {isEditing ? (
-                    <Textarea
-                      value={editData.current_address || ''}
-                      onChange={(e) => handleInputChange('current_address', e.target.value)}
-                      rows={3}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{profile.current_address || 'Not provided'}</p>
-                  )}
-                </div>
+                 <div className="space-y-2">
+                   <Label>Current Location</Label>
+                   {isEditing ? (
+                     <Input
+                       value={editData.current_location || ''}
+                       onChange={(e) => handleInputChange('current_location', e.target.value)}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.current_location || 'Not provided'}
+                       {profile.current_location && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
+                 <div className="space-y-2">
+                   <Label>Current Address</Label>
+                   {isEditing ? (
+                     <Textarea
+                       value={editData.current_address || ''}
+                       onChange={(e) => handleInputChange('current_address', e.target.value)}
+                       rows={3}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.current_address || 'Not provided'}
+                       {profile.current_address && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
               </CardContent>
             </Card>
 
@@ -356,57 +351,62 @@ const Profile = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Start Date</Label>
-                  {isEditing ? (
-                    <Input
-                      type="date"
-                      value={editData.start_date || ''}
-                      onChange={(e) => handleInputChange('start_date', e.target.value)}
-                    />
-                  ) : (
-                    <p className="text-gray-700">
-                      {profile.start_date ? new Date(profile.start_date).toLocaleDateString() : 'Not provided'}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>End Date</Label>
-                  {isEditing ? (
-                    <Input
-                      type="date"
-                      value={editData.end_date || ''}
-                      onChange={(e) => handleInputChange('end_date', e.target.value)}
-                    />
-                  ) : (
-                    <p className="text-gray-700">
-                      {profile.end_date ? new Date(profile.end_date).toLocaleDateString() : 'Not provided'}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label>Budget</Label>
-                  {isEditing ? (
-                    <Select 
-                      value={editData.budget || ''} 
-                      onValueChange={(value) => handleInputChange('budget', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select budget range" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="300-500">€300 - €500</SelectItem>
-                        <SelectItem value="500-700">€500 - €700</SelectItem>
-                        <SelectItem value="700-900">€700 - €900</SelectItem>
-                        <SelectItem value="900-1200">€900 - €1,200</SelectItem>
-                        <SelectItem value="1200-1500">€1,200 - €1,500</SelectItem>
-                        <SelectItem value="1500+">€1,500+</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <p className="text-gray-700">{profile.budget || 'Not provided'}</p>
-                  )}
-                </div>
+                 <div className="space-y-2">
+                   <Label>Start Date</Label>
+                   {isEditing ? (
+                     <Input
+                       type="date"
+                       value={editData.start_date || ''}
+                       onChange={(e) => handleInputChange('start_date', e.target.value)}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.start_date ? new Date(profile.start_date).toLocaleDateString() : 'Not provided'}
+                       {profile.start_date && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
+                 <div className="space-y-2">
+                   <Label>End Date</Label>
+                   {isEditing ? (
+                     <Input
+                       type="date"
+                       value={editData.end_date || ''}
+                       onChange={(e) => handleInputChange('end_date', e.target.value)}
+                     />
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.end_date ? new Date(profile.end_date).toLocaleDateString() : 'Not provided'}
+                       {profile.end_date && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
+                 <div className="space-y-2">
+                   <Label>Budget</Label>
+                   {isEditing ? (
+                     <Select 
+                       value={editData.budget || ''} 
+                       onValueChange={(value) => handleInputChange('budget', value)}
+                     >
+                       <SelectTrigger>
+                         <SelectValue placeholder="Select budget range" />
+                       </SelectTrigger>
+                       <SelectContent>
+                         <SelectItem value="300-500">€300 - €500</SelectItem>
+                         <SelectItem value="500-700">€500 - €700</SelectItem>
+                         <SelectItem value="700-900">€700 - €900</SelectItem>
+                         <SelectItem value="900-1200">€900 - €1,200</SelectItem>
+                         <SelectItem value="1200-1500">€1,200 - €1,500</SelectItem>
+                         <SelectItem value="1500+">€1,500+</SelectItem>
+                       </SelectContent>
+                     </Select>
+                   ) : (
+                     <p className="text-gray-700 bg-green-50 p-2 rounded border border-green-200">
+                       {profile.budget || 'Not provided'}
+                       {profile.budget && <span className="text-green-600 text-sm ml-2">✓ From onboarding</span>}
+                     </p>
+                   )}
+                 </div>
               </CardContent>
             </Card>
 

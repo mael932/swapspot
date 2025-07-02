@@ -169,24 +169,24 @@ const ConnectForums: React.FC = () => {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
-          <Users className="h-8 w-8 text-swap-blue" />
-          Connect with Fellow Students
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Join destination-specific forums to connect with other exchange students, find travel buddies, 
-          and get insider tips before your stay begins.
-        </p>
+      <h2 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
+        <Users className="h-8 w-8 text-swap-blue" />
+        Connect with Fellow Students
+      </h2>
+      <p className="text-gray-600 max-w-2xl mx-auto">
+        Join destination-specific group chats to connect with other exchange students, find travel buddies, 
+        and get insider tips before your stay begins. All chats are free for verified students!
+      </p>
       </div>
 
-      <Tabs defaultValue="forums" className="space-y-6">
+      <Tabs defaultValue="chats" className="space-y-6">
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-          <TabsTrigger value="forums">Browse Forums</TabsTrigger>
-          <TabsTrigger value="posts">Recent Posts</TabsTrigger>
+          <TabsTrigger value="chats">Exchange Chats</TabsTrigger>
+          <TabsTrigger value="posts">Recent Messages</TabsTrigger>
         </TabsList>
 
-        {/* Forums Tab */}
-        <TabsContent value="forums" className="space-y-6">
+        {/* Chats Tab */}
+        <TabsContent value="chats" className="space-y-6">
           {/* Search */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-grow">
@@ -200,15 +200,15 @@ const ConnectForums: React.FC = () => {
             </div>
             <Button className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              Request New Forum
+              Request New Chat Room
             </Button>
           </div>
 
-          {/* Featured Forums */}
+          {/* Featured Chat Rooms */}
           <div>
             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <Globe className="h-5 w-5 text-swap-blue" />
-              Popular Destinations
+              Popular Exchange Destinations
             </h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {forums.filter(forum => forum.featured).map((forum) => (
@@ -239,17 +239,17 @@ const ConnectForums: React.FC = () => {
                         </span>
                       </div>
                       <span className="text-xs">{forum.lastActivity}</span>
-                    </div>
-                    <Button className="w-full">Join Forum</Button>
-                  </CardContent>
+                     </div>
+                     <Button className="w-full">Join Chat</Button>
+                   </CardContent>
                 </Card>
               ))}
             </div>
           </div>
 
-          {/* All Forums */}
+          {/* All Chat Rooms */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">All Destinations</h3>
+            <h3 className="text-xl font-semibold mb-4">All Chat Rooms</h3>
             <div className="space-y-4">
               {forums.map((forum) => (
                 <Card key={forum.id} className="hover:shadow-md transition-shadow">
@@ -273,9 +273,9 @@ const ConnectForums: React.FC = () => {
                             <span>Active {forum.lastActivity}</span>
                           </div>
                         </div>
-                      </div>
-                      <Button variant="outline">Join</Button>
-                    </div>
+                       </div>
+                       <Button variant="outline">Join Chat</Button>
+                     </div>
                   </CardContent>
                 </Card>
               ))}
@@ -283,7 +283,7 @@ const ConnectForums: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Recent Posts Tab */}
+        {/* Recent Messages Tab */}
         <TabsContent value="posts" className="space-y-6">
           {/* Categories */}
           <div className="flex flex-wrap gap-2">
